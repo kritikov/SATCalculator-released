@@ -15,6 +15,9 @@
         <StackPanel Orientation="Vertical">
             <TextBlock Text="{Binding FormulaString, Mode=OneWay}"/>
             <ListBox ItemsSource="{Binding AnalysisResults}"/>
+            <TabControl>
+                <TabItem Header="Formula"/>
+            </TabControl>
         </StackPanel>
 
     </DockPanel>

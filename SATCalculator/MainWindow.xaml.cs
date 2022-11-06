@@ -43,7 +43,7 @@ namespace SATCalculator {
             }
         }
 
-        public SAT3 Formula;
+        public SAT3Formula Formula;
 
         #endregion
 
@@ -55,15 +55,36 @@ namespace SATCalculator {
 
             this.DataContext = this;
 
-            Formula = new SAT3();
+            Formula = new SAT3Formula();
 
-            Formula.Add("x1", "x2", "x3");
-            Formula.Add("x1'", "x4", "x3'");
-            Formula.Add("x5", "x2'", "x7");
-            Formula.Add("x1'", "x4", "x3'");
-            Formula.Add("x3", "x2", "x1");
+            Clause clause;
+
+            clause = new Clause(new Literal("x1", true), new Literal("x2", true), new Literal("x3", true));
+            Formula.Clauses.Add(clause);
+
+            clause = new Clause(new Literal("x1", false), new Literal("x4", true), new Literal("x3", true));
+            Formula.Clauses.Add(clause);
+
+            clause = new Clause(new Literal("x5", true), new Literal("x3", true), new Literal("x7", true));
+            Formula.Clauses.Add(clause);
+
+            clause = new Clause(new Literal("x1", true), new Literal("x4", false), new Literal("x3", true));
+            Formula.Clauses.Add(clause);
+
+            clause = new Clause(new Literal("x3", true), new Literal("x2", true), new Literal("x1", false));
+            Formula.Clauses.Add(clause);
 
             FormulaString = Formula.ToString();
+
+            //Formula = new SAT3();
+
+            //Formula.Add("x1", "x2", "x3");
+            //Formula.Add("x1'", "x4", "x3'");
+            //Formula.Add("x5", "x2'", "x7");
+            //Formula.Add("x1'", "x4", "x3'");
+            //Formula.Add("x3", "x2", "x1");
+
+            //FormulaString = Formula.ToString();
         }
 
         #endregion
@@ -72,7 +93,7 @@ namespace SATCalculator {
         #region EVENTS
 
         private void AnalyzeFormula(object sender, RoutedEventArgs e) {
-            AnalysisResults = Formula.Analyze();
+            //AnalysisResults = Formula.Analyze();
         }
 
         #endregion
