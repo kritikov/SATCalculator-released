@@ -1,32 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
-using static SATCalculator.Classes.SAT3;
+using System.Windows.Media.TextFormatting;
 
 namespace SATCalculator.Classes
 {
     public enum Sign { Positive, Nagetive };
 
+    public class Variable {
+        private static string DefaultVariableName = "x";
+
+        public string Name { get; set; }
+
+        public Variable(string value) {
+
+            value = value.Trim();
+
+            if (value[0] == '-') {
+                Name = Variable.DefaultVariableName + value.Substring(1, value.Length - 1);
+            }
+            else if (value[0] == '+') {
+                Name = Variable.DefaultVariableName + value.Substring(1, value.Length - 1);
+            }
+            else {
+                Name = Variable.DefaultVariableName + value;
+            }
+        }
+    }
+
     public class Literal
     {
-        public string VariableName { get; set; }
+        public Variable Variable { get; set; }
         public bool IsPositive { get; set; }
         public string Value { 
             get
             {
                 if (this.IsPositive)
-                    return VariableName;
+                    return Variable.Name;
                 else
-                    return "-" + VariableName;
+                    return "-" + Variable.Name;
             }
         }
 
-        public Literal(string name, bool isPositive)
+        public Literal(Variable variable, bool isPositive)
         {
-            VariableName = name;
+            Variable = variable;
             IsPositive = isPositive;
         }
     }
@@ -59,7 +83,6 @@ namespace SATCalculator.Classes
         public SAT3Formula()
         {
 
-
         }
 
         public void AddClause(Literal x1, Literal x2, Literal x3)
@@ -82,5 +105,52 @@ namespace SATCalculator.Classes
             return value;
         }
 
+        public static SAT3Formula GetFromFile(string filename) {
+
+            SAT3Formula formula = new SAT3Formula();
+
+            try {
+                string[] lines = File.ReadAllLines(filename);
+
+                foreach (string line in lines) {
+                    //Console.WriteLine(line);
+
+                    var lineParts = line.Trim().Split(' ');
+
+                    if (lineParts[0] == "c")
+                        continue;
+
+                    if (lineParts[0] == "p")
+                        continue;
+
+                    if (lineParts.Count() != 4)
+                        continue;
+
+                    Literal[] literals = new Literal[3];
+                    for (int i=0; i<3; i++) {
+                        if (lineParts[i][0] == '-') {
+                            Variable variable = new Variable(lineParts[i]);
+                            literals[i] = new Literal(variable, false);
+                        }
+                        else if (lineParts[0][0] == '+') {
+                            Variable variable = new Variable(lineParts[i]);
+                            literals[i] = new Literal(variable, true);
+                        }
+                        else {
+                            Variable variable = new Variable(lineParts[i]);
+                            literals[i] = new Literal(variable, true);
+                        }
+                    }
+
+                    Clause clause = new Clause(literals[0], literals[1], literals[2]);
+                    formula.Clauses.Add(clause);
+                }
+            }
+            catch (Exception ex) {
+                throw new Exception(ex.Message);
+            }
+
+            return formula;
+        }
     }
 }

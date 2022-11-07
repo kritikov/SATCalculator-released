@@ -9,11 +9,12 @@
     
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Load formula" Click="LoadFormula"/>
             <Button Content="Analyze" Click="AnalyzeFormula"/>
         </StackPanel>
 
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding FormulaString, Mode=OneWay}"/>
+            <TextBox IsReadOnly="True" Text="{Binding FormulaString, Mode=OneWay}" TextWrapping="Wrap" Height="60"/>
             <ListBox ItemsSource="{Binding AnalysisResults}"/>
             <TabControl>
                 <TabItem Header="Formula"/>

@@ -55,34 +55,24 @@ namespace SATCalculator {
 
             this.DataContext = this;
 
-            Formula = new SAT3Formula();
+            //Formula = new SAT3Formula();
 
-            Clause clause;
+            //Clause clause;
 
-            clause = new Clause(new Literal("x1", true), new Literal("x2", true), new Literal("x3", true));
-            Formula.Clauses.Add(clause);
+            //clause = new Clause(new Literal("x1", true), new Literal("x2", true), new Literal("x3", true));
+            //Formula.Clauses.Add(clause);
 
-            clause = new Clause(new Literal("x1", false), new Literal("x4", true), new Literal("x3", true));
-            Formula.Clauses.Add(clause);
+            //clause = new Clause(new Literal("x1", false), new Literal("x4", true), new Literal("x3", true));
+            //Formula.Clauses.Add(clause);
 
-            clause = new Clause(new Literal("x5", true), new Literal("x3", true), new Literal("x7", true));
-            Formula.Clauses.Add(clause);
+            //clause = new Clause(new Literal("x5", true), new Literal("x3", true), new Literal("x7", true));
+            //Formula.Clauses.Add(clause);
 
-            clause = new Clause(new Literal("x1", true), new Literal("x4", false), new Literal("x3", true));
-            Formula.Clauses.Add(clause);
+            //clause = new Clause(new Literal("x1", true), new Literal("x4", false), new Literal("x3", true));
+            //Formula.Clauses.Add(clause);
 
-            clause = new Clause(new Literal("x3", true), new Literal("x2", true), new Literal("x1", false));
-            Formula.Clauses.Add(clause);
-
-            FormulaString = Formula.ToString();
-
-            //Formula = new SAT3();
-
-            //Formula.Add("x1", "x2", "x3");
-            //Formula.Add("x1'", "x4", "x3'");
-            //Formula.Add("x5", "x2'", "x7");
-            //Formula.Add("x1'", "x4", "x3'");
-            //Formula.Add("x3", "x2", "x1");
+            //clause = new Clause(new Literal("x3", true), new Literal("x2", true), new Literal("x1", false));
+            //Formula.Clauses.Add(clause);
 
             //FormulaString = Formula.ToString();
         }
@@ -98,5 +88,34 @@ namespace SATCalculator {
 
         #endregion
 
+
+        private void LoadFormula(object sender, RoutedEventArgs e) {
+
+            // Configure open file dialog box
+            string path = AppDomain.CurrentDomain.BaseDirectory;
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.InitialDirectory = path;
+            dialog.FileName = "Document"; // Default file name
+            dialog.DefaultExt = ".cnf"; // Default file extension
+            dialog.Filter = "SAT3 documents (.cnf)|*.cnf"; // Filter files by extension
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true) {
+                // Open document
+                string filename = dialog.FileName;
+                Formula = SAT3Formula.GetFromFile(filename);
+
+                FormulaString = Formula.ToString();
+            }
+            else {
+                // error
+            }
+
+
+
+        }
     }
 }
