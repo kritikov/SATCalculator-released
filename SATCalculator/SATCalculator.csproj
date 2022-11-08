@@ -64,7 +64,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\Clause.cs" />
-    <Compile Include="Classes\Lietral.cs" />
+    <Compile Include="Classes\Literal.cs" />
     <Compile Include="Classes\SAT3.cs" />
     <Compile Include="Classes\SAT3Formula.cs" />
     <Compile Include="Classes\Variable.cs" />

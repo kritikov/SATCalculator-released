@@ -17,7 +17,7 @@ namespace SATCalculator.Classes
     public class SAT3Formula
     {
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
-        public Dictionary<string, Variable> Variables = new Dictionary<string, Variable>();
+        public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
 
         public SAT3Formula()
         {

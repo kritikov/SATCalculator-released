@@ -25,13 +25,27 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Vertical">
                             <TextBlock Text="Clauses"/>
-                            <ListBox Grid.Column="0" ItemsSource="{Binding Formula.Clauses}" Height="400"/>
+                            <ListBox ItemsSource="{Binding Formula.Clauses}" Height="400"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <TextBlock Text="variables"/>
+                            <ListView ItemsSource="{Binding Formula.Variables}">
+                                <ListView.View>
+                                    <GridView>
+                                        <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Value.Name}" />
+                                        <GridViewColumn Header="References" DisplayMemberBinding="{Binding Value.ReferencesInLiterals}" />
+                                    </GridView>
+                                    
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Vertical">
                             <TextBlock>
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
