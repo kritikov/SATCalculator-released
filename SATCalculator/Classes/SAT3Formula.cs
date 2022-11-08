@@ -14,69 +14,6 @@ namespace SATCalculator.Classes
 {
     public enum Sign { Positive, Nagetive };
 
-    public class Variable {
-        private static string DefaultVariableName = "x";
-
-        public string Name { get; set; }
-
-        public Variable(string value) {
-
-            value = value.Trim();
-
-            if (value[0] == '-') {
-                Name = Variable.DefaultVariableName + value.Substring(1, value.Length - 1);
-            }
-            else if (value[0] == '+') {
-                Name = Variable.DefaultVariableName + value.Substring(1, value.Length - 1);
-            }
-            else {
-                Name = Variable.DefaultVariableName + value;
-            }
-        }
-    }
-
-    public class Literal
-    {
-        public Variable Variable { get; set; }
-        public bool IsPositive { get; set; }
-        public string Value { 
-            get
-            {
-                if (this.IsPositive)
-                    return Variable.Name;
-                else
-                    return "-" + Variable.Name;
-            }
-        }
-
-        public Literal(Variable variable, bool isPositive)
-        {
-            Variable = variable;
-            IsPositive = isPositive;
-        }
-    }
-
-    public class Clause
-    {
-        public Literal[] Literals = new Literal[3];
-
-        public Clause(Literal x1, Literal x2, Literal x3)
-        {
-            Literals[0] = x1;
-            Literals[1] = x2;
-            Literals[2] = x3;
-        }
-
-        public override string ToString()
-        {
-            string value = $@"({Literals[0].Value} ∨ {Literals[1].Value} ∨ {Literals[2].Value})";
-
-            return value;
-        }
-
-        
-    }
-
     public class SAT3Formula
     {
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
@@ -121,8 +58,10 @@ namespace SATCalculator.Classes
         public Variable CreateVariable(string value) {
             Variable variable = new Variable(value);
 
-            if (this.Variables.ContainsKey(variable.Name))
+            if (this.Variables.ContainsKey(variable.Name)) {
                 variable = Variables[variable.Name];
+                variable.ReferencesInLiterals++;
+            }
             else
                 this.Variables.Add(variable.Name, variable);
 
