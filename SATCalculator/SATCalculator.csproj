@@ -65,7 +65,6 @@
     </Compile>
     <Compile Include="Classes\Clause.cs" />
     <Compile Include="Classes\Literal.cs" />
-    <Compile Include="Classes\SAT3.cs" />
     <Compile Include="Classes\SAT3Formula.cs" />
     <Compile Include="Classes\Trinity.cs" />
     <Compile Include="Classes\Variable.cs" />

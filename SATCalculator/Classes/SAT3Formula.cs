@@ -62,7 +62,6 @@ namespace SATCalculator.Classes
 
             if (this.Variables.ContainsKey(variable.Name)) {
                 variable = Variables[variable.Name];
-                variable.ReferencesInLiterals++;
             }
             else
                 this.Variables.Add(variable.Name, variable);
@@ -124,15 +123,18 @@ namespace SATCalculator.Classes
                     for (int i=0; i<3; i++) {
                         if (lineParts[i][0] == '-') {
                             Variable variable = formula.CreateVariable(lineParts[i]);
+                            variable.ReferencesNegative++;
                             literals[i] = new Literal(variable, false);
                         }
                         else if (lineParts[0][0] == '+') {
                             Variable variable = formula.CreateVariable(lineParts[i]);
+                            variable.ReferencesPositive++;
                             literals[i] = new Literal(variable, true);
                         }
                         else {
                             Variable variable = formula.CreateVariable(lineParts[i]);
                             literals[i] = new Literal(variable, true);
+                            variable.ReferencesPositive++;
                         }
                     }
 

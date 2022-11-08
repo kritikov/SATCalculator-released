@@ -65,8 +65,10 @@
                                 <ListView.View>
                                     <GridView>
                                         <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
-                                        <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Value.Name}" />
-                                        <GridViewColumn Header="References" Width="90" DisplayMemberBinding="{Binding Value.ReferencesInLiterals}" />
+                                        <GridViewColumn Header="Name" Width="50" DisplayMemberBinding="{Binding Value.Name}" />
+                                        <GridViewColumn Header="Refs" Width="40" DisplayMemberBinding="{Binding Value.References}" />
+                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ReferencesPositive}" />
+                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ReferencesNegative}" />
                                     </GridView>
 
                                 </ListView.View>
