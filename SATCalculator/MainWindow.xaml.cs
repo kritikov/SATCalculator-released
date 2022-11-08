@@ -25,15 +25,6 @@ namespace SATCalculator {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string formulaString = "";
-        public string FormulaString {
-            get => formulaString;
-            set {
-                formulaString = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormulaString"));
-            }
-        }
-
         private SAT3Formula formula;
         public SAT3Formula Formula {
             get => formula;
@@ -83,8 +74,6 @@ namespace SATCalculator {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
-
-                FormulaString = Formula.ToString();
             }
             else {
                 // error

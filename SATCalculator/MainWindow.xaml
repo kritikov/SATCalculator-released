@@ -23,39 +23,77 @@
                 <TabItem Header="Formula">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Orientation="Vertical">
-                            <TextBlock Text="Clauses"/>
-                            <ListBox ItemsSource="{Binding Formula.Clauses}" Height="400"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Vertical">
-                            <TextBlock Text="variables"/>
-                            <ListView ItemsSource="{Binding Formula.Variables}">
-                                <ListView.View>
-                                    <GridView>
-                                        <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Value.Name}" />
-                                        <GridViewColumn Header="References" DisplayMemberBinding="{Binding Value.ReferencesInLiterals}" />
-                                    </GridView>
-                                    
-                                </ListView.View>
-                            </ListView>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2" Orientation="Vertical">
-                            <TextBlock>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <TextBlock>
+                            <!--<ListBox Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"/>-->
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                        <GridViewColumn Header="Trinity" Width="120" DisplayMemberBinding="{Binding Trinity.Contents}" />
+                                    </GridView>
+
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
                                 <Run Text="variables: "/>
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
-                        </StackPanel>
-                        
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Variables}">
+                                <ListView.View>
+                                    <GridView>
+                                        <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
+                                        <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Value.Name}" />
+                                        <GridViewColumn Header="References" Width="90" DisplayMemberBinding="{Binding Value.ReferencesInLiterals}" />
+                                    </GridView>
+
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
+                                <Run Text="trinities: "/>
+                                <Run Text="{Binding Formula.TrinitiesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Trinities}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Value.Contents}" />
+                                        <GridViewColumn Header="References" Width="90" DisplayMemberBinding="{Binding Value.References}" />
+                                    </GridView>
+
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
                     </Grid>
                 </TabItem>
             </TabControl>
