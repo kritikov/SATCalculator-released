@@ -34,16 +34,14 @@ namespace SATCalculator {
             }
         }
 
-        private List<string> analysisResults = new List<string>();
-        public List<string> AnalysisResults {
-            get => analysisResults;
+        private SAT3Formula formula;
+        public SAT3Formula Formula {
+            get => formula;
             set {
-                analysisResults = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AnalysisResults"));
+                formula = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Formula"));
             }
         }
-
-        public SAT3Formula Formula;
 
         #endregion
 
@@ -52,29 +50,7 @@ namespace SATCalculator {
 
         public MainWindow() {
             InitializeComponent();
-
             this.DataContext = this;
-
-            //Formula = new SAT3Formula();
-
-            //Clause clause;
-
-            //clause = new Clause(new Literal("x1", true), new Literal("x2", true), new Literal("x3", true));
-            //Formula.Clauses.Add(clause);
-
-            //clause = new Clause(new Literal("x1", false), new Literal("x4", true), new Literal("x3", true));
-            //Formula.Clauses.Add(clause);
-
-            //clause = new Clause(new Literal("x5", true), new Literal("x3", true), new Literal("x7", true));
-            //Formula.Clauses.Add(clause);
-
-            //clause = new Clause(new Literal("x1", true), new Literal("x4", false), new Literal("x3", true));
-            //Formula.Clauses.Add(clause);
-
-            //clause = new Clause(new Literal("x3", true), new Literal("x2", true), new Literal("x1", false));
-            //Formula.Clauses.Add(clause);
-
-            //FormulaString = Formula.ToString();
         }
 
         #endregion

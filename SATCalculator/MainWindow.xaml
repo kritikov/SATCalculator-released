@@ -5,21 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
-    
+        Title="MainWindow" Height="604" Width="977" WindowStartupLocation="CenterScreen">
+
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Load formula" Click="LoadFormula"/>
             <Button Content="Analyze" Click="AnalyzeFormula"/>
         </StackPanel>
 
-        <StackPanel Orientation="Vertical">
-            <TextBox IsReadOnly="True" Text="{Binding FormulaString, Mode=OneWay}" TextWrapping="Wrap" Height="60"/>
-            <ListBox ItemsSource="{Binding AnalysisResults}"/>
+        <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+            <TextBox Background="Transparent" BorderThickness="0" Text="{Binding Formula.DisplayValue, Mode=OneWay}" 
+                     IsReadOnly="True" TextWrapping="NoWrap" />
+        </ScrollViewer>
+
+        <Grid>
             <TabControl>
-                <TabItem Header="Formula"/>
+                <TabItem Header="Formula">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Vertical">
+                            <TextBlock Text="Clauses"/>
+                            <ListBox Grid.Column="0" ItemsSource="{Binding Formula.Clauses}" Height="400"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <TextBlock>
+                                <Run Text="clauses: "/>
+                                <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="variables: "/>
+                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                        </StackPanel>
+                        
+                    </Grid>
+                </TabItem>
             </TabControl>
-        </StackPanel>
+        </Grid>
 
     </DockPanel>
 </Window>
