@@ -46,7 +46,6 @@ namespace SATCalculator.Classes
         }
 
         public string DisplayValue => this.ToString();
-
         public int ClausesCount => Clauses.Count;
         public int VariablesCount => Variables.Count;
         public int TrinitiesCount => Trinities.Count;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -34,12 +35,27 @@ namespace SATCalculator {
             }
         }
 
-        #endregion
+        public class VariableValue
+        {
+            public VariableValueEnum Value { get; set; }
+            public string ValueAsString { get; set; }
+        }
+        public static List<VariableValue> VariableValues { get; set; } = new List<VariableValue>
+        {
+            new VariableValue(){Value = VariableValueEnum.Null, ValueAsString="null" },
+            new VariableValue(){Value = VariableValueEnum.True, ValueAsString="true" },
+            new VariableValue(){Value = VariableValueEnum.False, ValueAsString="false" }
+        };
+
+        //public Value[] VariableValues { get; set; } = { Value.Null, Value.True, Value.False };
+        //public List<string> VariableValues = new List<string>(){"string1", "string2"};
+
+    #endregion
 
 
-        #region CONSTRUCTORS
+    #region CONSTRUCTORS
 
-        public MainWindow() {
+    public MainWindow() {
             InitializeComponent();
             this.DataContext = this;
         }
@@ -51,6 +67,39 @@ namespace SATCalculator {
 
         private void AnalyzeFormula(object sender, RoutedEventArgs e) {
             //AnalysisResults = Formula.Analyze();
+        }
+
+        public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
+        {
+            var headerClicked = e.OriginalSource as GridViewColumnHeader;
+            var control = (e.Source as ListView);
+            ListSortDirection direction;
+
+            if (headerClicked != null)
+            {
+                if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
+                {
+                    var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
+                    var sortBy = columnBinding?.Path.Path ?? headerClicked.Column.Header as string;
+
+                    Sort(sortBy, control);
+
+                    //if (direction == ListSortDirection.Ascending)
+                    //{
+                    //    headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
+                    //}
+                    //else
+                    //{
+                    //    headerClicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowDown"] as DataTemplate;
+                    //}
+
+                    //// Remove arrow from previously sorted header
+                    //if (_lastHeaderClicked != null && _lastHeaderClicked != headerClicked)
+                    //{
+                    //    _lastHeaderClicked.Column.HeaderTemplate = null;
+                    //}
+                }
+            }
         }
 
         #endregion
@@ -78,9 +127,34 @@ namespace SATCalculator {
             else {
                 // error
             }
+        }
 
+        
+        /// <summary>
+        /// Sort a grid by a field
+        /// </summary>
+        /// <param name="sortBy"></param>
+        /// <param name="direction"></param>
+        /// <param name="control"></param>
+        private void Sort(string sortBy, ListView control)
+        {
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(control.ItemsSource);
 
+            ListSortDirection direction = ListSortDirection.Ascending;
 
+            if (dataView.SortDescriptions.Count > 0)
+            {
+                ListSortDirection oldDirection = dataView.SortDescriptions[0].Direction;
+                if (oldDirection == ListSortDirection.Descending)
+                    direction = ListSortDirection.Ascending;
+                else
+                    direction = ListSortDirection.Descending;
+            }
+
+            dataView.SortDescriptions.Clear();
+            SortDescription sd = new SortDescription(sortBy, direction);
+            dataView.SortDescriptions.Add(sd);
+            dataView.Refresh();
         }
     }
 }

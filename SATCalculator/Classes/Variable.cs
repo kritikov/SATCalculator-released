@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SATCalculator.Classes {
+
     public class Variable {
         private static string DefaultVariableName = "x";
 
         public string Name { get; set; }
         public int CnfIndex { get; set; }
+        public VariableValueEnum Value { get; set; } = VariableValueEnum.Null;
 
         public int References => ReferencesPositive + ReferencesNegative;
         public int ReferencesPositive { get; set; } = 0;

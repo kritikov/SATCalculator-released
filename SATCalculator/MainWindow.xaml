@@ -4,9 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator"
+        xmlns:Converters="clr-namespace:SATCalculator.Classes"
         mc:Ignorable="d"
         Title="MainWindow" Height="604" Width="977" WindowStartupLocation="CenterScreen">
 
+    
+    
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Load formula" Click="LoadFormula"/>
@@ -40,11 +43,12 @@
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <!--<ListBox Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"/>-->
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
-                                        <GridViewColumn Header="Trinity" Width="120" DisplayMemberBinding="{Binding Trinity.Contents}" />
+                                        <GridViewColumn Header="Variables" Width="120" DisplayMemberBinding="{Binding Trinity.Contents}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -61,7 +65,9 @@
                                 <Run Text="variables: "/>
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Variables}">
+                            <ListView Grid.Row="1"
+                                      ItemsSource="{Binding Formula.Variables}" 
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
@@ -85,7 +91,8 @@
                                 <Run Text="trinities: "/>
                                 <Run Text="{Binding Formula.TrinitiesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Trinities}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Trinities}"
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Value.Contents}" />
@@ -96,6 +103,84 @@
                             </ListView>
                         </Grid>
 
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Tester">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
+                                <Run Text="variables: "/>
+                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
+                                      ItemsSource="{Binding Formula.Variables}" 
+                                      ScrollViewer.CanContentScroll="True" 
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto">            
+                                <DataGrid.Resources>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ReferencesPositive}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ReferencesNegative}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Value" IsReadOnly="False" Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox Grid.Column="4"
+                                                      ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
+                                                        Path=DataContext.VariableValues}"
+                                                      DisplayMemberPath="ValueAsString"
+                                                      SelectedValuePath="Value"
+                                                      SelectedValue="{Binding Value.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                        
                     </Grid>
                 </TabItem>
             </TabControl>
