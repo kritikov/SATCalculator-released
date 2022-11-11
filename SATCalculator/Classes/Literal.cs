@@ -43,9 +43,17 @@ namespace SATCalculator.Classes {
 
         #region Constructors
 
-        public Literal(Clause clause) {
+        public Literal(Clause clause, bool isPositive, Variable variable) {
+
             this.ParentClause = clause;
 
+            if (isPositive)
+                variable.ReferencesPositive++;
+            else 
+                variable.ReferencesNegative++;
+
+            Variable = variable;
+            IsPositive = isPositive;
         }
 
         #endregion

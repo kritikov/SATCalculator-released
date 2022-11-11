@@ -26,17 +26,14 @@ namespace SATCalculator.Classes {
             if (valueInCnf[0] == '-') {
                 Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
                 CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
-                //ReferencesNegative++;
             }
             else if (valueInCnf[0] == '+') {
                 Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
                 CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
-                //ReferencesPositive++;
             }
             else {
                 Name = Variable.DefaultVariableName + valueInCnf;
                 CnfIndex = Convert.ToInt32(valueInCnf);
-                //ReferencesPositive++;
             }
         }
     }
