@@ -8,6 +8,23 @@ namespace SATCalculator.Classes {
     public class Clause {
         public Literal[] Literals { get; set; }
         public Trinity Trinity { get; set; }
+        public VariableValueEnum Valuation {
+            get {
+                if (Literals[0].Valuation == VariableValueEnum.True ||
+                    Literals[1].Valuation == VariableValueEnum.True ||
+                    Literals[2].Valuation == VariableValueEnum.True)
+                    return VariableValueEnum.True;
+
+                else if (Literals[0].Valuation == VariableValueEnum.Null &&
+                    Literals[1].Valuation == VariableValueEnum.Null &&
+                    Literals[2].Valuation == VariableValueEnum.Null) {
+                    return VariableValueEnum.Null;
+                }
+                else {
+                    return VariableValueEnum.False;
+                }
+            }
+        }
 
         public Clause(Literal x1, Literal x2, Literal x3) {
             Literals = new Literal[3];
@@ -21,7 +38,5 @@ namespace SATCalculator.Classes {
         public override string ToString() {
             return Name;
         }
-
-
     }
 }

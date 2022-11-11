@@ -115,7 +115,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
-                        <Grid Grid.Column="1">
+                        <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
@@ -129,8 +129,9 @@
                                       ItemsSource="{Binding Formula.Variables}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto">            
-                                <DataGrid.Resources>
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="DataGrid_SelectionChanged"
+                                      SelectionMode="Single">
+                            <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                     </Style>
@@ -171,8 +172,8 @@
                                                       ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
                                                         Path=DataContext.VariableValues}"
                                                       DisplayMemberPath="ValueAsString"
-                                                      SelectedValuePath="Value"
-                                                      SelectedValue="{Binding Value.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                      SelectedValuePath="Valuation"
+                                                      SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                                 </ComboBox>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -180,7 +181,27 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
-                        
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
+                                <Run Text="participate in clauses"/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding ParticipationClausesView}"
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                    </GridView>
+
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
                     </Grid>
                 </TabItem>
             </TabControl>

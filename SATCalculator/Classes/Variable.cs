@@ -11,7 +11,7 @@ namespace SATCalculator.Classes {
 
         public string Name { get; set; }
         public int CnfIndex { get; set; }
-        public VariableValueEnum Value { get; set; } = VariableValueEnum.Null;
+        public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
 
         public int References => ReferencesPositive + ReferencesNegative;
         public int ReferencesPositive { get; set; } = 0;
@@ -24,17 +24,17 @@ namespace SATCalculator.Classes {
             if (valueInCnf[0] == '-') {
                 Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
                 CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
-                ReferencesNegative++;
+                //ReferencesNegative++;
             }
             else if (valueInCnf[0] == '+') {
                 Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
                 CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
-                ReferencesPositive++;
+                //ReferencesPositive++;
             }
             else {
                 Name = Variable.DefaultVariableName + valueInCnf;
                 CnfIndex = Convert.ToInt32(valueInCnf);
-                ReferencesPositive++;
+                //ReferencesPositive++;
             }
         }
     }

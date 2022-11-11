@@ -35,6 +35,22 @@ namespace SATCalculator {
             }
         }
 
+        private readonly CollectionViewSource participationClausesSource = new CollectionViewSource();
+        public ICollectionView ParticipationClausesView {
+            get {
+                return this.participationClausesSource.View;
+            }
+        }
+
+        private Variable selectedVariable;
+        public Variable SelectedVariable {
+            get => selectedVariable;
+            set {
+                selectedVariable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
+            }
+        }
+
         public class VariableValue
         {
             public VariableValueEnum Value { get; set; }
@@ -53,9 +69,9 @@ namespace SATCalculator {
     #endregion
 
 
-    #region CONSTRUCTORS
+        #region CONSTRUCTORS
 
-    public MainWindow() {
+        public MainWindow() {
             InitializeComponent();
             this.DataContext = this;
         }
@@ -123,6 +139,14 @@ namespace SATCalculator {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
+
+
+
+                //TEST
+                //Formula.SelectedVariable = Formula.Variables[0];
+                participationClausesSource.Source = Formula.Clauses;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ParticipationClausesView"));
+                ParticipationClausesView.Refresh();
             }
             else {
                 // error
@@ -155,6 +179,47 @@ namespace SATCalculator {
             SortDescription sd = new SortDescription(sortBy, direction);
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
+        }
+
+
+        /// <summary>
+        /// filter the participating clauses view
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private bool ParticipationClausesFilter(object item) {
+            Clause clause = item as Clause;
+
+            if (clause.Literals[0].Variable == Formula.SelectedVariable ||
+                clause.Literals[1].Variable == Formula.SelectedVariable ||
+                clause.Literals[2].Variable == Formula.SelectedVariable) {
+                return true;
+            }
+            else
+                return false;
+
+            return true;
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            //var item = (e.OriginalSource as DataGrid).SelectedItem as Variable;
+
+            if (Formula != null) {
+
+                var grid = sender as DataGrid;
+
+                if (grid.SelectedItem != null) {
+                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                    Formula.SelectedVariable = selectedItem.Value;
+                    if (Formula.SelectedVariable != null) {
+                        ParticipationClausesView.Filter = ParticipationClausesFilter;
+                        participationClausesSource.View.Refresh();
+                        ParticipationClausesView.Refresh();
+                    }
+                }
+            }
+
         }
     }
 }

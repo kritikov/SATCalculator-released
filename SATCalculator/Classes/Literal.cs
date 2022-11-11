@@ -16,6 +16,23 @@ namespace SATCalculator.Classes {
                     return "-" + Variable.Name;
             }
         }
+        public VariableValueEnum Valuation {
+            get {
+
+                if (Variable == null || Variable?.Valuation == VariableValueEnum.Null)
+                    return VariableValueEnum.Null;
+
+                if (this.IsPositive) {
+                    return Variable.Valuation;
+                }
+                else {
+                    if (Variable.Valuation == VariableValueEnum.True)
+                        return VariableValueEnum.False;
+                    else
+                        return VariableValueEnum.True;
+                }
+            }
+        }
 
         public Literal(Variable variable, bool isPositive) {
             Variable = variable;

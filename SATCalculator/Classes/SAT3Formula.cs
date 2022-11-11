@@ -19,6 +19,7 @@ namespace SATCalculator.Classes
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, Trinity> Trinities { get; set; } = new Dictionary<string, Trinity>();
+        public Variable SelectedVariable { get; set; }
 
         public SAT3Formula()
         {
