@@ -85,17 +85,16 @@ namespace SATCalculator.Classes {
         /// </summary>
         /// <param name="part"></param>
         public void CreateAndAddLiteral(string part) {
-            Variable variable = ParentFormula.CreateVariable(part);
             Literal literal;
 
             if (part[0] == '-') {
-                literal = new Literal(this, false, variable);
+                literal = new Literal(this, false, part);
             }
             else if (part[0] == '+') {
-                literal = new Literal(this, true, variable);
+                literal = new Literal(this, true, part);
             }
             else {
-                literal = new Literal(this, true, variable);
+                literal = new Literal(this, true, part);
             }
 
             this.Literals.Add(literal);
