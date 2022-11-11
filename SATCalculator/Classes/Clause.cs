@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SATCalculator.Classes {
     public class Clause {
-        public Literal[] Literals { get; set; }
+
+        #region Fields
+
+        public SAT3Formula ParentFormula { get; set; }
+        public List<Literal> Literals { get; set; }
         public Trinity Trinity { get; set; }
         public VariableValueEnum Valuation {
             get {
@@ -26,17 +30,87 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public Clause(Literal x1, Literal x2, Literal x3) {
-            Literals = new Literal[3];
-            Literals[0] = x1;
-            Literals[1] = x2;
-            Literals[2] = x3;
+        public string Name => $@"({Literals[0].Value} ∨ {Literals[1].Value} ∨ {Literals[2].Value})";
+
+        #endregion
+
+
+        #region Constructors
+
+        public Clause(SAT3Formula formula, string[] parts) {
+
+            ParentFormula = formula;
+            Literals = new List<Literal>();
+
+            for (int i = 0; i < 3; i++) {
+                CreateAndAddLiteral(parts[i]);
+            }
+
+            Literals = this.Literals.OrderBy(c => c.Variable.CnfIndex).ToList();
+            Trinity = CreateTrinity();
         }
 
-        public string Name => $@"({Literals[0].Value} ∨ {Literals[1].Value} ∨ {Literals[2].Value})";
+
+        #endregion
+
+
+        #region Methods
 
         public override string ToString() {
             return Name;
         }
+
+        /// <summary>
+        /// Check if the trinity from variables of the clause exists in the list with the formula trinities.
+        /// If exists then returns the existing trinity or else creates a new one
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public Trinity CreateTrinity() {
+            Trinity trinity = new Trinity(this);
+
+            if (this.ParentFormula.Trinities.ContainsKey(trinity.Name)) {
+                trinity = this.ParentFormula.Trinities[trinity.Name];
+                trinity.References++;
+            }
+            else {
+                this.ParentFormula.Trinities.Add(trinity.Name, trinity);
+            }
+
+            return trinity;
+        }
+
+        /// <summary>
+        /// Create a literal from a string and add it to the list
+        /// </summary>
+        /// <param name="part"></param>
+        public void CreateAndAddLiteral(string part) {
+            Literal literal = new Literal(this);
+
+            if (part[0] == '-') {
+                Variable variable = ParentFormula.CreateVariable(part);
+                variable.ReferencesNegative++;
+                literal.Variable = variable;
+                literal.IsPositive = false;
+            }
+            else if (part[0] == '+') {
+                Variable variable = ParentFormula.CreateVariable(part);
+                variable.ReferencesPositive++;
+                literal.Variable = variable;
+                literal.IsPositive = true;
+            }
+            else {
+                Variable variable = ParentFormula.CreateVariable(part);
+                variable.ReferencesPositive++; ;
+                literal.Variable = variable;
+                literal.IsPositive = true;
+            }
+
+            this.Literals.Add(literal);
+        }
+
+        #endregion
+
+
     }
 }

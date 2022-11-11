@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace SATCalculator.Classes {
     public class Literal {
+
+        #region Fields
+
+        public Clause ParentClause;
         public Variable Variable { get; set; }
         public bool IsPositive { get; set; }
         public string Value {
@@ -34,9 +38,16 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public Literal(Variable variable, bool isPositive) {
-            Variable = variable;
-            IsPositive = isPositive;
+        #endregion
+
+
+        #region Constructors
+
+        public Literal(Clause clause) {
+            this.ParentClause = clause;
+
         }
+
+        #endregion
     }
 }

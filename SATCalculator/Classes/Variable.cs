@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 namespace SATCalculator.Classes {
 
     public class Variable {
+        public SAT3Formula ParentFormula;
+
         private static string DefaultVariableName = "x";
 
         public string Name { get; set; }

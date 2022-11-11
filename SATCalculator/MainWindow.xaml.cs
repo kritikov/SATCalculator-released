@@ -35,10 +35,10 @@ namespace SATCalculator {
             }
         }
 
-        private readonly CollectionViewSource participationClausesSource = new CollectionViewSource();
-        public ICollectionView ParticipationClausesView {
+        private readonly CollectionViewSource relatedClausesSource = new CollectionViewSource();
+        public ICollectionView RelatedClausesView {
             get {
-                return this.participationClausesSource.View;
+                return this.relatedClausesSource.View;
             }
         }
 
@@ -140,13 +140,9 @@ namespace SATCalculator {
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
 
-
-
-                //TEST
-                //Formula.SelectedVariable = Formula.Variables[0];
-                participationClausesSource.Source = Formula.Clauses;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ParticipationClausesView"));
-                ParticipationClausesView.Refresh();
+                // Fill related clauses view
+                relatedClausesSource.Source = Formula.Clauses;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedClausesView"));
             }
             else {
                 // error
@@ -155,7 +151,7 @@ namespace SATCalculator {
 
         
         /// <summary>
-        /// Sort a grid by a field
+        /// Sort a ListView by a field
         /// </summary>
         /// <param name="sortBy"></param>
         /// <param name="direction"></param>
@@ -190,9 +186,9 @@ namespace SATCalculator {
         private bool ParticipationClausesFilter(object item) {
             Clause clause = item as Clause;
 
-            if (clause.Literals[0].Variable == Formula.SelectedVariable ||
-                clause.Literals[1].Variable == Formula.SelectedVariable ||
-                clause.Literals[2].Variable == Formula.SelectedVariable) {
+            if (clause.Literals[0].Variable == SelectedVariable ||
+                clause.Literals[1].Variable == SelectedVariable ||
+                clause.Literals[2].Variable == SelectedVariable) {
                 return true;
             }
             else
@@ -201,21 +197,19 @@ namespace SATCalculator {
             return true;
         }
 
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            //var item = (e.OriginalSource as DataGrid).SelectedItem as Variable;
+        private void RelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
             if (Formula != null) {
-
                 var grid = sender as DataGrid;
 
                 if (grid.SelectedItem != null) {
                     var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
 
-                    Formula.SelectedVariable = selectedItem.Value;
-                    if (Formula.SelectedVariable != null) {
-                        ParticipationClausesView.Filter = ParticipationClausesFilter;
-                        participationClausesSource.View.Refresh();
-                        ParticipationClausesView.Refresh();
+                    SelectedVariable = selectedItem.Value;
+                    if (SelectedVariable != null) {
+                        RelatedClausesView.Filter = ParticipationClausesFilter;
+                        relatedClausesSource.View.Refresh();
+                        RelatedClausesView.Refresh();
                     }
                 }
             }

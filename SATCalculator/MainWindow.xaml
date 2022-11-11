@@ -129,7 +129,7 @@
                                       ItemsSource="{Binding Formula.Variables}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="DataGrid_SelectionChanged"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
                             <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
@@ -189,10 +189,10 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0">
-                                <Run Text="participate in clauses"/>
+                                <Run Text="related clauses"/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ParticipationClausesView}"
+                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
