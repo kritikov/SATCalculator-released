@@ -44,7 +44,7 @@ namespace SATCalculator.Classes {
         #region Constructors
 
         public Literal(Clause clause, bool isPositive, string part) {
-            Variable variable = clause.ParentFormula.CreateVariable(part);
+            Variable variable = clause.ParentFormula.CreateVariables(part);
 
             this.ParentClause = clause;
 

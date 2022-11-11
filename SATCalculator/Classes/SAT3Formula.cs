@@ -61,7 +61,7 @@ namespace SATCalculator.Classes
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Variable CreateVariable(string value) {
+        public Variable CreateVariables(string value) {
             Variable variable = new Variable(value);
 
             if (this.Variables.ContainsKey(variable.Name)) {
