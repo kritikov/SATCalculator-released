@@ -19,14 +19,13 @@ namespace SATCalculator.Classes {
                     Literals[2].Valuation == VariableValueEnum.True)
                     return VariableValueEnum.True;
 
-                else if (Literals[0].Valuation == VariableValueEnum.False &&
+                if (Literals[0].Valuation == VariableValueEnum.False &&
                     Literals[1].Valuation == VariableValueEnum.False &&
                     Literals[2].Valuation == VariableValueEnum.False) {
                     return VariableValueEnum.False;
                 }
-                else {
-                    return VariableValueEnum.Null;
-                }
+
+                return VariableValueEnum.Null;
             }
         }
 

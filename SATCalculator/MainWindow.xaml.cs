@@ -42,6 +42,16 @@ namespace SATCalculator {
             }
         }
 
+        //private readonly CollectionViewSource clausesSource = new CollectionViewSource();
+        //public ICollectionView ClausesView
+        //{
+        //    get
+        //    {
+        //        return this.clausesSource.View;
+        //    }
+        //}
+
+
         private Variable selectedVariable;
         public Variable SelectedVariable {
             get => selectedVariable;
@@ -141,6 +151,9 @@ namespace SATCalculator {
                 Formula = SAT3Formula.GetFromFile(filename);
 
                 // Fill related clauses view
+                //clausesSource.Source = Formula.Clauses;
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("clausesView"));
+
                 relatedClausesSource.Source = Formula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedClausesView"));
             }

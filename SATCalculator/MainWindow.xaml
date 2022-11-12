@@ -134,7 +134,7 @@
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
-                            <DataGrid.Resources>
+                                <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                     </Style>
@@ -195,33 +195,24 @@
                                 <Run Text="related clauses"/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}">
-                                <!--<ListView.View>
+                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                                <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                        <GridViewColumn Header="Clause" Width="120" >
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        <TextBlock Text=" ∨ "/>
+                                                        <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        <TextBlock Text=" ∨ "/>
+                                                        <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
-                                </ListView.View>-->
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                            <TextBlock Text=" ∨ "/>
-                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                            <TextBlock Text=" ∨ "/>
-                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                                
-                                <!--<ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Style.Resources>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                            </Style>
-                                        </Style.Resources>
-                                    </Style>
-                                </ListView.ItemContainerStyle>-->
+                                </ListView.View>
                             </ListView>
                         </Grid>
 
@@ -235,14 +226,32 @@
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                        <GridViewColumn Header="Clause" Width="120" >
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        <TextBlock Text=" ∨ "/>
+                                                        <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        <TextBlock Text=" ∨ "/>
+                                                        <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Valuation" Width="90" DisplayMemberBinding="{Binding Valuation}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Valuation}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
-                                <ListView.ItemContainerStyle>
+                                <!--<ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Style.Resources>
                                             <Style TargetType="TextBlock">
@@ -250,7 +259,7 @@
                                             </Style>
                                         </Style.Resources>
                                     </Style>
-                                </ListView.ItemContainerStyle>
+                                </ListView.ItemContainerStyle>-->
                             </ListView>
                         </Grid>
 
