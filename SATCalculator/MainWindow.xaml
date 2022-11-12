@@ -129,7 +129,7 @@
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
-                                      ItemsSource="{Binding Formula.Variables}" 
+                                      ItemsSource="{Binding VariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
@@ -198,7 +198,7 @@
                             <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Clause" Width="120" >
+                                        <GridViewColumn Header="Clause" Width="120">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal">
@@ -226,7 +226,7 @@
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesView}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="120" >

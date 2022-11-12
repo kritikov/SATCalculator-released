@@ -42,14 +42,23 @@ namespace SATCalculator {
             }
         }
 
-        //private readonly CollectionViewSource clausesSource = new CollectionViewSource();
-        //public ICollectionView ClausesView
-        //{
-        //    get
-        //    {
-        //        return this.clausesSource.View;
-        //    }
-        //}
+        private readonly CollectionViewSource variablesSource = new CollectionViewSource();
+        public ICollectionView VariablesView
+        {
+            get
+            {
+                return this.variablesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource clausesSource = new CollectionViewSource();
+        public ICollectionView ClausesView
+        {
+            get
+            {
+                return this.clausesSource.View;
+            }
+        }
 
 
         private Variable selectedVariable;
@@ -73,10 +82,7 @@ namespace SATCalculator {
             new VariableValue(){Value = VariableValueEnum.False, ValueAsString="false" }
         };
 
-        //public Value[] VariableValues { get; set; } = { Value.Null, Value.True, Value.False };
-        //public List<string> VariableValues = new List<string>(){"string1", "string2"};
-
-    #endregion
+        #endregion
 
 
         #region CONSTRUCTORS
@@ -150,12 +156,15 @@ namespace SATCalculator {
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
 
-                // Fill related clauses view
-                //clausesSource.Source = Formula.Clauses;
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("clausesView"));
+                // update the source of the views
+                clausesSource.Source = Formula.Clauses;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesView"));
 
                 relatedClausesSource.Source = Formula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedClausesView"));
+
+                variablesSource.Source = Formula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
             }
             else {
                 // error
@@ -206,8 +215,6 @@ namespace SATCalculator {
             }
             else
                 return false;
-
-            return true;
         }
 
         private void RelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -221,12 +228,9 @@ namespace SATCalculator {
                     SelectedVariable = selectedItem.Value;
                     if (SelectedVariable != null) {
                         RelatedClausesView.Filter = ParticipationClausesFilter;
-                        relatedClausesSource.View.Refresh();
-                        RelatedClausesView.Refresh();
                     }
                 }
             }
-
         }
     }
 }
