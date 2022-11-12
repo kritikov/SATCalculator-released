@@ -29,12 +29,11 @@ namespace SATCalculator.Classes {
                 if (this.IsPositive) {
                     return Variable.Valuation;
                 }
-                else {
-                    if (Variable.Valuation == VariableValueEnum.True)
-                        return VariableValueEnum.False;
-                    else
-                        return VariableValueEnum.True;
-                }
+
+                if (Variable.Valuation == VariableValueEnum.True)
+                    return VariableValueEnum.False;
+                else
+                    return VariableValueEnum.True;
             }
         }
 

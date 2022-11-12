@@ -9,42 +9,29 @@ using System.Windows.Media;
 
 namespace SATCalculator.Classes
 {
-    //public class VariableValueToString : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        VariableBooleanValueEnum? variableValue = value as VariableBooleanValueEnum?;
+    public class ValuationToColor : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            VariableValueEnum? valuation = value as VariableValueEnum?;
 
-    //        if (variableValue == VariableBooleanValueEnum.True)
-    //        {
-    //            return "true";
-    //        }
-    //        else if (variableValue == VariableBooleanValueEnum.False)
-    //        {
-    //            return "false";
-    //        }
-    //        else
-    //        {
-    //            return "null";
-    //        }
-    //    }
+            if (valuation == VariableValueEnum.True)
+            {
+                return Brushes.Green;
+            }
+            else if (valuation == VariableValueEnum.False)
+            {
+                return Brushes.Red;
+            }
+            else
+            {
+                return Brushes.Black;
+            }
+        }
 
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        string variableValue = value.ToString();
-
-    //        if (variableValue == "true")
-    //        {
-    //            return VariableBooleanValueEnum.True;
-    //        }
-    //        else if (variableValue == "false")
-    //        {
-    //            return VariableBooleanValueEnum.False;
-    //        }
-    //        else
-    //        {
-    //            return VariableBooleanValueEnum.Null;
-    //        }
-    //    }
-    //}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

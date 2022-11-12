@@ -34,9 +34,9 @@
     <!--  Tab control -->
     <LinearGradientBrush x:Key="TabItemBackground" EndPoint="0.5,1" StartPoint="0.5,0">
         <GradientStop Color="#FFE4E4E4" Offset="0"/>
-        <GradientStop Color="#FF4D566C" Offset="0.59"/>
-        <GradientStop Color="#FF727E99" Offset="1"/>
-        <GradientStop Color="#FF7C86A0" Offset="0.347"/>
+        <GradientStop Color="#FF2F52A5" Offset="0.59"/>
+        <GradientStop Color="#FF5C79BB" Offset="1"/>
+        <GradientStop Color="#FF5A7BD0" Offset="0.347"/>
     </LinearGradientBrush>
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="Background" Value="Transparent"/>
@@ -127,13 +127,13 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Resources>
             <Style TargetType="ListViewItem">
-                <Setter Property="BorderBrush" Value="LightGray" />
+                <Setter Property="BorderBrush" Value="WhiteSmoke" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Padding" Value="4" />
                 <Setter Property="Foreground" Value="DarkSlateBlue"/>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Foreground" Value="DarkGreen" />
+                        <Setter Property="Foreground" Value="Black" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -143,12 +143,13 @@
                 <Setter Property="Padding" Value="2" />
             </Style>
             <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="DarkGreen" />
+                <Setter Property="Foreground" Value="Black" />
                 <Setter Property="Margin" Value="12" />
             </Style>
         </Style.Resources>
     </Style>
 
+    <!-- GroupBox -->
     <Style TargetType="GroupBox">
         <Setter Property="Background" Value="WhiteSmoke"/>
         <Setter Property="BorderBrush" Value="BurlyWood"/>
@@ -165,16 +166,18 @@
                 <Setter Property="Margin" Value="2, 3, 2, 3"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FlowDirection" Value="LeftToRight"/>
-                <Setter Property="Foreground" Value="DarkSlateBlue"/>
+                <Setter Property="Foreground" Value="#FF266E94"/>
             </Style>
         </Style.Resources>
     </Style>
 
+    <!-- TextBlock -->
     <Style TargetType="TextBlock" x:Key="InformationsTextBlock">
         <Setter Property="Padding" Value="5"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="DarkCyan"/>
+        <Setter Property="Foreground" Value="#FF475AA5"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="TextAlignment" Value="Center"/>
     </Style>
-
 
 </ResourceDictionary>

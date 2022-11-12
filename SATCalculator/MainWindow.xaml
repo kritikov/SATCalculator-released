@@ -8,8 +8,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="604" Width="977" WindowStartupLocation="CenterScreen">
 
-    
-    
+    <Window.Resources>
+        <Converters:ValuationToColor x:Key="ValuationToColor"/>
+
+    </Window.Resources>
+
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Load formula" Click="LoadFormula"/>
@@ -38,7 +41,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0">
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
@@ -61,7 +64,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0">
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="variables: "/>
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
@@ -87,7 +90,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0">
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="trinities: "/>
                                 <Run Text="{Binding Formula.TrinitiesCount, Mode=OneWay}"/>
                             </TextBlock>
@@ -121,7 +124,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0">
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="variables: "/>
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
@@ -172,7 +175,7 @@
                                                       ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
                                                         Path=DataContext.VariableValues}"
                                                       DisplayMemberPath="ValueAsString"
-                                                      SelectedValuePath="Valuation"
+                                                      SelectedValuePath="Value"
                                                       SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                                 </ComboBox>
                                             </DataTemplate>
@@ -188,20 +191,69 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0">
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="related clauses"/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}"
+                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}">
+                                <!--<ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                    </GridView>
+                                </ListView.View>-->
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                            <TextBlock Text=" ∨ "/>
+                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                            <TextBlock Text=" ∨ "/>
+                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                
+                                <!--<ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Style.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                            </Style>
+                                        </Style.Resources>
+                                    </Style>
+                                </ListView.ItemContainerStyle>-->
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="clauses: "/>
+                                <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
                                     </GridView>
-
                                 </ListView.View>
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Style.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                            </Style>
+                                        </Style.Resources>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
                             </ListView>
                         </Grid>
+
                     </Grid>
                 </TabItem>
             </TabControl>
