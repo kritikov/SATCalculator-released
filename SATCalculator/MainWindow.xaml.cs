@@ -42,6 +42,15 @@ namespace SATCalculator {
             }
         }
 
+        private readonly CollectionViewSource relatedVariablesSource = new CollectionViewSource();
+        public ICollectionView RelatedVariablesView
+        {
+            get
+            {
+                return this.relatedVariablesSource.View;
+            }
+        }
+
         private readonly CollectionViewSource variablesSource = new CollectionViewSource();
         public ICollectionView VariablesView
         {
@@ -134,6 +143,26 @@ namespace SATCalculator {
             }
         }
 
+        private void RelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Formula != null)
+            {
+                var grid = sender as DataGrid;
+
+                if (grid.SelectedItem != null)
+                {
+                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                    SelectedVariable = selectedItem.Value;
+                    if (SelectedVariable != null)
+                    {
+                        RelatedClausesView.Filter = RelatedClausesFilter;
+                        RelatedVariablesView.Filter = RelatedVariablesFilter;
+                    }
+                }
+            }
+        }
+
         #endregion
 
 
@@ -163,8 +192,12 @@ namespace SATCalculator {
                 relatedClausesSource.Source = Formula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedClausesView"));
 
+                relatedVariablesSource.Source = Formula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedVariablesView"));
+
                 variablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
+
             }
             else {
                 // error
@@ -201,11 +234,11 @@ namespace SATCalculator {
 
 
         /// <summary>
-        /// filter the participating clauses view
+        /// filter the related clauses view
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private bool ParticipationClausesFilter(object item) {
+        private bool RelatedClausesFilter(object item) {
             Clause clause = item as Clause;
 
             if (clause.Literals[0].Variable == SelectedVariable ||
@@ -217,20 +250,31 @@ namespace SATCalculator {
                 return false;
         }
 
-        private void RelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        /// <summary>
+        /// filter the related clauses view
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private bool RelatedVariablesFilter(object item)
+        {
 
-            if (Formula != null) {
-                var grid = sender as DataGrid;
+            Variable variable = ((KeyValuePair<string, Variable>)item).Value;
+            var relatedClauses = RelatedClausesList.Items;
 
-                if (grid.SelectedItem != null) {
-                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
-
-                    SelectedVariable = selectedItem.Value;
-                    if (SelectedVariable != null) {
-                        RelatedClausesView.Filter = ParticipationClausesFilter;
-                    }
+            foreach(Clause clause in relatedClauses)
+            {
+                if (clause.Literals[0].Variable == variable ||
+                    clause.Literals[1].Variable == variable ||
+                    clause.Literals[2].Variable == variable)
+                {
+                    return true;
                 }
             }
+
+            return false;
+
         }
+
+        
     }
 }

@@ -115,6 +115,7 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
@@ -195,7 +196,8 @@
                                 <Run Text="related clauses"/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedClausesView}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                            <ListView Grid.Row="1" Name="RelatedClausesList" ItemsSource="{Binding RelatedClausesView}" 
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="120">
@@ -217,6 +219,25 @@
                         </Grid>
 
                         <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="related variables"/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedVariablesView}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Variable" Width="100" DisplayMemberBinding="{Binding Value.Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
