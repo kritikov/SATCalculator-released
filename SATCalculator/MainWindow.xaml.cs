@@ -42,6 +42,20 @@ namespace SATCalculator {
             }
         }
 
+        private readonly CollectionViewSource clausesWithPositiveReferencesSource = new CollectionViewSource();
+        public ICollectionView ClausesWithPositiveReferencesView {
+            get {
+                return this.clausesWithPositiveReferencesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource clausesWithNegativeReferencesSource = new CollectionViewSource();
+        public ICollectionView ClausesWithNegativeReferencesView {
+            get {
+                return this.clausesWithNegativeReferencesSource.View;
+            }
+        }
+
         private readonly CollectionViewSource relatedVariablesSource = new CollectionViewSource();
         public ICollectionView RelatedVariablesView
         {
@@ -158,6 +172,13 @@ namespace SATCalculator {
                     {
                         RelatedClausesView.Filter = RelatedClausesFilter;
                         RelatedVariablesView.Filter = RelatedVariablesFilter;
+
+                        clausesWithPositiveReferencesSource.Source = SelectedVariable.ClausesWithPositiveAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithPositiveReferencesView"));
+
+                        clausesWithNegativeReferencesSource.Source = SelectedVariable.ClausesWithNegativeAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithNegativeReferencesView"));
+
                     }
                 }
             }
@@ -191,6 +212,14 @@ namespace SATCalculator {
 
                 relatedClausesSource.Source = Formula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedClausesView"));
+
+                SelectedVariable = null;
+
+                //clausesWithPositiveReferencesSource.Source = SelectedVariable?.ClausesWithPositiveAppearance;
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithPositiveReferencesView"));
+
+                //clausesWithNegativeReferencesSource.Source = SelectedVariable?.ClausesWithNegativeAppearance;
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithNegativeReferencesView"));
 
                 relatedVariablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedVariablesView"));

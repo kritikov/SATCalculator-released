@@ -7,18 +7,32 @@ using System.Threading.Tasks;
 namespace SATCalculator.Classes {
 
     public class Variable {
-        public SAT3Formula ParentFormula;
+
+        #region Fields
 
         private static string DefaultVariableName = "x";
+
+        public SAT3Formula ParentFormula { get; set; }
+        public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
 
         public string Name { get; set; }
         public int CnfIndex { get; set; }
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
 
-        public int References => ReferencesPositive + ReferencesNegative;
-        public int ReferencesPositive { get; set; } = 0;
-        public int ReferencesNegative { get; set; } = 0;
+        public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
+        public int ClausesWithPositiveReferencesCount => ClausesWithPositiveAppearance.Count;
+        public int ClausesWithNegativeReferencesCount => ClausesWithNegativeAppearance.Count;
 
+        #endregion
+
+
+        #region Constructors
+
+        /// <summary>
+        /// Create a variable from a string as found in a cnf file
+        /// </summary>
+        /// <param name="valueInCnf"></param>
         public Variable(string valueInCnf) {
 
             valueInCnf = valueInCnf.Trim();
@@ -36,5 +50,7 @@ namespace SATCalculator.Classes {
                 CnfIndex = Convert.ToInt32(valueInCnf);
             }
         }
+
+        #endregion
     }
 }

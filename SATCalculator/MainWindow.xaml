@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SATCalculator"
         xmlns:Converters="clr-namespace:SATCalculator.Classes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="604" Width="977" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="694" Width="1145" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Converters:ValuationToColor x:Key="ValuationToColor"/>
@@ -76,8 +76,8 @@
                                         <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
                                         <GridViewColumn Header="Name" Width="50" DisplayMemberBinding="{Binding Value.Name}" />
                                         <GridViewColumn Header="Refs" Width="40" DisplayMemberBinding="{Binding Value.References}" />
-                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ReferencesPositive}" />
-                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ReferencesNegative}" />
+                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithPositiveReferences}" />
+                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithNegativeReferences}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -116,9 +116,10 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
@@ -155,14 +156,14 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ReferencesPositive}" IsReadOnly="True">
+                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style>
                                                 <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ReferencesNegative}" IsReadOnly="True">
+                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style>
                                                 <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -244,6 +245,44 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="clauses with pos. refs."/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithPositiveReferencesView}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="clauses with neg. refs."/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithNegativeReferencesView}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
@@ -286,6 +325,126 @@
 
                     </Grid>
                 </TabItem>
+
+                <TabItem Header="Reduction">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="variables: "/>
+                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
+                                      ItemsSource="{Binding VariablesView}" 
+                                      ScrollViewer.CanContentScroll="True" 
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
+                                      SelectionMode="Single">
+                                <DataGrid.Resources>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Value" IsReadOnly="False" Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox Grid.Column="4"
+                                                      ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
+                                                        Path=DataContext.VariableValues}"
+                                                      DisplayMemberPath="ValueAsString"
+                                                      SelectedValuePath="Value"
+                                                      SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="clauses with pos. refs."/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithPositiveReferencesView}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="clauses with neg. refs."/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithNegativeReferencesView}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                    </Grid>
+                </TabItem>
+
             </TabControl>
         </Grid>
 
