@@ -242,6 +242,10 @@ namespace SATCalculator {
             }
         }
 
+        private void ReductionClause(object sender, RoutedEventArgs e) {
+
+        }
+
         #endregion
 
 
