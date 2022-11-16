@@ -479,8 +479,9 @@
                         <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button Content="Test selected clauses" Click="TestReductionSelectedClauses"/>
                             <Button Content="Reduction selected clauses" Click="ReductionSelectedClauses"/>
-                            <Button Content="Test all clauses" Click="TestAllReductionClauses"/>
-                            <Button Content="Reduction all clauses" Click="ReductionAllClauses"/>
+                            <Button Content="Test all variable clauses" Click="TestAllVariableClauses"/>
+                            <Button Content="Reduction all variable clauses" Click="ReductionAllVariableClauses"/>
+                            <Button Content="Combine final clauses" Click="CombineFinalClauses"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

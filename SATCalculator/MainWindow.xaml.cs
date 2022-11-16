@@ -261,21 +261,42 @@ namespace SATCalculator {
                 {
                     if (literal.Variable != selectedVariable)
                     {
-                        newClause.Literals.Add(literal);
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            if (existingLiteral.IsPositive != literal.IsPositive)
+                            {
+                                newClause.Literals.Remove(existingLiteral);
+                            }
+                        }
                     }
                 }
                 foreach (var literal in negativeClause.Literals)
                 {
                     if (literal.Variable != selectedVariable)
                     {
-                        newClause.Literals.Add(literal);
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            if (existingLiteral.IsPositive != literal.IsPositive)
+                            {
+                                newClause.Literals.Remove(existingLiteral);
+                            }
+                        }
                     }
                 }
 
-                // simplify the new clause
-
                 // add the new clause to the results
-                Reduction.Results.Add(newClause);
+                if (newClause.Literals.Count>0)
+                    Reduction.Results.Add(newClause);
             }
         }
 
@@ -295,23 +316,44 @@ namespace SATCalculator {
                 {
                     if (literal.Variable != selectedVariable)
                     {
-                        newClause.Literals.Add(literal);
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            if (existingLiteral.IsPositive != literal.IsPositive)
+                            {
+                                newClause.Literals.Remove(existingLiteral);
+                            }
+                        }
                     }
                 }
                 foreach (var literal in negativeClause.Literals)
                 {
                     if (literal.Variable != selectedVariable)
                     {
-                        newClause.Literals.Add(literal);
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            if (existingLiteral.IsPositive != literal.IsPositive)
+                            {
+                                newClause.Literals.Remove(existingLiteral);
+                            }
+                        }
                     }
                 }
-
-                // simplify the new clause
 
                 // remove old clauses from the formula
                 Reduction.Formula.Clauses.Remove(positiveClause);
                 Reduction.Formula.Clauses.Remove(negativeClause);
-                Reduction.Formula.Clauses.Add(newClause);
+                if (newClause.Literals.Count > 0)
+                    Reduction.Results.Add(newClause);
 
                 // create a new reduction formula
                 Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
@@ -322,7 +364,7 @@ namespace SATCalculator {
             }
         }
 
-        private void TestAllReductionClauses(object sender, RoutedEventArgs e)
+        private void TestAllVariableClauses(object sender, RoutedEventArgs e)
         {
             var selectedVariable = Reduction.SelectedVariable;
             Reduction.Results.Clear();
@@ -342,26 +384,47 @@ namespace SATCalculator {
                     {
                         if (literal.Variable != selectedVariable)
                         {
-                            newClause.Literals.Add(literal);
+                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                            if (existingLiteral == null)
+                            {
+                                newClause.Literals.Add(literal);
+                            }
+                            else
+                            {
+                                if (existingLiteral.IsPositive != literal.IsPositive)
+                                {
+                                    newClause.Literals.Remove(existingLiteral);
+                                }
+                            }
                         }
                     }
                     foreach (var literal in negativeClause.Literals)
                     {
                         if (literal.Variable != selectedVariable)
                         {
-                            newClause.Literals.Add(literal);
+                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                            if (existingLiteral == null)
+                            {
+                                newClause.Literals.Add(literal);
+                            }
+                            else
+                            {
+                                if (existingLiteral.IsPositive != literal.IsPositive)
+                                {
+                                    newClause.Literals.Remove(existingLiteral);
+                                }
+                            }
                         }
                     }
 
-                    // simplify the new clause
-
                     // add the new clause to the results
-                    Reduction.Results.Add(newClause);
+                    if (newClause.Literals.Count > 0)
+                        Reduction.Results.Add(newClause);
                 }
             }
         }
 
-        private void ReductionAllClauses(object sender, RoutedEventArgs e)
+        private void ReductionAllVariableClauses(object sender, RoutedEventArgs e)
         {
             var selectedVariable = Reduction.SelectedVariable;
             Reduction.Results.Clear();
@@ -381,27 +444,79 @@ namespace SATCalculator {
                     {
                         if (literal.Variable != selectedVariable)
                         {
-                            newClause.Literals.Add(literal);
+                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                            if (existingLiteral == null)
+                            {
+                                newClause.Literals.Add(literal);
+                            }
+                            else
+                            {
+                                if (existingLiteral.IsPositive != literal.IsPositive)
+                                {
+                                    newClause.Literals.Remove(existingLiteral);
+                                }
+                            }
                         }
                     }
                     foreach (var literal in negativeClause.Literals)
                     {
                         if (literal.Variable != selectedVariable)
                         {
-                            newClause.Literals.Add(literal);
+                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                            if (existingLiteral == null)
+                            {
+                                newClause.Literals.Add(literal);
+                            }
+                            else
+                            {
+                                if (existingLiteral.IsPositive != literal.IsPositive)
+                                {
+                                    newClause.Literals.Remove(existingLiteral);
+                                }
+                            }
                         }
                     }
-
-                    // simplify the new clause
 
                     // remove old clauses from the formula
                     Reduction.Formula.Clauses.Remove(positiveClause);
                     Reduction.Formula.Clauses.Remove(negativeClause);
-                    Reduction.Formula.Clauses.Add(newClause);
-
-                    
+                    if (newClause.Literals.Count > 0)
+                        Reduction.Results.Add(newClause);
                 }
             }
+
+            // create a new reduction formula
+            Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
+
+            reductionVariablesSource.Source = Reduction.Formula.Variables;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
+        }
+
+        private void CombineFinalClauses(object sender, RoutedEventArgs e)
+        {
+            Clause newClause = new Clause();
+
+            foreach (var clause in Reduction.Formula.Clauses)
+            {
+                foreach (var literal in clause.Literals)
+                {
+                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                    if (existingLiteral == null)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                    else
+                    {
+                        if (existingLiteral.IsPositive != literal.IsPositive)
+                        {
+                            newClause.Literals.Remove(existingLiteral);
+                        }
+                    }
+                }
+            }
+
+            Reduction.Formula.Clauses.Clear();
+            Reduction.Formula.Clauses.Add(newClause);
 
             // create a new reduction formula
             Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
