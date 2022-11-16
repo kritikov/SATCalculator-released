@@ -45,6 +45,12 @@ namespace SATCalculator.Classes {
 
         #region Constructors
 
+        public Clause()
+        {
+            Literals = new List<Literal>();
+            Variables = new VariablesCollection(this);
+        }
+
         public Clause(SATFormula formula, List<string> parts) {
 
             ParentFormula = formula;

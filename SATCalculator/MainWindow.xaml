@@ -349,7 +349,7 @@
 
                             <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="variables: "/>
-                                <Run Text="{Binding ReductionFormula.VariablesCount, Mode=OneWay}"/>
+                                <Run Text="{Binding Reduction.Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
                                       ItemsSource="{Binding ReductionVariablesView}" 
@@ -405,7 +405,8 @@
                                 <Run Text="clauses with pos. refs."/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithPositiveReferencesView}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithPositiveReferencesView}"
+                                      IsSynchronizedWithCurrentItem="True">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
@@ -424,7 +425,8 @@
                                 <Run Text="clauses with neg. refs."/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithNegativeReferencesView}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithNegativeReferencesView}"
+                                      IsSynchronizedWithCurrentItem="True">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
@@ -433,6 +435,25 @@
                             </ListView>
                         </Grid>
 
+                        <Grid Grid.Column="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <Run Text="reduction results"/>
+                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                            </TextBlock>
+                            <ListView Grid.Row="1" ItemsSource="{Binding Reduction.Results}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                        
                         <Grid Grid.Column="4">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
@@ -441,10 +462,10 @@
 
                             <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="clauses: "/>
-                                <Run Text="{Binding ReductionFormula.ClausesCount, Mode=OneWay}"/>
+                                <Run Text="{Binding Reduction.Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <!--<ListBox Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"/>-->
-                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionFormula.Clauses}"
+                            <ListView Grid.Row="1" ItemsSource="{Binding Reduction.Formula.Clauses}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
@@ -456,7 +477,10 @@
                         </Grid>
 
                         <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="Reduction clauses" Click="ReductionClause"/>
+                            <Button Content="Test selected clauses" Click="TestReductionSelectedClauses"/>
+                            <Button Content="Reduction selected clauses" Click="ReductionSelectedClauses"/>
+                            <Button Content="Test all clauses" Click="TestAllReductionClauses"/>
+                            <Button Content="Reduction all clauses" Click="ReductionAllClauses"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

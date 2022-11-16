@@ -35,6 +35,8 @@ namespace SATCalculator {
             }
         }
 
+        public Reduction Reduction { get; set; } = new Reduction();
+
         private SATFormula reductionFormula;
         public SATFormula ReductionFormula {
             get => reductionFormula;
@@ -224,26 +226,188 @@ namespace SATCalculator {
         }
 
         private void ReductionRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (ReductionFormula != null) {
+            if (Reduction.Formula != null) {
                 var grid = sender as DataGrid;
 
                 if (grid.SelectedItem != null) {
                     var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
 
-                    SelectedReductionVariable = selectedItem.Value;
-                    if (SelectedReductionVariable != null) {
-                        reductionClausesWithPositiveReferencesSource.Source = SelectedReductionVariable.ClausesWithPositiveAppearance;
+                    Reduction.SelectedVariable= selectedItem.Value;
+                    if (Reduction.SelectedVariable != null) {
+                        reductionClausesWithPositiveReferencesSource.Source = Reduction.SelectedVariable.ClausesWithPositiveAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithPositiveReferencesView"));
 
-                        reductionClausesWithNegativeReferencesSource.Source = SelectedReductionVariable.ClausesWithNegativeAppearance;
+                        reductionClausesWithNegativeReferencesSource.Source = Reduction.SelectedVariable.ClausesWithNegativeAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithNegativeReferencesView"));
                     }
                 }
             }
         }
 
-        private void ReductionClause(object sender, RoutedEventArgs e) {
+        
+        private void TestReductionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            var positiveClause = ReductionClausesWithPositiveReferencesView.CurrentItem as Clause;
+            var negativeClause = ReductionClausesWithNegativeReferencesView.CurrentItem as Clause;
+            var selectedVariable = Reduction.SelectedVariable;
+            Reduction.Results.Clear();
 
+            if (positiveClause != null && negativeClause != null)
+            {
+                Clause newClause = new Clause();
+
+                // combine the selected clauses into a new clause
+                foreach (var literal in positiveClause.Literals)
+                {
+                    if (literal.Variable != selectedVariable)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                }
+                foreach (var literal in negativeClause.Literals)
+                {
+                    if (literal.Variable != selectedVariable)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                }
+
+                // simplify the new clause
+
+                // add the new clause to the results
+                Reduction.Results.Add(newClause);
+            }
+        }
+
+        private void ReductionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            var positiveClause = ReductionClausesWithPositiveReferencesView.CurrentItem as Clause;
+            var negativeClause = ReductionClausesWithNegativeReferencesView.CurrentItem as Clause;
+            var selectedVariable = Reduction.SelectedVariable;
+            Reduction.Results.Clear();
+
+            if (positiveClause != null && negativeClause != null)
+            {
+                Clause newClause = new Clause();
+
+                // combine the selected clauses into a new clause
+                foreach (var literal in positiveClause.Literals)
+                {
+                    if (literal.Variable != selectedVariable)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                }
+                foreach (var literal in negativeClause.Literals)
+                {
+                    if (literal.Variable != selectedVariable)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                }
+
+                // simplify the new clause
+
+                // remove old clauses from the formula
+                Reduction.Formula.Clauses.Remove(positiveClause);
+                Reduction.Formula.Clauses.Remove(negativeClause);
+                Reduction.Formula.Clauses.Add(newClause);
+
+                // create a new reduction formula
+                Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
+
+                reductionVariablesSource.Source = Reduction.Formula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
+
+            }
+        }
+
+        private void TestAllReductionClauses(object sender, RoutedEventArgs e)
+        {
+            var selectedVariable = Reduction.SelectedVariable;
+            Reduction.Results.Clear();
+
+            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            for (int i=0; i < pairsCount; i++)
+            {
+                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+                if (positiveClause != null && negativeClause != null)
+                {
+                    Clause newClause = new Clause();
+
+                    // combine the selected clauses into a new clause
+                    foreach (var literal in positiveClause.Literals)
+                    {
+                        if (literal.Variable != selectedVariable)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                    }
+                    foreach (var literal in negativeClause.Literals)
+                    {
+                        if (literal.Variable != selectedVariable)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                    }
+
+                    // simplify the new clause
+
+                    // add the new clause to the results
+                    Reduction.Results.Add(newClause);
+                }
+            }
+        }
+
+        private void ReductionAllClauses(object sender, RoutedEventArgs e)
+        {
+            var selectedVariable = Reduction.SelectedVariable;
+            Reduction.Results.Clear();
+
+            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            for (int i = 0; i < pairsCount; i++)
+            {
+                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+                if (positiveClause != null && negativeClause != null)
+                {
+                    Clause newClause = new Clause();
+
+                    // combine the selected clauses into a new clause
+                    foreach (var literal in positiveClause.Literals)
+                    {
+                        if (literal.Variable != selectedVariable)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                    }
+                    foreach (var literal in negativeClause.Literals)
+                    {
+                        if (literal.Variable != selectedVariable)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                    }
+
+                    // simplify the new clause
+
+                    // remove old clauses from the formula
+                    Reduction.Formula.Clauses.Remove(positiveClause);
+                    Reduction.Formula.Clauses.Remove(negativeClause);
+                    Reduction.Formula.Clauses.Add(newClause);
+
+                    
+                }
+            }
+
+            // create a new reduction formula
+            Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
+
+            reductionVariablesSource.Source = Reduction.Formula.Variables;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
         }
 
         #endregion
@@ -267,7 +431,7 @@ namespace SATCalculator {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
-                ReductionFormula = Formula.CopyAsSATFormula();
+                Reduction.Formula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
                 clausesSource.Source = Formula.Clauses;
@@ -284,7 +448,7 @@ namespace SATCalculator {
                 variablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
 
-                reductionVariablesSource.Source = ReductionFormula.Variables;
+                reductionVariablesSource.Source = Reduction.Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
 
             }
