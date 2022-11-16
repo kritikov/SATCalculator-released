@@ -9,44 +9,54 @@ namespace SATCalculator.Classes {
 
         #region Fields
 
-        public SAT3Formula ParentFormula { get; set; }
+        public SATFormula ParentFormula { get; set; }
         public List<Literal> Literals { get; set; }
-        public Trinity Trinity { get; set; }
+        public VariablesCollection Variables { get; set; }
         public VariableValueEnum Valuation {
             get {
-                if (Literals[0].Valuation == VariableValueEnum.True ||
-                    Literals[1].Valuation == VariableValueEnum.True ||
-                    Literals[2].Valuation == VariableValueEnum.True)
+
+                if (Literals.Count(p=>p.Valuation == VariableValueEnum.True) == Literals.Count)
                     return VariableValueEnum.True;
 
-                if (Literals[0].Valuation == VariableValueEnum.False &&
-                    Literals[1].Valuation == VariableValueEnum.False &&
-                    Literals[2].Valuation == VariableValueEnum.False) {
+                if (Literals.Count(p => p.Valuation == VariableValueEnum.False) == Literals.Count)
                     return VariableValueEnum.False;
-                }
 
                 return VariableValueEnum.Null;
             }
         }
 
-        public string Name => $@"({Literals[0].Value} ∨ {Literals[1].Value} ∨ {Literals[2].Value})";
+        public string Name {
+            get {
+
+                string name = "";
+                foreach(var literal in Literals) {
+                    if (name != "")
+                        name += " ∨ ";
+
+                    name += literal.Value;
+                }
+
+                return name;
+            }
+        }
 
         #endregion
 
 
         #region Constructors
 
-        public Clause(SAT3Formula formula, string[] parts) {
+        public Clause(SATFormula formula, List<string> parts) {
 
             ParentFormula = formula;
             Literals = new List<Literal>();
 
-            for (int i = 0; i < 3; i++) {
-                CreateAndAddLiteral(parts[i]);
+            foreach(string part in parts) {
+                if (part != "0")
+                    CreateAndAddLiteral(part);
             }
 
             Literals = this.Literals.OrderBy(c => c.Variable.CnfIndex).ToList();
-            Trinity = CreateTrinity();
+            Variables = CreateVariablesCollection();
         }
 
 
@@ -60,23 +70,23 @@ namespace SATCalculator.Classes {
         }
 
         /// <summary>
-        /// Check if the trinity from variables of the clause exists in the list with the formula trinities.
-        /// If exists then returns the existing trinity or else creates a new one
+        /// Check if the collection of variables from the clause exists in the list with the formula variables per clause.
+        /// If exists then returns the existing collection or else creates a new one
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Trinity CreateTrinity() {
-            Trinity trinity = new Trinity(this);
+        public VariablesCollection CreateVariablesCollection() {
+            VariablesCollection variablesCollection = new VariablesCollection(this);
 
-            if (this.ParentFormula.Trinities.ContainsKey(trinity.Name)) {
-                trinity = this.ParentFormula.Trinities[trinity.Name];
-                trinity.References++;
+            if (this.ParentFormula.VariablesPerClause.ContainsKey(variablesCollection.Name)) {
+                variablesCollection = this.ParentFormula.VariablesPerClause[variablesCollection.Name];
+                variablesCollection.References++;
             }
             else {
-                this.ParentFormula.Trinities.Add(trinity.Name, trinity);
+                this.ParentFormula.VariablesPerClause.Add(variablesCollection.Name, variablesCollection);
             }
 
-            return trinity;
+            return variablesCollection;
         }
 
         /// <summary>

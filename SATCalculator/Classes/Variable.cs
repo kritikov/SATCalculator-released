@@ -12,7 +12,7 @@ namespace SATCalculator.Classes {
 
         private static string DefaultVariableName = "x";
 
-        public SAT3Formula ParentFormula { get; set; }
+        public SATFormula ParentFormula { get; set; }
         public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
         public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
 

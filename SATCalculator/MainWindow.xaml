@@ -51,7 +51,6 @@
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
-                                        <GridViewColumn Header="Variables" Width="120" DisplayMemberBinding="{Binding Trinity.Contents}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -76,8 +75,8 @@
                                         <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
                                         <GridViewColumn Header="Name" Width="50" DisplayMemberBinding="{Binding Value.Name}" />
                                         <GridViewColumn Header="Refs" Width="40" DisplayMemberBinding="{Binding Value.References}" />
-                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithPositiveReferences}" />
-                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithNegativeReferences}" />
+                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithPositiveReferencesCount}" />
+                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithNegativeReferencesCount}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -91,10 +90,10 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="trinities: "/>
-                                <Run Text="{Binding Formula.TrinitiesCount, Mode=OneWay}"/>
+                                <Run Text="combinations: "/>
+                                <Run Text="{Binding Formula.VariablesPerClauseCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Trinities}"
+                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.VariablesPerClause}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
@@ -345,13 +344,13 @@
 
                             <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="variables: "/>
-                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
+                                <Run Text="{Binding ReductionFormula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
-                                      ItemsSource="{Binding VariablesView}" 
+                                      ItemsSource="{Binding ReductionVariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="ReductionRelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
                                 <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
@@ -387,19 +386,6 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTemplateColumn Header="Value" IsReadOnly="False" Width="100">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox Grid.Column="4"
-                                                      ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
-                                                        Path=DataContext.VariableValues}"
-                                                      DisplayMemberPath="ValueAsString"
-                                                      SelectedValuePath="Value"
-                                                      SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                                </ComboBox>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
@@ -414,7 +400,7 @@
                                 <Run Text="clauses with pos. refs."/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithPositiveReferencesView}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithPositiveReferencesView}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
@@ -433,7 +419,7 @@
                                 <Run Text="clauses with neg. refs."/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithNegativeReferencesView}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ReductionClausesWithNegativeReferencesView}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>

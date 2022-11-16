@@ -46,11 +46,6 @@ namespace SATCalculator.Classes {
 
             this.ParentClause = clause;
 
-            //if (isPositive)
-            //    variable.ReferencesPositive++;
-            //else 
-            //    variable.ReferencesNegative++;
-
             Variable = variable;
             IsPositive = isPositive;
         }

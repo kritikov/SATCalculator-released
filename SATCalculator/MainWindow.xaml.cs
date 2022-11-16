@@ -35,6 +35,15 @@ namespace SATCalculator {
             }
         }
 
+        private SATFormula reductionFormula;
+        public SATFormula ReductionFormula {
+            get => reductionFormula;
+            set {
+                reductionFormula = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionFormula"));
+            }
+        }
+
         private readonly CollectionViewSource relatedClausesSource = new CollectionViewSource();
         public ICollectionView RelatedClausesView {
             get {
@@ -83,6 +92,27 @@ namespace SATCalculator {
             }
         }
 
+        private readonly CollectionViewSource reductionVariablesSource = new CollectionViewSource();
+        public ICollectionView ReductionVariablesView {
+            get {
+                return this.reductionVariablesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource reductionClausesWithPositiveReferencesSource = new CollectionViewSource();
+        public ICollectionView ReductionClausesWithPositiveReferencesView {
+            get {
+                return this.reductionClausesWithPositiveReferencesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource reductionClausesWithNegativeReferencesSource = new CollectionViewSource();
+        public ICollectionView ReductionClausesWithNegativeReferencesView {
+            get {
+                return this.reductionClausesWithNegativeReferencesSource.View;
+            }
+        }
+
 
         private Variable selectedVariable;
         public Variable SelectedVariable {
@@ -90,6 +120,15 @@ namespace SATCalculator {
             set {
                 selectedVariable = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
+            }
+        }
+
+        private Variable selectedReductionVariable;
+        public Variable SelectedReductionVariable {
+            get => selectedReductionVariable;
+            set {
+                selectedReductionVariable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedReductionVariable"));
             }
         }
 
@@ -184,6 +223,25 @@ namespace SATCalculator {
             }
         }
 
+        private void ReductionRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (ReductionFormula != null) {
+                var grid = sender as DataGrid;
+
+                if (grid.SelectedItem != null) {
+                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                    SelectedReductionVariable = selectedItem.Value;
+                    if (SelectedReductionVariable != null) {
+                        reductionClausesWithPositiveReferencesSource.Source = SelectedReductionVariable.ClausesWithPositiveAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithPositiveReferencesView"));
+
+                        reductionClausesWithNegativeReferencesSource.Source = SelectedReductionVariable.ClausesWithNegativeAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithNegativeReferencesView"));
+                    }
+                }
+            }
+        }
+
         #endregion
 
 
@@ -205,6 +263,7 @@ namespace SATCalculator {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
+                ReductionFormula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
                 clausesSource.Source = Formula.Clauses;
@@ -215,21 +274,18 @@ namespace SATCalculator {
 
                 SelectedVariable = null;
 
-                //clausesWithPositiveReferencesSource.Source = SelectedVariable?.ClausesWithPositiveAppearance;
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithPositiveReferencesView"));
-
-                //clausesWithNegativeReferencesSource.Source = SelectedVariable?.ClausesWithNegativeAppearance;
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesWithNegativeReferencesView"));
-
                 relatedVariablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RelatedVariablesView"));
 
                 variablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
 
+                reductionVariablesSource.Source = ReductionFormula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
+
             }
             else {
-                // error
+                ReductionFormula = new SATFormula();
             }
         }
 
