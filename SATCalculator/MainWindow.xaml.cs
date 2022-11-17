@@ -252,8 +252,7 @@ namespace SATCalculator {
             var selectedVariable = Reduction.SelectedVariable;
             Reduction.Results.Clear();
 
-            if (positiveClause != null && negativeClause != null)
-            {
+            if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
                 Clause newClause = new Clause();
 
                 // combine the selected clauses into a new clause
@@ -307,7 +306,7 @@ namespace SATCalculator {
             var selectedVariable = Reduction.SelectedVariable;
             Reduction.Results.Clear();
 
-            if (positiveClause != null && negativeClause != null)
+            if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1)
             {
                 Clause newClause = new Clause();
 
@@ -375,8 +374,7 @@ namespace SATCalculator {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
                 var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
 
-                if (positiveClause != null && negativeClause != null)
-                {
+                if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
                     Clause newClause = new Clause();
 
                     // combine the selected clauses into a new clause
@@ -435,8 +433,7 @@ namespace SATCalculator {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
                 var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
 
-                if (positiveClause != null && negativeClause != null)
-                {
+                if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
                     Clause newClause = new Clause();
 
                     // combine the selected clauses into a new clause
