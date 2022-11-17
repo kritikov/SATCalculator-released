@@ -352,8 +352,8 @@ namespace SATCalculator {
                 // remove old clauses from the formula
                 Reduction.Formula.Clauses.Remove(positiveClause);
                 Reduction.Formula.Clauses.Remove(negativeClause);
-                if (newClause.Literals.Count > 0)
-                    Reduction.Results.Add(newClause);
+                //if (newClause.Literals.Count > 0)
+                    Reduction.Formula.Clauses.Add(newClause);
 
                 // create a new reduction formula
                 Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
@@ -418,7 +418,7 @@ namespace SATCalculator {
                     }
 
                     // add the new clause to the results
-                    if (newClause.Literals.Count > 0)
+                    //if (newClause.Literals.Count > 0)
                         Reduction.Results.Add(newClause);
                 }
             }
@@ -481,7 +481,7 @@ namespace SATCalculator {
                     Reduction.Formula.Clauses.Remove(positiveClause);
                     Reduction.Formula.Clauses.Remove(negativeClause);
                     if (newClause.Literals.Count > 0)
-                        Reduction.Results.Add(newClause);
+                        Reduction.Formula.Clauses.Add(newClause);
                 }
             }
 
