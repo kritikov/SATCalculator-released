@@ -53,4 +53,6 @@ namespace SATCalculator.Classes {
 
         #endregion
     }
+
+    
 }
