@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SATCalculator.Classes
 {
-    public class Reduction : INotifyPropertyChanged
+    public class Resolution : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -53,7 +53,7 @@ namespace SATCalculator.Classes
 
         #region Constructors
 
-        public Reduction()
+        public Resolution()
         {
 
         }

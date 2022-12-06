@@ -120,6 +120,62 @@ namespace SATCalculator.Classes {
             this.Literals.Add(literal);
         }
 
+        /// return a clause from a resolution of two others 
+        public static Clause Resolution(Variable variable, Clause positiveClause, Clause negativeClause)
+        {
+            Clause newClause = new Clause();
+
+            // check the literals in the clause with the positive reference of the variable
+            foreach (var literal in positiveClause.Literals)
+            {
+                if (literal.Variable != variable)
+                {
+                    // if the literal doesnt exists allready in the new clause add it
+                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                    if (existingLiteral == null)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                    else
+                    {
+                        // if the literal exists in the new clause but with opposite value
+                        // then the clause is always true and can be discarded
+                        if (existingLiteral.IsPositive != literal.IsPositive)
+                        {
+                            //newClause.Literals.Remove(existingLiteral);
+                            return new Clause();
+                        }
+                    }
+                }
+            }
+
+            // check the literals in the clause with the negative reference of the variable
+            foreach (var literal in negativeClause.Literals)
+            {
+                if (literal.Variable != variable)
+                {
+                    // if the literal doesnt exists allready in the new clause add it
+                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                    if (existingLiteral == null)
+                    {
+                        newClause.Literals.Add(literal);
+                    }
+                    else
+                    {
+                        // if the literal exists in the new clause but with opposite value
+                        // then the clause is always true and can be discarded
+                        if (existingLiteral.IsPositive != literal.IsPositive)
+                        {
+                            //newClause.Literals.Remove(existingLiteral);
+                            return new Clause();
+                        }
+                    }
+                }
+            }
+
+            return newClause;
+        }
+
         #endregion
 
 

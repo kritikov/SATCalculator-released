@@ -35,14 +35,14 @@ namespace SATCalculator {
             }
         }
 
-        public Reduction Reduction { get; set; } = new Reduction();
+        public Resolution Resolution { get; set; } = new Resolution();
 
-        private SATFormula reductionFormula;
-        public SATFormula ReductionFormula {
-            get => reductionFormula;
+        private SATFormula resolutionFormula;
+        public SATFormula ResolutionFormula {
+            get => resolutionFormula;
             set {
-                reductionFormula = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionFormula"));
+                resolutionFormula = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionFormula"));
             }
         }
 
@@ -94,24 +94,24 @@ namespace SATCalculator {
             }
         }
 
-        private readonly CollectionViewSource reductionVariablesSource = new CollectionViewSource();
-        public ICollectionView ReductionVariablesView {
+        private readonly CollectionViewSource resolutionVariablesSource = new CollectionViewSource();
+        public ICollectionView ResolutionVariablesView {
             get {
-                return this.reductionVariablesSource.View;
+                return this.resolutionVariablesSource.View;
             }
         }
 
-        private readonly CollectionViewSource reductionClausesWithPositiveReferencesSource = new CollectionViewSource();
-        public ICollectionView ReductionClausesWithPositiveReferencesView {
+        private readonly CollectionViewSource resolutionClausesWithPositiveReferencesSource = new CollectionViewSource();
+        public ICollectionView ResolutionClausesWithPositiveReferencesView {
             get {
-                return this.reductionClausesWithPositiveReferencesSource.View;
+                return this.resolutionClausesWithPositiveReferencesSource.View;
             }
         }
 
-        private readonly CollectionViewSource reductionClausesWithNegativeReferencesSource = new CollectionViewSource();
-        public ICollectionView ReductionClausesWithNegativeReferencesView {
+        private readonly CollectionViewSource resolutionClausesWithNegativeReferencesSource = new CollectionViewSource();
+        public ICollectionView ResolutionClausesWithNegativeReferencesView {
             get {
-                return this.reductionClausesWithNegativeReferencesSource.View;
+                return this.resolutionClausesWithNegativeReferencesSource.View;
             }
         }
 
@@ -125,12 +125,12 @@ namespace SATCalculator {
             }
         }
 
-        private Variable selectedReductionVariable;
-        public Variable SelectedReductionVariable {
-            get => selectedReductionVariable;
+        private Variable selectedResolutionVariable;
+        public Variable SelectedResolutionVariable {
+            get => selectedResolutionVariable;
             set {
-                selectedReductionVariable = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedReductionVariable"));
+                selectedResolutionVariable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedResolutionVariable"));
             }
         }
 
@@ -225,307 +225,31 @@ namespace SATCalculator {
             }
         }
 
-        private void ReductionRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (Reduction.Formula != null) {
+        private void ResolutionRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (Resolution.Formula != null) {
                 var grid = sender as DataGrid;
 
                 if (grid.SelectedItem != null) {
                     var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
 
-                    Reduction.SelectedVariable= selectedItem.Value;
-                    if (Reduction.SelectedVariable != null) {
-                        reductionClausesWithPositiveReferencesSource.Source = Reduction.SelectedVariable.ClausesWithPositiveAppearance;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithPositiveReferencesView"));
+                    Resolution.SelectedVariable= selectedItem.Value;
+                    if (Resolution.SelectedVariable != null) {
+                        resolutionClausesWithPositiveReferencesSource.Source = Resolution.SelectedVariable.ClausesWithPositiveAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesWithPositiveReferencesView"));
 
-                        reductionClausesWithNegativeReferencesSource.Source = Reduction.SelectedVariable.ClausesWithNegativeAppearance;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionClausesWithNegativeReferencesView"));
+                        resolutionClausesWithNegativeReferencesSource.Source = Resolution.SelectedVariable.ClausesWithNegativeAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesWithNegativeReferencesView"));
                     }
                 }
             }
-        }
-
-        
-        private void TestReductionSelectedClauses(object sender, RoutedEventArgs e)
-        {
-            var positiveClause = ReductionClausesWithPositiveReferencesView.CurrentItem as Clause;
-            var negativeClause = ReductionClausesWithNegativeReferencesView.CurrentItem as Clause;
-            var selectedVariable = Reduction.SelectedVariable;
-            Reduction.Results.Clear();
-
-            if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
-                Clause newClause = new Clause();
-
-                // combine the selected clauses into a new clause
-                foreach (var literal in positiveClause.Literals)
-                {
-                    if (literal.Variable != selectedVariable)
-                    {
-                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                        if (existingLiteral == null)
-                        {
-                            newClause.Literals.Add(literal);
-                        }
-                        else
-                        {
-                            if (existingLiteral.IsPositive != literal.IsPositive)
-                            {
-                                newClause.Literals.Remove(existingLiteral);
-                            }
-                        }
-                    }
-                }
-                foreach (var literal in negativeClause.Literals)
-                {
-                    if (literal.Variable != selectedVariable)
-                    {
-                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                        if (existingLiteral == null)
-                        {
-                            newClause.Literals.Add(literal);
-                        }
-                        else
-                        {
-                            if (existingLiteral.IsPositive != literal.IsPositive)
-                            {
-                                newClause.Literals.Remove(existingLiteral);
-                            }
-                        }
-                    }
-                }
-
-                // add the new clause to the results
-                if (newClause.Literals.Count>0)
-                    Reduction.Results.Add(newClause);
-            }
-        }
-
-        private void ReductionSelectedClauses(object sender, RoutedEventArgs e)
-        {
-            var positiveClause = ReductionClausesWithPositiveReferencesView.CurrentItem as Clause;
-            var negativeClause = ReductionClausesWithNegativeReferencesView.CurrentItem as Clause;
-            var selectedVariable = Reduction.SelectedVariable;
-            Reduction.Results.Clear();
-
-            if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1)
-            {
-                Clause newClause = new Clause();
-
-                // combine the selected clauses into a new clause
-                foreach (var literal in positiveClause.Literals)
-                {
-                    if (literal.Variable != selectedVariable)
-                    {
-                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                        if (existingLiteral == null)
-                        {
-                            newClause.Literals.Add(literal);
-                        }
-                        else
-                        {
-                            if (existingLiteral.IsPositive != literal.IsPositive)
-                            {
-                                newClause.Literals.Remove(existingLiteral);
-                            }
-                        }
-                    }
-                }
-                foreach (var literal in negativeClause.Literals)
-                {
-                    if (literal.Variable != selectedVariable)
-                    {
-                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                        if (existingLiteral == null)
-                        {
-                            newClause.Literals.Add(literal);
-                        }
-                        else
-                        {
-                            if (existingLiteral.IsPositive != literal.IsPositive)
-                            {
-                                newClause.Literals.Remove(existingLiteral);
-                            }
-                        }
-                    }
-                }
-
-                // remove old clauses from the formula
-                Reduction.Formula.Clauses.Remove(positiveClause);
-                Reduction.Formula.Clauses.Remove(negativeClause);
-                //if (newClause.Literals.Count > 0)
-                    Reduction.Formula.Clauses.Add(newClause);
-
-                // create a new reduction formula
-                Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
-
-                reductionVariablesSource.Source = Reduction.Formula.Variables;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
-
-            }
-        }
-
-        private void TestAllVariableClauses(object sender, RoutedEventArgs e)
-        {
-            var selectedVariable = Reduction.SelectedVariable;
-            Reduction.Results.Clear();
-
-            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
-            for (int i=0; i < pairsCount; i++)
-            {
-                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
-
-                if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
-                    Clause newClause = new Clause();
-
-                    // combine the selected clauses into a new clause
-                    foreach (var literal in positiveClause.Literals)
-                    {
-                        if (literal.Variable != selectedVariable)
-                        {
-                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                            if (existingLiteral == null)
-                            {
-                                newClause.Literals.Add(literal);
-                            }
-                            else
-                            {
-                                if (existingLiteral.IsPositive != literal.IsPositive)
-                                {
-                                    newClause.Literals.Remove(existingLiteral);
-                                }
-                            }
-                        }
-                    }
-                    foreach (var literal in negativeClause.Literals)
-                    {
-                        if (literal.Variable != selectedVariable)
-                        {
-                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                            if (existingLiteral == null)
-                            {
-                                newClause.Literals.Add(literal);
-                            }
-                            else
-                            {
-                                if (existingLiteral.IsPositive != literal.IsPositive)
-                                {
-                                    newClause.Literals.Remove(existingLiteral);
-                                }
-                            }
-                        }
-                    }
-
-                    // add the new clause to the results
-                    //if (newClause.Literals.Count > 0)
-                        Reduction.Results.Add(newClause);
-                }
-            }
-        }
-
-        private void ReductionAllVariableClauses(object sender, RoutedEventArgs e)
-        {
-            var selectedVariable = Reduction.SelectedVariable;
-            Reduction.Results.Clear();
-
-            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
-            for (int i = 0; i < pairsCount; i++)
-            {
-                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
-
-                if (positiveClause != null && negativeClause != null && positiveClause.Literals.Count > 1 && negativeClause.Literals.Count > 1) {
-                    Clause newClause = new Clause();
-
-                    // combine the selected clauses into a new clause
-                    foreach (var literal in positiveClause.Literals)
-                    {
-                        if (literal.Variable != selectedVariable)
-                        {
-                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                            if (existingLiteral == null)
-                            {
-                                newClause.Literals.Add(literal);
-                            }
-                            else
-                            {
-                                if (existingLiteral.IsPositive != literal.IsPositive)
-                                {
-                                    newClause.Literals.Remove(existingLiteral);
-                                }
-                            }
-                        }
-                    }
-                    foreach (var literal in negativeClause.Literals)
-                    {
-                        if (literal.Variable != selectedVariable)
-                        {
-                            Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                            if (existingLiteral == null)
-                            {
-                                newClause.Literals.Add(literal);
-                            }
-                            else
-                            {
-                                if (existingLiteral.IsPositive != literal.IsPositive)
-                                {
-                                    newClause.Literals.Remove(existingLiteral);
-                                }
-                            }
-                        }
-                    }
-
-                    // remove old clauses from the formula
-                    Reduction.Formula.Clauses.Remove(positiveClause);
-                    Reduction.Formula.Clauses.Remove(negativeClause);
-                    if (newClause.Literals.Count > 0)
-                        Reduction.Formula.Clauses.Add(newClause);
-                }
-            }
-
-            // create a new reduction formula
-            Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
-
-            reductionVariablesSource.Source = Reduction.Formula.Variables;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
-        }
-
-        private void CombineFinalClauses(object sender, RoutedEventArgs e)
-        {
-            Clause newClause = new Clause();
-
-            foreach (var clause in Reduction.Formula.Clauses)
-            {
-                foreach (var literal in clause.Literals)
-                {
-                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                    if (existingLiteral == null)
-                    {
-                        newClause.Literals.Add(literal);
-                    }
-                    else
-                    {
-                        if (existingLiteral.IsPositive != literal.IsPositive)
-                        {
-                            newClause.Literals.Remove(existingLiteral);
-                        }
-                    }
-                }
-            }
-
-            Reduction.Formula.Clauses.Clear();
-            Reduction.Formula.Clauses.Add(newClause);
-
-            // create a new reduction formula
-            Reduction.Formula = Reduction.Formula.CopyAsSATFormula();
-
-            reductionVariablesSource.Source = Reduction.Formula.Variables;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
         }
 
         #endregion
 
+        #region METHODS
 
-        private void LoadFormula(object sender, RoutedEventArgs e) {
+        private void LoadFormula(object sender, RoutedEventArgs e)
+        {
 
             // Configure open file dialog box
             string path = AppDomain.CurrentDomain.BaseDirectory;
@@ -539,11 +263,12 @@ namespace SATCalculator {
             bool? result = dialog.ShowDialog();
 
             // Process open file dialog box results
-            if (result == true) {
+            if (result == true)
+            {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromFile(filename);
-                Reduction.Formula = Formula.CopyAsSATFormula();
+                Resolution.Formula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
                 clausesSource.Source = Formula.Clauses;
@@ -560,16 +285,17 @@ namespace SATCalculator {
                 variablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
 
-                reductionVariablesSource.Source = Reduction.Formula.Variables;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReductionVariablesView"));
+                resolutionVariablesSource.Source = Resolution.Formula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
 
             }
-            else {
-                ReductionFormula = new SATFormula();
+            else
+            {
+                ResolutionFormula = new SATFormula();
             }
         }
 
-        
+
         /// <summary>
         /// Sort a ListView by a field
         /// </summary>
@@ -603,12 +329,14 @@ namespace SATCalculator {
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private bool RelatedClausesFilter(object item) {
+        private bool RelatedClausesFilter(object item)
+        {
             Clause clause = item as Clause;
 
             if (clause.Literals[0].Variable == SelectedVariable ||
                 clause.Literals[1].Variable == SelectedVariable ||
-                clause.Literals[2].Variable == SelectedVariable) {
+                clause.Literals[2].Variable == SelectedVariable)
+            {
                 return true;
             }
             else
@@ -626,7 +354,7 @@ namespace SATCalculator {
             Variable variable = ((KeyValuePair<string, Variable>)item).Value;
             var relatedClauses = RelatedClausesList.Items;
 
-            foreach(Clause clause in relatedClauses)
+            foreach (Clause clause in relatedClauses)
             {
                 if (clause.Literals[0].Variable == variable ||
                     clause.Literals[1].Variable == variable ||
@@ -639,6 +367,103 @@ namespace SATCalculator {
             return false;
 
         }
+
+        private void TestResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            // get the selected items from the lists to apply resolution
+            var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
+            var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
+            var selectedVariable = Resolution.SelectedVariable;
+            Resolution.Results.Clear();
+
+            if (positiveClause != null && negativeClause != null) {
+                Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+            
+                // add the new clause to the results
+                if (newClause.Literals.Count>0)
+                    Resolution.Results.Add(newClause);
+            }
+        }
+
+        private void ResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
+            var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
+            var selectedVariable = Resolution.SelectedVariable;
+            Resolution.Results.Clear();
+
+            if (positiveClause != null && negativeClause != null)
+            {
+                Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+                // remove old clauses from the formula
+                Resolution.Formula.Clauses.Remove(positiveClause);
+                Resolution.Formula.Clauses.Remove(negativeClause);
+                if (newClause.Literals.Count > 0)
+                    Resolution.Formula.Clauses.Add(newClause);
+
+                // create a new resolution formula
+                Resolution.Formula = Resolution.Formula.CopyAsSATFormula();
+
+                resolutionVariablesSource.Source = Resolution.Formula.Variables;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
+
+            }
+        }
+
+        private void TestAllVariableClauses(object sender, RoutedEventArgs e)
+        {
+            var selectedVariable = Resolution.SelectedVariable;
+            Resolution.Results.Clear();
+
+            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            for (int i=0; i < pairsCount; i++)
+            {
+                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+                if (positiveClause != null && negativeClause != null) {
+                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+                    // add the new clause to the results
+                    if (newClause.Literals.Count > 0)
+                        Resolution.Results.Add(newClause);
+                }
+            }
+        }
+
+        private void ResolutionAllVariableClauses(object sender, RoutedEventArgs e)
+        {
+            var selectedVariable = Resolution.SelectedVariable;
+            Resolution.Results.Clear();
+
+            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            for (int i = 0; i < pairsCount; i++)
+            {
+                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+                if (positiveClause != null && negativeClause != null) {
+                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+                    // remove old clauses from the formula
+                    Resolution.Formula.Clauses.Remove(positiveClause);
+                    Resolution.Formula.Clauses.Remove(negativeClause);
+                    if (newClause.Literals.Count > 0)
+                        Resolution.Formula.Clauses.Add(newClause);
+                }
+            }
+
+            // create a new resolution formula
+            Resolution.Formula = Resolution.Formula.CopyAsSATFormula();
+
+            resolutionVariablesSource.Source = Resolution.Formula.Variables;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
+        }
+
+       #endregion
+
+
 
         
     }
