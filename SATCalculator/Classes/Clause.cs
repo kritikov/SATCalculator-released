@@ -9,9 +9,10 @@ namespace SATCalculator.Classes {
 
         #region Fields
 
-        public SATFormula ParentFormula { get; set; }
-        public List<Literal> Literals { get; set; }
-        public VariablesCollection Variables { get; set; }
+        public SATFormula ParentFormula { get; set; } = new SATFormula();
+        public List<Literal> Literals { get; set; } = new List<Literal>();
+        public VariablesCollection Variables { get; set; } = new VariablesCollection();
+        public Dictionary<string, Variable> VariablesList { get; set; } = new Dictionary<string, Variable>();
         public VariableValueEnum Valuation {
             get {
 
@@ -49,9 +50,42 @@ namespace SATCalculator.Classes {
         {
             Literals = new List<Literal>();
             Variables = new VariablesCollection(this);
+            VariablesList = new Dictionary<string, Variable>();
         }
 
-        public Clause(SATFormula formula, List<string> parts) {
+        public Clause(List<string> parts)
+        {
+            foreach (string part in parts)
+            {
+                if (part != "0")
+                {
+                    Literal literal = new Literal(part);
+                    AddLiteral(literal);
+
+                    // if the variable is allready exists in the clause
+                    if (VariablesList.ContainsKey(literal.Variable.Name))
+                    {
+                        Variable existingVariable = VariablesList[literal.Variable.Name];
+                        literal.Variable = existingVariable;
+                    }
+
+                    // if the variable is not created yet in the clause
+                    else
+                    {
+                        if (literal.Sign == Sign.Positive)
+                            literal.Variable.ClausesWithPositiveAppearance.Add(this);
+                        else if (literal.Sign == Sign.Negative)
+                            literal.Variable.ClausesWithNegativeAppearance.Add(this);
+
+                        this.VariablesList.Add(literal.Variable.Name, literal.Variable);
+                    }
+                }
+            }
+
+            Variables = new VariablesCollection(this);
+        }
+
+        public Clause(SATFormula formula, List<string> parts) : base() {
 
             ParentFormula = formula;
             Literals = new List<Literal>();
@@ -64,7 +98,6 @@ namespace SATCalculator.Classes {
             Literals = this.Literals.OrderBy(c => c.Variable.CnfIndex).ToList();
             Variables = CreateVariablesCollection();
         }
-
 
         #endregion
 
@@ -118,6 +151,17 @@ namespace SATCalculator.Classes {
             }
 
             this.Literals.Add(literal);
+        }
+
+        // Add a literal in the clause and update its variable with proper clauses references
+        public void AddLiteral(Literal literal)
+        {
+            Literals.Add(literal);
+
+            if (literal.Sign == Sign.Positive)
+                literal.Variable.ClausesWithPositiveAppearance.Add(this);
+            else if (literal.Sign == Sign.Negative)
+                literal.Variable.ClausesWithNegativeAppearance.Add(this);
         }
 
         /// return a clause from a resolution of two others 

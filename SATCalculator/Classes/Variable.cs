@@ -12,13 +12,15 @@ namespace SATCalculator.Classes {
 
         private static string DefaultVariableName = "x";
 
-        public SATFormula ParentFormula { get; set; }
-        public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
-        public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
-
         public string Name { get; set; }
         public int CnfIndex { get; set; }
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
+
+
+        // usefull for fast searching
+        public SATFormula ParentFormula { get; set; }
+        public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
 
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int ClausesWithPositiveReferencesCount => ClausesWithPositiveAppearance.Count;
@@ -28,12 +30,16 @@ namespace SATCalculator.Classes {
 
 
         #region Constructors
+        public Variable()
+        {
+
+        }
 
         /// <summary>
         /// Create a variable from a string as found in a cnf file
         /// </summary>
         /// <param name="valueInCnf"></param>
-        public Variable(string valueInCnf) {
+        public Variable(string valueInCnf) : base(){
 
             valueInCnf = valueInCnf.Trim();
 
@@ -52,6 +58,18 @@ namespace SATCalculator.Classes {
         }
 
         #endregion
+
+
+        public override bool Equals(object @object)
+        {
+            return @object is Variable variable &&
+                   Name == variable.Name;
+        }
+
+        //public override int GetHashCode()
+        //{
+        //    return HashCode.Combine(Name);
+        //}
     }
 
     

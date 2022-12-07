@@ -7,23 +7,19 @@ using System.Threading.Tasks;
 namespace SATCalculator.Classes {
     
     public class VariablesCollection {
+
+        #region Fields
+
         public HashSet<Variable> Items { get; set; } = new HashSet<Variable>();
-        public int References { get; set; }
+        public int References { get; set; } = 0;
 
-        public VariablesCollection(Clause clause) {
-
-            foreach(var literal in clause.Literals) {
-                Items.Add(literal.Variable);
-            }
-
-            References = 1;
-        }
-
-        public string Name {
-            get {
-
+        public string Name
+        {
+            get
+            {
                 string name = "";
-                foreach (var variable in Items) {
+                foreach (var variable in Items)
+                {
                     if (name != "")
                         name += "-";
 
@@ -34,11 +30,13 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public string Contents {
-            get {
-
+        public string Contents
+        {
+            get
+            {
                 string name = "";
-                foreach (var variable in Items) {
+                foreach (var variable in Items)
+                {
                     if (name != "")
                         name += ", ";
 
@@ -48,9 +46,34 @@ namespace SATCalculator.Classes {
                 return name;
             }
         }
+        #endregion
+
+
+        #region Constructors
+
+        public VariablesCollection()
+        {
+
+        }
+
+        public VariablesCollection(Clause clause) : base() {
+
+            foreach(var literal in clause.Literals) {
+                Items.Add(literal.Variable);
+            }
+
+            References = 1;
+        }
+
+        #endregion
+
+
+        #region Methods
 
         public override string ToString() {
             return Contents;
         }
+
+        #endregion
     }
 }

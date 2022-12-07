@@ -9,9 +9,10 @@ namespace SATCalculator.Classes {
 
         #region Fields
 
-        public Clause ParentClause;
-        public Variable Variable { get; set; }
-        public bool IsPositive { get; set; }
+        public Clause ParentClause = new Clause();
+        public Variable Variable { get; set; } = new Variable();
+        public Sign Sign { get; set; }
+        public bool IsPositive { get; set; } = true;
         public string Value {
             get {
                 if (this.IsPositive)
@@ -42,13 +43,36 @@ namespace SATCalculator.Classes {
 
         #region Constructors
 
-        public Literal(Clause clause, bool isPositive, Variable variable) {
+        public Literal()
+        {
+            Sign = Sign.Positive;
+            IsPositive = true;
+        }
 
+        public Literal(string displayValue) : base()
+        {
+            Variable = new Variable(displayValue);
+
+            if (displayValue[0] == '-')
+            {
+                IsPositive = false;
+                Sign = Sign.Negative;
+            }
+            else
+            {
+                IsPositive = true;
+                Sign = Sign.Positive;
+            }
+        }
+
+        public Literal(Clause clause, bool isPositive, Variable variable) : base()
+        {
             this.ParentClause = clause;
 
             Variable = variable;
             IsPositive = isPositive;
         }
+
 
         #endregion
     }
