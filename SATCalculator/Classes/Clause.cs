@@ -53,7 +53,7 @@ namespace SATCalculator.Classes {
             VariablesList = new Dictionary<string, Variable>();
         }
 
-        public Clause(List<string> parts)
+        public Clause(List<string> parts) :base()
         {
             foreach (string part in parts)
             {
@@ -61,24 +61,6 @@ namespace SATCalculator.Classes {
                 {
                     Literal literal = new Literal(part);
                     AddLiteral(literal);
-
-                    // if the variable is allready exists in the clause
-                    if (VariablesList.ContainsKey(literal.Variable.Name))
-                    {
-                        Variable existingVariable = VariablesList[literal.Variable.Name];
-                        literal.Variable = existingVariable;
-                    }
-
-                    // if the variable is not created yet in the clause
-                    else
-                    {
-                        if (literal.Sign == Sign.Positive)
-                            literal.Variable.ClausesWithPositiveAppearance.Add(this);
-                        else if (literal.Sign == Sign.Negative)
-                            literal.Variable.ClausesWithNegativeAppearance.Add(this);
-
-                        this.VariablesList.Add(literal.Variable.Name, literal.Variable);
-                    }
                 }
             }
 
@@ -156,7 +138,20 @@ namespace SATCalculator.Classes {
         // Add a literal in the clause and update its variable with proper clauses references
         public void AddLiteral(Literal literal)
         {
+            literal.ParentClause = this;
             Literals.Add(literal);
+
+            if (VariablesList.ContainsKey(literal.Variable.Name))
+            {
+                // if the variable is allready exists in the clause then use this one in the literal
+                Variable existingVariable = VariablesList[literal.Variable.Name];
+                literal.Variable = existingVariable;
+            }
+            else
+            {
+                // if the variable is not created yet in the clause then add it from the literal
+                this.VariablesList.Add(literal.Variable.Name, literal.Variable);
+            }
 
             if (literal.Sign == Sign.Positive)
                 literal.Variable.ClausesWithPositiveAppearance.Add(this);

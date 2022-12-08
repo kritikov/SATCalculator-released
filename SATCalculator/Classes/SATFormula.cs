@@ -47,6 +47,31 @@ namespace SATCalculator.Classes {
             return value;
         }
 
+        public void AddClause(Clause clause)
+        {
+            clause.ParentFormula = this;
+
+            foreach(var variableDict in clause.VariablesList)
+            {
+                if (Variables.ContainsKey(variableDict.Key))
+                {
+                    Variable existingVariable = Variables[variableDict.Key];
+
+                    if (variableDict.Value.ClausesWithPositiveAppearance.Count > 0)
+                        existingVariable.ClausesWithPositiveAppearance.Add(clause);
+                    else if (variableDict.Value.ClausesWithNegativeAppearance.Count > 0)
+                        existingVariable.ClausesWithNegativeAppearance.Add(clause);
+
+                    clause.VariablesList[variableDict.Key] = Variables[variableDict.Key];
+                }
+                else
+                {
+                    variableDict.Value.ParentFormula = this;
+                    Variables.Add(variableDict.Key, variableDict.Value);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Check if a variable name exists in the list with the formula unique variable.
