@@ -47,40 +47,40 @@ namespace SATCalculator.Classes {
             return value;
         }
 
+        /// <summary>
+        /// Add a clause to the formula. Thiw method will synchronize also the variables of the formula and the literals
+        /// </summary>
+        /// <param name="clause"></param>
         public void AddClause(Clause clause)
         {
             clause.ParentFormula = this;
             this.Clauses.Add(clause);
+            clause.Variables.Clear();
 
             // update the variables list
-            foreach (var variableDict in clause.VariablesList)
+            foreach(var literal in clause.Literals)
             {
-                var clauseVariable = variableDict.Value;
-
-                if (this.Variables.ContainsKey(variableDict.Key))
+                if (Variables.ContainsKey(literal.Variable.Name))
                 {
-                    // if the variable is allready exists in the clause then use this one in the clause
-                    Variable existingVariable = this.Variables[variableDict.Key];
-                    existingVariable.Valuation = clauseVariable.Valuation;
+                    // if the variable is allready exists in the list then use this one in the literal and its clause
+                    Variable existingVariable = Variables[literal.Variable.Name];
+                    literal.Variable = existingVariable;
+                    clause.Variables.Add(existingVariable.Name, existingVariable);
 
-                    foreach (var variablePositiveClause in clauseVariable.ClausesWithPositiveAppearance)
-                    {
-                        existingVariable.ClausesWithPositiveAppearance.Add(variablePositiveClause);
-                    }
-                    foreach (var variableNegativeClause in clauseVariable.ClausesWithNegativeAppearance)
-                    {
-                        existingVariable.ClausesWithNegativeAppearance.Add(variableNegativeClause);
-                    }
-
-                    clause.VariablesList[variableDict.Key] = existingVariable;
-                    variableDict.Value = existingVariable;
+                    if (literal.Sign == Sign.Positive)
+                        Variables[literal.Variable.Name].ClausesWithPositiveAppearance.Add(clause);
+                    else if (literal.Sign == Sign.Negative)
+                        Variables[literal.Variable.Name].ClausesWithNegativeAppearance.Add(clause);
                 }
                 else
                 {
-                    clauseVariable.ParentFormula = this;
-                    this.Variables.Add(variableDict.Key, clauseVariable);
+                    // if the variable is not created yet in the clause then add it from the literal
+                    this.Variables.Add(literal.Variable.Name, literal.Variable);
                 }
             }
+
+            clause.VariablesCollection = new VariablesCollection(clause);
+
 
             // update the variables collections
             if (this.VariablesPerClause.ContainsKey(clause.VariablesCollection.Name))

@@ -12,7 +12,7 @@ namespace SATCalculator.Classes {
         public SATFormula ParentFormula { get; set; } = new SATFormula();
         public List<Literal> Literals { get; set; } = new List<Literal>();
         public VariablesCollection VariablesCollection { get; set; } = new VariablesCollection();
-        public Dictionary<string, Variable> VariablesList { get; set; } = new Dictionary<string, Variable>();
+        public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public VariableValueEnum Valuation {
             get {
 
@@ -50,7 +50,7 @@ namespace SATCalculator.Classes {
         {
             Literals = new List<Literal>();
             VariablesCollection = new VariablesCollection(this);
-            VariablesList = new Dictionary<string, Variable>();
+            Variables = new Dictionary<string, Variable>();
         }
 
         public Clause(List<string> parts) :base()
@@ -82,16 +82,16 @@ namespace SATCalculator.Classes {
             literal.ParentClause = this;
             Literals.Add(literal);
 
-            if (VariablesList.ContainsKey(literal.Variable.Name))
+            if (Variables.ContainsKey(literal.Variable.Name))
             {
                 // if the variable is allready exists in the clause then use this one in the literal
-                Variable existingVariable = VariablesList[literal.Variable.Name];
+                Variable existingVariable = Variables[literal.Variable.Name];
                 literal.Variable = existingVariable;
             }
             else
             {
                 // if the variable is not created yet in the clause then add it from the literal
-                this.VariablesList.Add(literal.Variable.Name, literal.Variable);
+                this.Variables.Add(literal.Variable.Name, literal.Variable);
             }
 
             if (literal.Sign == Sign.Positive)
