@@ -73,7 +73,7 @@ namespace SATCalculator.Classes {
                     }
 
                     clause.VariablesList[variableDict.Key] = existingVariable;
-                    //clauseVariable = existingVariable;
+                    variableDict.Value = existingVariable;
                 }
                 else
                 {
