@@ -244,6 +244,14 @@ namespace SATCalculator {
             }
         }
 
+        private void SelectedClauseChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ResolutionClausesWithPositiveReferencesView != null && ResolutionClausesWithNegativeReferencesView != null)
+            {
+                ResolutionSelectedClausesTest();
+            }
+        }
+
         #endregion
 
         #region METHODS
@@ -368,20 +376,25 @@ namespace SATCalculator {
 
         }
 
-        private void TestResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        private void ResolutionSelectedClausesTest()
         {
-            // get the selected items from the lists to apply resolution
-            var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
-            var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
-            var selectedVariable = Resolution.SelectedVariable;
             Resolution.Results.Clear();
 
-            if (positiveClause != null && negativeClause != null) {
-                Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
-            
-                // add the new clause to the results
-                if (newClause.Literals.Count>0)
-                    Resolution.Results.Add(newClause);
+            if (ResolutionClausesWithPositiveReferencesView.CurrentItem != null && ResolutionClausesWithNegativeReferencesView.CurrentItem != null)
+            {
+                // get the selected items from the lists to apply resolution
+                var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
+                var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
+                var selectedVariable = Resolution.SelectedVariable;
+
+                if (positiveClause != null && negativeClause != null)
+                {
+                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+                    // add the new clause to the results
+                    if (newClause.Literals.Count > 0)
+                        Resolution.Results.Add(newClause);
+                }
             }
         }
 
@@ -461,10 +474,11 @@ namespace SATCalculator {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
         }
 
-       #endregion
 
 
 
-        
+        #endregion
+
+       
     }
 }

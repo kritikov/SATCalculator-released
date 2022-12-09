@@ -105,6 +105,16 @@ namespace SATCalculator.Classes {
         {
             Clause newClause = new Clause();
 
+            if (positiveClause.Literals.Count == 1 && negativeClause.Literals.Count == 1 &&
+                positiveClause.Literals[0].Variable == variable &&
+                negativeClause.Literals[0].Variable == variable)
+            {
+                Literal newLiteral = new Literal("FALSE");
+                newClause = new Clause();
+                newClause.AddLiteral(newLiteral);
+                return newClause;
+            }
+
             // check the literals in the clause with the positive reference of the variable
             foreach (var literal in positiveClause.Literals)
             {
@@ -122,8 +132,10 @@ namespace SATCalculator.Classes {
                         // then the clause is always true and can be discarded
                         if (existingLiteral.IsPositive != literal.IsPositive)
                         {
-                            //newClause.Literals.Remove(existingLiteral);
-                            return new Clause();
+                            Literal newLiteral = new Literal("TRUE");
+                            newClause = new Clause();
+                            newClause.AddLiteral(newLiteral);
+                            return newClause;
                         }
                     }
                 }
@@ -147,7 +159,10 @@ namespace SATCalculator.Classes {
                         if (existingLiteral.IsPositive != literal.IsPositive)
                         {
                             //newClause.Literals.Remove(existingLiteral);
-                            return new Clause();
+                            Literal newLiteral = new Literal("TRUE");
+                            newClause = new Clause();
+                            newClause.AddLiteral(newLiteral);
+                            return newClause;
                         }
                     }
                 }

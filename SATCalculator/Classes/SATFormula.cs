@@ -118,7 +118,7 @@ namespace SATCalculator.Classes {
                 {
                     string pros = literal.IsPositive ? "+" : "-";
 
-                    parts.Add($"{pros}{literal.Variable.CnfIndex}");
+                    parts.Add($"{pros}{literal.Variable.Name}");
                 }
 
                 formula.AddClause(parts);
@@ -127,6 +127,7 @@ namespace SATCalculator.Classes {
 
             return formula;
         }
+
         #endregion
     }
 }

@@ -406,7 +406,7 @@
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
                             <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True">
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="SelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
@@ -426,7 +426,7 @@
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                             </TextBlock>
                             <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True">
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="SelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
@@ -477,7 +477,6 @@
                         </Grid>
 
                         <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="Test selected clauses" Click="TestResolutionSelectedClauses"/>
                             <Button Content="Resolution selected clauses" Click="ResolutionSelectedClauses"/>
                             <Button Content="Test all variable clauses" Click="TestAllVariableClauses"/>
                             <Button Content="Resolution all variable clauses" Click="ResolutionAllVariableClauses"/>

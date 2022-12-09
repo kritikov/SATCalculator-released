@@ -44,20 +44,30 @@ namespace SATCalculator.Classes {
 
             valueInCnf = valueInCnf.Trim();
 
-            if (valueInCnf[0] == '-') {
-                Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
-                CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
-            }
-            else if (valueInCnf[0] == '+') {
-                Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
-                CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
+            if (valueInCnf[0] == '-' || valueInCnf[0] == '+') {
+                if (Char.IsDigit(valueInCnf[1]))
+                {
+                    Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
+                    CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
+                }
+                else
+                {
+                    Name = valueInCnf.Substring(1, valueInCnf.Length - 1);
+                }
             }
             else {
-                Name = Variable.DefaultVariableName + valueInCnf;
-                CnfIndex = Convert.ToInt32(valueInCnf);
+                if (Char.IsDigit(valueInCnf[0]))
+                {
+                    Name = Variable.DefaultVariableName + valueInCnf;
+                    CnfIndex = Convert.ToInt32(valueInCnf);
+                }
+                else
+                {
+                    Name = valueInCnf;
+                }
             }
         }
-
+      
         #endregion
 
 
