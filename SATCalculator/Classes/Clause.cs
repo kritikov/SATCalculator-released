@@ -11,7 +11,7 @@ namespace SATCalculator.Classes {
 
         public SATFormula ParentFormula { get; set; } = new SATFormula();
         public List<Literal> Literals { get; set; } = new List<Literal>();
-        public VariablesCollection Variables { get; set; } = new VariablesCollection();
+        public VariablesCollection VariablesCollection { get; set; } = new VariablesCollection();
         public Dictionary<string, Variable> VariablesList { get; set; } = new Dictionary<string, Variable>();
         public VariableValueEnum Valuation {
             get {
@@ -49,7 +49,7 @@ namespace SATCalculator.Classes {
         public Clause()
         {
             Literals = new List<Literal>();
-            Variables = new VariablesCollection(this);
+            VariablesCollection = new VariablesCollection(this);
             VariablesList = new Dictionary<string, Variable>();
         }
 
@@ -64,21 +64,7 @@ namespace SATCalculator.Classes {
                 }
             }
 
-            Variables = new VariablesCollection(this);
-        }
-
-        public Clause(SATFormula formula, List<string> parts) : base() {
-
-            ParentFormula = formula;
-            Literals = new List<Literal>();
-
-            foreach(string part in parts) {
-                if (part != "0")
-                    CreateAndAddLiteral(part);
-            }
-
-            Literals = this.Literals.OrderBy(c => c.Variable.CnfIndex).ToList();
-            Variables = CreateVariablesCollection();
+            VariablesCollection = new VariablesCollection(this);
         }
 
         #endregion
@@ -88,51 +74,6 @@ namespace SATCalculator.Classes {
 
         public override string ToString() {
             return Name;
-        }
-
-        /// <summary>
-        /// Check if the collection of variables from the clause exists in the list with the formula variables per clause.
-        /// If exists then returns the existing collection or else creates a new one
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public VariablesCollection CreateVariablesCollection() {
-            VariablesCollection variablesCollection = new VariablesCollection(this);
-
-            if (this.ParentFormula.VariablesPerClause.ContainsKey(variablesCollection.Name)) {
-                variablesCollection = this.ParentFormula.VariablesPerClause[variablesCollection.Name];
-                variablesCollection.References++;
-            }
-            else {
-                this.ParentFormula.VariablesPerClause.Add(variablesCollection.Name, variablesCollection);
-            }
-
-            return variablesCollection;
-        }
-
-        /// <summary>
-        /// Create a literal from a string and add it to the list
-        /// </summary>
-        /// <param name="part"></param>
-        public void CreateAndAddLiteral(string part) {
-            Variable variable = ParentFormula.CreateVariables(part);
-
-            Literal literal;
-
-            if (part[0] == '-') {
-                variable.ClausesWithNegativeAppearance.Add(this);
-                literal = new Literal(this, false, variable);
-            }
-            else if (part[0] == '+') {
-                variable.ClausesWithPositiveAppearance.Add(this);
-                literal = new Literal(this, true, variable);
-            }
-            else {
-                variable.ClausesWithPositiveAppearance.Add(this);
-                literal = new Literal(this, true, variable);
-            }
-
-            this.Literals.Add(literal);
         }
 
         // Add a literal in the clause and update its variable with proper clauses references
@@ -159,7 +100,7 @@ namespace SATCalculator.Classes {
                 literal.Variable.ClausesWithNegativeAppearance.Add(this);
         }
 
-        /// return a clause from a resolution of two others 
+        /// return a clause from the resolution of two others 
         public static Clause Resolution(Variable variable, Clause positiveClause, Clause negativeClause)
         {
             Clause newClause = new Clause();

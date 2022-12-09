@@ -42,12 +42,12 @@ namespace SATCalculator.Classes
 
             SAT3Formula formula = new SAT3Formula();
 
-            try {
+            try
+            {
                 string[] lines = File.ReadAllLines(filename);
 
-                foreach (string line in lines) {
-                    //Console.WriteLine(line);
-
+                foreach (string line in lines)
+                {
                     var lineParts = line.Trim().Split(' ').ToList();
 
                     if (lineParts[0] == "c")
@@ -59,12 +59,14 @@ namespace SATCalculator.Classes
                     if (lineParts.Count() != 4)
                         continue;
 
-                    formula.CreateAndAddClause(lineParts);
+                    formula.AddClause(lineParts);
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
+
 
             return formula;
         }

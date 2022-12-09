@@ -12,6 +12,7 @@ namespace SATCalculator.Classes {
 
         private static string DefaultVariableName = "x";
 
+        public Guid Id = Guid.NewGuid();
         public string Name { get; set; }
         public int CnfIndex { get; set; }
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
@@ -60,11 +61,11 @@ namespace SATCalculator.Classes {
         #endregion
 
 
-        public override bool Equals(object @object)
-        {
-            return @object is Variable variable &&
-                   Name == variable.Name;
-        }
+        //public override bool Equals(object @object)
+        //{
+        //    return @object is Variable variable &&
+        //           Name == variable.Name;
+        //}
 
         //public override int GetHashCode()
         //{

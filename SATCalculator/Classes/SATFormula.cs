@@ -50,82 +50,83 @@ namespace SATCalculator.Classes {
         public void AddClause(Clause clause)
         {
             clause.ParentFormula = this;
+            this.Clauses.Add(clause);
 
-            foreach(var variableDict in clause.VariablesList)
+            // update the variables list
+            foreach (var variableDict in clause.VariablesList)
             {
-                if (Variables.ContainsKey(variableDict.Key))
+                var clauseVariable = variableDict.Value;
+
+                if (this.Variables.ContainsKey(variableDict.Key))
                 {
-                    Variable existingVariable = Variables[variableDict.Key];
+                    // if the variable is allready exists in the clause then use this one in the clause
+                    Variable existingVariable = this.Variables[variableDict.Key];
+                    existingVariable.Valuation = clauseVariable.Valuation;
 
-                    if (variableDict.Value.ClausesWithPositiveAppearance.Count > 0)
-                        existingVariable.ClausesWithPositiveAppearance.Add(clause);
-                    else if (variableDict.Value.ClausesWithNegativeAppearance.Count > 0)
-                        existingVariable.ClausesWithNegativeAppearance.Add(clause);
+                    foreach (var variablePositiveClause in clauseVariable.ClausesWithPositiveAppearance)
+                    {
+                        existingVariable.ClausesWithPositiveAppearance.Add(variablePositiveClause);
+                    }
+                    foreach (var variableNegativeClause in clauseVariable.ClausesWithNegativeAppearance)
+                    {
+                        existingVariable.ClausesWithNegativeAppearance.Add(variableNegativeClause);
+                    }
 
-                    clause.VariablesList[variableDict.Key] = Variables[variableDict.Key];
+                    clause.VariablesList[variableDict.Key] = existingVariable;
+                    //clauseVariable = existingVariable;
                 }
                 else
                 {
-                    variableDict.Value.ParentFormula = this;
-                    Variables.Add(variableDict.Key, variableDict.Value);
+                    clauseVariable.ParentFormula = this;
+                    this.Variables.Add(variableDict.Key, clauseVariable);
                 }
             }
-        }
 
-
-        /// <summary>
-        /// Check if a variable name exists in the list with the formula unique variable.
-        /// If exists then returns the existing variable or creates a new one
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public Variable CreateVariables(string value) {
-            Variable variable = new Variable(value);
-
-            if (this.Variables.ContainsKey(variable.Name)) {
-                variable = Variables[variable.Name];
+            // update the variables collections
+            if (this.VariablesPerClause.ContainsKey(clause.VariablesCollection.Name))
+            {
+                var existingCollection = this.VariablesPerClause[clause.VariablesCollection.Name];
+                existingCollection.References++;
+                clause.VariablesCollection = existingCollection;
             }
             else
-                this.Variables.Add(variable.Name, variable);
-
-            variable.ParentFormula = this;
-
-            return variable;
-
+            {
+                this.VariablesPerClause.Add(clause.VariablesCollection.Name, clause.VariablesCollection);
+            }
         }
 
-        /// <summary>
-        /// Create a clause from strings and add it to the list with the clauses
-        /// </summary>
-        /// <param name="lineParts"></param>
-        public void CreateAndAddClause(List<string> lineParts) {
-            Clause clause = new Clause(this, lineParts);
-            this.Clauses.Add(clause);
+        public void AddClause(List<string> parts)
+        {
+            Clause clause = new Clause(parts);
+            clause.ParentFormula = this;
+            this.AddClause(clause);
         }
 
         /// <summary>
         /// Create a clone of the formula in single SAT form
         /// </summary>
         /// <returns></returns>
-        public SATFormula CopyAsSATFormula() {
+        public SATFormula CopyAsSATFormula()
+        {
             SATFormula formula = new SATFormula();
 
             List<string> parts;
-            foreach (var clause in Clauses) {
+            foreach (var clause in Clauses)
+            {
                 parts = new List<string>();
-                foreach (var literal in clause.Literals) {
+                foreach (var literal in clause.Literals)
+                {
                     string pros = literal.IsPositive ? "+" : "-";
 
                     parts.Add($"{pros}{literal.Variable.CnfIndex}");
                 }
 
-                formula.CreateAndAddClause(parts);
+                formula.AddClause(parts);
 
             }
 
             return formula;
         }
-
         #endregion
     }
 }
