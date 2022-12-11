@@ -261,6 +261,8 @@ namespace SATCalculator {
 
             // Configure open file dialog box
             string path = AppDomain.CurrentDomain.BaseDirectory;
+            path = "C:\\Users\\kritikov\\source\\repos\\SATCalculator\\SATCalculator\\Resources\\SAT3 formulas";
+
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.InitialDirectory = path;
             dialog.FileName = "Document"; // Default file name
