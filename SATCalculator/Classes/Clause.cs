@@ -53,13 +53,13 @@ namespace SATCalculator.Classes {
             Variables = new Dictionary<string, Variable>();
         }
 
-        public Clause(List<string> parts) :base()
+        public Clause(List<string> parts, VariableCreationType creationType) :base()
         {
             foreach (string part in parts)
             {
                 if (part != "0")
                 {
-                    Literal literal = new Literal(part);
+                    Literal literal = new Literal(part, creationType);
                     AddLiteral(literal);
                 }
             }

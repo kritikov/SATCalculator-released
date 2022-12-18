@@ -8,4 +8,5 @@ namespace SATCalculator.Classes
 {
     public enum VariableValueEnum { Null, True, False };
     public enum Sign { Positive, Negative };
+    public enum VariableCreationType { Default, Cnf};
 }

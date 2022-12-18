@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using SATCalculator.Classes;
 
 namespace SATCalculator {
@@ -37,14 +39,14 @@ namespace SATCalculator {
 
         public Resolution Resolution { get; set; } = new Resolution();
 
-        private SATFormula resolutionFormula;
-        public SATFormula ResolutionFormula {
-            get => resolutionFormula;
-            set {
-                resolutionFormula = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionFormula"));
-            }
-        }
+        //private SATFormula resolutionFormula;
+        //public SATFormula ResolutionFormula {
+        //    get => resolutionFormula;
+        //    set {
+        //        resolutionFormula = value;
+        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionFormula"));
+        //    }
+        //}
 
         private readonly CollectionViewSource relatedClausesSource = new CollectionViewSource();
         public ICollectionView RelatedClausesView {
@@ -146,6 +148,7 @@ namespace SATCalculator {
             new VariableValue(){Value = VariableValueEnum.False, ValueAsString="false" }
         };
 
+        public bool ResolutionKeepTrueClauses { get; set; } = true;
         #endregion
 
 
@@ -252,7 +255,20 @@ namespace SATCalculator {
             }
         }
 
+        private void ResetResolutionFormula(object sender, RoutedEventArgs e)
+        {
+            Resolution.Formula = Formula.CopyAsSATFormula();
+            resolutionVariablesSource.Source = Resolution.Formula.Variables;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
+        }
+
+        private void SaveResolutionFormulaAsSAT(object sender, RoutedEventArgs e)
+        {
+            SaveResolutionFormulaAsSAT(Resolution.Formula);
+        }
+
         #endregion
+
 
         #region METHODS
 
@@ -277,7 +293,7 @@ namespace SATCalculator {
             {
                 // Open document
                 string filename = dialog.FileName;
-                Formula = SAT3Formula.GetFromFile(filename);
+                Formula = SAT3Formula.GetFromCnfFile(filename);
                 Resolution.Formula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
@@ -301,10 +317,9 @@ namespace SATCalculator {
             }
             else
             {
-                ResolutionFormula = new SATFormula();
+                Resolution.Formula = new SATFormula();
             }
         }
-
 
         /// <summary>
         /// Sort a ListView by a field
@@ -332,7 +347,6 @@ namespace SATCalculator {
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
         }
-
 
         /// <summary>
         /// filter the related clauses view
@@ -414,8 +428,22 @@ namespace SATCalculator {
                 // remove old clauses from the formula
                 Resolution.Formula.Clauses.Remove(positiveClause);
                 Resolution.Formula.Clauses.Remove(negativeClause);
+
+                // add the new clause in the formula
                 if (newClause.Literals.Count > 0)
-                    Resolution.Formula.Clauses.Add(newClause);
+                    // if we dont keep the TRUE clauses in the formula then exit
+                    if (newClause.Literals.Count == 1 && newClause.Literals[0].Value == "TRUE")
+                    {
+                        if (ResolutionKeepTrueClauses)
+                        {
+                            Resolution.Formula.Clauses.Add(newClause);
+                        }
+                    }
+                    else
+                    {
+                        Resolution.Formula.Clauses.Add(newClause);
+                    }
+                        
 
                 // create a new resolution formula
                 Resolution.Formula = Resolution.Formula.CopyAsSATFormula();
@@ -476,11 +504,34 @@ namespace SATCalculator {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
         }
 
+        /// <summary>
+        /// Save a formula in a file at cnf format
+        /// </summary>
+        /// <param name="formula"></param>
+        private void SaveResolutionFormulaAsSAT(SATFormula formula)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "sat file|*.sat";
+            saveFileDialog.Title = "Save a sat file";
+            saveFileDialog.ShowDialog();
 
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog.FileName != "")
+            {
+                StreamWriter file = new StreamWriter($"{saveFileDialog.FileName}");
 
+                List<string> cnfLines = formula.GetSATLines();
 
+                foreach (string line in cnfLines)
+                {
+                    file.WriteLineAsync(line);
+                }
+
+                file.Close();
+            }
+        }
         #endregion
 
-       
+        
     }
 }

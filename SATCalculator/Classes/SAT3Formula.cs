@@ -38,7 +38,7 @@ namespace SATCalculator.Classes
         /// <param name="filename"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static SAT3Formula GetFromFile(string filename) {
+        public static SAT3Formula GetFromCnfFile(string filename) {
 
             SAT3Formula formula = new SAT3Formula();
 
@@ -59,7 +59,7 @@ namespace SATCalculator.Classes
                     if (lineParts.Count() != 4)
                         continue;
 
-                    formula.AddClause(lineParts);
+                    formula.AddClause(lineParts, VariableCreationType.Cnf);
                 }
             }
             catch (Exception ex)

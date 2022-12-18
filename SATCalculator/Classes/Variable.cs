@@ -14,7 +14,7 @@ namespace SATCalculator.Classes {
 
         public Guid Id = Guid.NewGuid();
         public string Name { get; set; }
-        public int CnfIndex { get; set; }
+        public int CnfIndex { get; set; } = -1;
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
 
 
@@ -39,35 +39,53 @@ namespace SATCalculator.Classes {
         /// <summary>
         /// Create a variable from a string as found in a cnf file
         /// </summary>
-        /// <param name="valueInCnf"></param>
-        public Variable(string valueInCnf) : base(){
+        /// <param name="value"></param>
+        public Variable(string value) : base(){
 
-            valueInCnf = valueInCnf.Trim();
+            value = value.Trim();
 
-            if (valueInCnf[0] == '-' || valueInCnf[0] == '+') {
-                if (Char.IsDigit(valueInCnf[1]))
+            if (value[0] == '-' || value[0] == '+')
+            {
+                Name = value.Substring(1, value.Length - 1);
+            }
+            else
+            {
+                Name = value;
+            }
+        }
+
+        public Variable(string value, VariableCreationType type) : base()
+        {
+            if (type == VariableCreationType.Cnf)
+            {
+                value = value.Trim();
+
+                if (value[0] == '-' || value[0] == '+')
                 {
-                    Name = Variable.DefaultVariableName + valueInCnf.Substring(1, valueInCnf.Length - 1);
-                    CnfIndex = Convert.ToInt32(valueInCnf.Substring(1, valueInCnf.Length - 1));
+                    Name = Variable.DefaultVariableName + value.Substring(1, value.Length - 1);
+                    CnfIndex = Convert.ToInt32(value.Substring(1, value.Length - 1));
                 }
                 else
                 {
-                    Name = valueInCnf.Substring(1, valueInCnf.Length - 1);
+                    Name = Variable.DefaultVariableName + value;
+                    CnfIndex = Convert.ToInt32(value);
                 }
             }
-            else {
-                if (Char.IsDigit(valueInCnf[0]))
+            else if (type == VariableCreationType.Default)
+            {
+                value = value.Trim();
+
+                if (value[0] == '-' || value[0] == '+')
                 {
-                    Name = Variable.DefaultVariableName + valueInCnf;
-                    CnfIndex = Convert.ToInt32(valueInCnf);
+                    Name = value.Substring(1, value.Length - 1);
                 }
                 else
                 {
-                    Name = valueInCnf;
+                    Name = value;
                 }
             }
         }
-      
+
         #endregion
 
 

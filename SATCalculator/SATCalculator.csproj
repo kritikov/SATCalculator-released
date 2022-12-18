@@ -67,7 +67,7 @@
     <Compile Include="Classes\Converters.cs" />
     <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\Literal.cs" />
-    <Compile Include="Classes\Reduction.cs" />
+    <Compile Include="Classes\Resolution.cs" />
     <Compile Include="Classes\SAT3Formula.cs" />
     <Compile Include="Classes\SATFormula.cs" />
     <Compile Include="Classes\Variable.cs" />

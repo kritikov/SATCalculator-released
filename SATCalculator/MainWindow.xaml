@@ -454,6 +454,10 @@
                             <Button Content="Resolution selected clauses" Click="ResolutionSelectedClauses"/>
                             <Button Content="Test all variable clauses" Click="TestAllVariableClauses"/>
                             <Button Content="Resolution all variable clauses" Click="ResolutionAllVariableClauses"/>
+                            <Button Content="Reset" Click="ResetResolutionFormula"/>
+                            <Button Content="Save formula" Click="SaveResolutionFormulaAsSAT"/>
+                            <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
+                                      ToolTip="Keep the clauses that are TRUE after a resolution"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

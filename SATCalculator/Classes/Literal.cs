@@ -65,6 +65,22 @@ namespace SATCalculator.Classes {
             }
         }
 
+        public Literal(string displayValue, VariableCreationType creationType) : base()
+        {
+            Variable = new Variable(displayValue, creationType);
+
+            if (displayValue[0] == '-')
+            {
+                IsPositive = false;
+                Sign = Sign.Negative;
+            }
+            else
+            {
+                IsPositive = true;
+                Sign = Sign.Positive;
+            }
+        }
+
         public Literal(Clause clause, bool isPositive, Variable variable) : base()
         {
             this.ParentClause = clause;

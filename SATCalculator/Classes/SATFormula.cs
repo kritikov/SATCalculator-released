@@ -95,9 +95,9 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public void AddClause(List<string> parts)
+        public void AddClause(List<string> parts, VariableCreationType creationType)
         {
-            Clause clause = new Clause(parts);
+            Clause clause = new Clause(parts, creationType);
             clause.ParentFormula = this;
             this.AddClause(clause);
         }
@@ -121,12 +121,38 @@ namespace SATCalculator.Classes {
                     parts.Add($"{pros}{literal.Variable.Name}");
                 }
 
-                formula.AddClause(parts);
+                formula.AddClause(parts, VariableCreationType.Default);
 
             }
 
             return formula;
         }
+
+        /// <summary>
+        /// Get the literals of the clauses in a list to be saved in a SAT file
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetSATLines()
+        {
+            List<string> cnfLines = new List<string>();
+
+            foreach(var clause in this.Clauses)
+            {
+                string line = "";
+                foreach(var literal in clause.Literals)
+                {
+                    if (line != "")
+                        line += " ";
+
+                    line += literal.Value;
+                    
+                }
+                line += $" 0";
+                cnfLines.Add(line);
+            }
+
+            return cnfLines;
+        } 
 
         #endregion
     }
