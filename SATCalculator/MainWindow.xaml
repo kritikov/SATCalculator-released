@@ -325,6 +325,138 @@
                     </Grid>
                 </TabItem>
 
+                <TabItem Header="Editor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
+                                      ItemsSource="{Binding EditorVariablesView}" 
+                                      ScrollViewer.CanContentScroll="True" 
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="EditorRelatedClausesGrid_SelectionChanged"
+                                      SelectionMode="Single">
+                                <DataGrid.Resources>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithPositiveReferencesView}"
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithNegativeReferencesView}"
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!--<ListView Grid.Row="1" ItemsSource="{Binding Resolution.Results}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>-->
+                        </Grid>
+                        
+                        <Grid Grid.Column="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesView}"
+                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding Name}" />
+                                    </GridView>
+
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
+                            <Button Content="Reset" Click="ResetEditorFormula"/>
+                            <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
                 <TabItem Header="Resolution">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -432,14 +564,14 @@
                                 </ListView.View>
                             </ListView>
                         </Grid>
-                        
+
                         <Grid Grid.Column="4">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding Resolution.Formula.Clauses}"
+                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesView}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
@@ -461,7 +593,6 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
-
             </TabControl>
         </Grid>
 

@@ -12,7 +12,7 @@ using System.Windows.Media.TextFormatting;
 
 namespace SATCalculator.Classes
 {
-    public class SAT3Formula :SATFormula
+    public class SAT3Formula : SATFormula
     {
         #region Fields
 

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
 namespace SATCalculator.Classes {
 
-    public class SATFormula {
+    public class SATFormula : INotifyPropertyChanged
+    {
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
 
@@ -18,6 +22,16 @@ namespace SATCalculator.Classes {
         public int VariablesCount => Variables.Count;
         public int VariablesPerClauseCount => VariablesPerClause.Count;
 
+        private Variable selectedVariable;
+        public Variable SelectedVariable
+        {
+            get => selectedVariable;
+            set
+            {
+                selectedVariable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
+            }
+        }
         #endregion
 
 
