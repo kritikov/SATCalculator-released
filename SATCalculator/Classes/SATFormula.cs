@@ -130,7 +130,7 @@ namespace SATCalculator.Classes {
                 parts = new List<string>();
                 foreach (var literal in clause.Literals)
                 {
-                    string pros = literal.IsPositive ? "+" : "-";
+                    string pros = literal.Sign == Sign.Positive ? "+" : "-";
 
                     parts.Add($"{pros}{literal.Variable.Name}");
                 }

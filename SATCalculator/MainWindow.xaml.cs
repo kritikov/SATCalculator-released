@@ -38,8 +38,9 @@ namespace SATCalculator {
         }
 
         public SATFormula EditorFormula { get; set; } = new SATFormula();
+        public SATFormula ResolutionFormula { get; set; } = new SATFormula();
 
-        public Resolution Resolution { get; set; } = new Resolution();
+        //public Resolution Resolution { get; set; } = new Resolution();
 
         private readonly CollectionViewSource relatedClausesSource = new CollectionViewSource();
         public ICollectionView RelatedClausesView {
@@ -105,7 +106,6 @@ namespace SATCalculator {
             }
         }
 
-
         private readonly CollectionViewSource resolutionClausesWithPositiveReferencesSource = new CollectionViewSource();
         public ICollectionView ResolutionClausesWithPositiveReferencesView {
             get {
@@ -168,6 +168,16 @@ namespace SATCalculator {
             }
         }
 
+        private ObservableCollection<Clause> editorSimplificationResult = new ObservableCollection<Clause>();
+        public ObservableCollection<Clause> EditorSimplificationResult
+        {
+            get => editorSimplificationResult;
+            set
+            {
+                editorSimplificationResult = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorSimplificationResult"));
+            }
+        }
 
         private Variable selectedVariable;
         public Variable SelectedVariable {
@@ -178,14 +188,14 @@ namespace SATCalculator {
             }
         }
 
-        private Variable selectedResolutionVariable;
-        public Variable SelectedResolutionVariable {
-            get => selectedResolutionVariable;
-            set {
-                selectedResolutionVariable = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedResolutionVariable"));
-            }
-        }
+        //private Variable selectedResolutionVariable;
+        //public Variable SelectedResolutionVariable {
+        //    get => selectedResolutionVariable;
+        //    set {
+        //        selectedResolutionVariable = value;
+        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedResolutionVariable"));
+        //    }
+        //}
 
         public class VariableValue
         {
@@ -280,18 +290,18 @@ namespace SATCalculator {
         }
 
         private void ResolutionRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (Resolution.Formula != null) {
+            if (ResolutionFormula != null) {
                 var grid = sender as DataGrid;
 
                 if (grid.SelectedItem != null) {
                     var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
 
-                    Resolution.SelectedVariable= selectedItem.Value;
-                    if (Resolution.SelectedVariable != null) {
-                        resolutionClausesWithPositiveReferencesSource.Source = Resolution.SelectedVariable.ClausesWithPositiveAppearance;
+                    ResolutionFormula.SelectedVariable= selectedItem.Value;
+                    if (ResolutionFormula.SelectedVariable != null) {
+                        resolutionClausesWithPositiveReferencesSource.Source = ResolutionFormula.SelectedVariable.ClausesWithPositiveAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesWithPositiveReferencesView"));
 
-                        resolutionClausesWithNegativeReferencesSource.Source = Resolution.SelectedVariable.ClausesWithNegativeAppearance;
+                        resolutionClausesWithNegativeReferencesSource.Source = ResolutionFormula.SelectedVariable.ClausesWithNegativeAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesWithNegativeReferencesView"));
                     }
                 }
@@ -317,7 +327,7 @@ namespace SATCalculator {
             }
         }
 
-        private void SelectedClauseChanged(object sender, SelectionChangedEventArgs e)
+        private void ResolutionSelectedClauseChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ResolutionClausesWithPositiveReferencesView != null && ResolutionClausesWithNegativeReferencesView != null)
             {
@@ -327,16 +337,20 @@ namespace SATCalculator {
 
         private void EditorSelectedClauseChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
-            //{
-            //    EditorSelectedClausesTest();
-            //}
+            if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
+            {
+                EditorSimplifyClausesTest();
+            }
         }
 
+        private void EditorSimplifySelectedClauses(object sender, RoutedEventArgs e)
+        {
+            EditorSimplifyClauses();
+        }
         private void ResetResolutionFormula(object sender, RoutedEventArgs e)
         {
-            Resolution.Formula = Formula.CopyAsSATFormula();
-            resolutionVariablesSource.Source = Resolution.Formula.Variables;
+            ResolutionFormula = Formula.CopyAsSATFormula();
+            resolutionVariablesSource.Source = ResolutionFormula.Variables;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
         }
 
@@ -349,7 +363,7 @@ namespace SATCalculator {
 
         private void SaveResolutionFormulaAsSAT(object sender, RoutedEventArgs e)
         {
-            SaveFormulaAsSAT(Resolution.Formula);
+            SaveFormulaAsSAT(ResolutionFormula);
         }
 
         private void SaveEditorFormulaAsSAT(object sender, RoutedEventArgs e)
@@ -384,7 +398,7 @@ namespace SATCalculator {
                 // Open document
                 string filename = dialog.FileName;
                 Formula = SAT3Formula.GetFromCnfFile(filename);
-                Resolution.Formula = Formula.CopyAsSATFormula();
+                ResolutionFormula = Formula.CopyAsSATFormula();
                 EditorFormula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
@@ -402,10 +416,10 @@ namespace SATCalculator {
                 variablesSource.Source = Formula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
 
-                resolutionClausesSource.Source = Resolution.Formula.Clauses;
+                resolutionClausesSource.Source = ResolutionFormula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesView"));
 
-                resolutionVariablesSource.Source = Resolution.Formula.Variables;
+                resolutionVariablesSource.Source = ResolutionFormula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
 
                 editorClausesSource.Source = EditorFormula.Clauses;
@@ -417,7 +431,7 @@ namespace SATCalculator {
             }
             else
             {
-                Resolution.Formula = new SATFormula();
+                ResolutionFormula = new SATFormula();
                 EditorFormula = new SATFormula();
             }
         }
@@ -495,14 +509,14 @@ namespace SATCalculator {
 
         private void ResolutionSelectedClausesTest()
         {
-            Resolution.Results.Clear();
+            ResolutionResults.Clear();
 
             if (ResolutionClausesWithPositiveReferencesView.CurrentItem != null && ResolutionClausesWithNegativeReferencesView.CurrentItem != null)
             {
                 // get the selected items from the lists to apply resolution
                 var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
                 var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
-                var selectedVariable = Resolution.SelectedVariable;
+                var selectedVariable = ResolutionFormula.SelectedVariable;
 
                 if (positiveClause != null && negativeClause != null)
                 {
@@ -510,47 +524,95 @@ namespace SATCalculator {
 
                     // add the new clause to the results
                     if (newClause.Literals.Count > 0)
-                        Resolution.Results.Add(newClause);
+                        ResolutionResults.Add(newClause);
                 }
             }
         }
 
-        private void EditorSelectedClausesTest()
+        private void EditorSimplifyClausesTest()
         {
-            //Editor.Results.Clear();
+            EditorSimplificationResult.Clear();
 
-            //if (ResolutionClausesWithPositiveReferencesView.CurrentItem != null && ResolutionClausesWithNegativeReferencesView.CurrentItem != null)
-            //{
-            //    // get the selected items from the lists to apply resolution
-            //    var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
-            //    var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
-            //    var selectedVariable = Resolution.SelectedVariable;
+            if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
+            {
+                // get the selected items from the lists to apply resolution
+                var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+                var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+                var selectedVariable = EditorFormula.SelectedVariable;
 
-            //    if (positiveClause != null && negativeClause != null)
-            //    {
-            //        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+                if (positiveClause != null && negativeClause != null)
+                {
+                    List<Variable> allowedVariables = new List<Variable>
+                    {
+                        EditorFormula.Variables["x1"],
+                        EditorFormula.Variables["x2"],
+                        EditorFormula.Variables["x3"]
+                    };
 
-            //        // add the new clause to the results
-            //        if (newClause.Literals.Count > 0)
-            //            Resolution.Results.Add(newClause);
-            //    }
-            //}
+                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
+
+                    EditorSimplificationResult.Add(newClauses.Item1);
+                    EditorSimplificationResult.Add(newClauses.Item2);
+                }
+            }
+        }
+
+        private void EditorSimplifyClauses()
+        {
+            EditorSimplificationResult.Clear();
+
+            if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
+            {
+                // get the selected items from the lists to apply resolution
+                var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+                var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+                var selectedVariable = EditorFormula.SelectedVariable;
+
+                if (positiveClause != null && negativeClause != null)
+                {
+                    List<Variable> allowedVariables = new List<Variable>
+                    {
+                        EditorFormula.Variables["x1"],
+                        EditorFormula.Variables["x2"],
+                        EditorFormula.Variables["x3"]
+                    };
+
+                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
+
+                    // remove old clauses from the formula
+                    EditorFormula.Clauses.Remove(positiveClause);
+                    EditorFormula.Clauses.Remove(negativeClause);
+
+                    //add new clauses to the formula
+                    EditorFormula.Clauses.Add(newClauses.Item1);
+                    EditorFormula.Clauses.Add(newClauses.Item2);
+
+                    // create a new resolution formula
+                    EditorFormula = EditorFormula.CopyAsSATFormula();
+
+                    editorClausesSource.Source = EditorFormula.Clauses;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
+
+                    editorVariablesSource.Source = EditorFormula.Variables;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
+                }
+            }
         }
 
         private void ResolutionSelectedClauses(object sender, RoutedEventArgs e)
         {
             var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
             var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
-            var selectedVariable = Resolution.SelectedVariable;
-            Resolution.Results.Clear();
+            var selectedVariable = ResolutionFormula.SelectedVariable;
+            ResolutionResults.Clear();
 
             if (positiveClause != null && negativeClause != null)
             {
                 Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
                 // remove old clauses from the formula
-                Resolution.Formula.Clauses.Remove(positiveClause);
-                Resolution.Formula.Clauses.Remove(negativeClause);
+                ResolutionFormula.Clauses.Remove(positiveClause);
+                ResolutionFormula.Clauses.Remove(negativeClause);
 
                 // add the new clause in the formula
                 if (newClause.Literals.Count > 0)
@@ -559,22 +621,22 @@ namespace SATCalculator {
                     {
                         if (ResolutionKeepTrueClauses)
                         {
-                            Resolution.Formula.Clauses.Add(newClause);
+                            ResolutionFormula.Clauses.Add(newClause);
                         }
                     }
                     else
                     {
-                        Resolution.Formula.Clauses.Add(newClause);
+                        ResolutionFormula.Clauses.Add(newClause);
                     }
                         
 
                 // create a new resolution formula
-                Resolution.Formula = Resolution.Formula.CopyAsSATFormula();
+                ResolutionFormula = ResolutionFormula.CopyAsSATFormula();
 
-                resolutionClausesSource.Source = Resolution.Formula.Clauses;
+                resolutionClausesSource.Source = ResolutionFormula.Clauses;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesView"));
 
-                resolutionVariablesSource.Source = Resolution.Formula.Variables;
+                resolutionVariablesSource.Source = ResolutionFormula.Variables;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
 
             }
@@ -582,8 +644,8 @@ namespace SATCalculator {
 
         private void TestAllVariableClauses(object sender, RoutedEventArgs e)
         {
-            var selectedVariable = Resolution.SelectedVariable;
-            Resolution.Results.Clear();
+            var selectedVariable = ResolutionFormula.SelectedVariable;
+            ResolutionResults.Clear();
 
             int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
             for (int i=0; i < pairsCount; i++)
@@ -596,15 +658,15 @@ namespace SATCalculator {
 
                     // add the new clause to the results
                     if (newClause.Literals.Count > 0)
-                        Resolution.Results.Add(newClause);
+                        ResolutionResults.Add(newClause);
                 }
             }
         }
 
         private void ResolutionAllVariableClauses(object sender, RoutedEventArgs e)
         {
-            var selectedVariable = Resolution.SelectedVariable;
-            Resolution.Results.Clear();
+            var selectedVariable = ResolutionFormula.SelectedVariable;
+            ResolutionResults.Clear();
 
             int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
             for (int i = 0; i < pairsCount; i++)
@@ -616,20 +678,20 @@ namespace SATCalculator {
                     Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
                     // remove old clauses from the formula
-                    Resolution.Formula.Clauses.Remove(positiveClause);
-                    Resolution.Formula.Clauses.Remove(negativeClause);
+                    ResolutionFormula.Clauses.Remove(positiveClause);
+                    ResolutionFormula.Clauses.Remove(negativeClause);
                     if (newClause.Literals.Count > 0)
-                        Resolution.Formula.Clauses.Add(newClause);
+                        ResolutionFormula.Clauses.Add(newClause);
                 }
             }
 
             // create a new resolution formula
-            Resolution.Formula = Resolution.Formula.CopyAsSATFormula();
+            ResolutionFormula = ResolutionFormula.CopyAsSATFormula();
 
-            resolutionClausesSource.Source = Resolution.Formula.Clauses;
+            resolutionClausesSource.Source = ResolutionFormula.Clauses;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionClausesView"));
 
-            resolutionVariablesSource.Source = Resolution.Formula.Variables;
+            resolutionVariablesSource.Source = ResolutionFormula.Variables;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResolutionVariablesView"));
         }
 
@@ -659,6 +721,8 @@ namespace SATCalculator {
                 file.Close();
             }
         }
+
+
         #endregion
 
         

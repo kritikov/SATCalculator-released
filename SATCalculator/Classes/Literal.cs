@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SATCalculator.Classes {
     public class Literal {
@@ -12,10 +13,9 @@ namespace SATCalculator.Classes {
         public Clause ParentClause = new Clause();
         public Variable Variable { get; set; } = new Variable();
         public Sign Sign { get; set; }
-        public bool IsPositive { get; set; } = true;
         public string Value {
             get {
-                if (this.IsPositive)
+                if (Sign == Sign.Positive)
                     return Variable.Name;
                 else
                     return "-" + Variable.Name;
@@ -27,7 +27,7 @@ namespace SATCalculator.Classes {
                 if (Variable == null || Variable?.Valuation == VariableValueEnum.Null)
                     return VariableValueEnum.Null;
 
-                if (this.IsPositive) {
+                if (Sign == Sign.Positive) {
                     return Variable.Valuation;
                 }
 
@@ -46,7 +46,6 @@ namespace SATCalculator.Classes {
         public Literal()
         {
             Sign = Sign.Positive;
-            IsPositive = true;
         }
 
         public Literal(string displayValue) : base()
@@ -55,12 +54,10 @@ namespace SATCalculator.Classes {
 
             if (displayValue[0] == '-')
             {
-                IsPositive = false;
                 Sign = Sign.Negative;
             }
             else
             {
-                IsPositive = true;
                 Sign = Sign.Positive;
             }
         }
@@ -71,24 +68,22 @@ namespace SATCalculator.Classes {
 
             if (displayValue[0] == '-')
             {
-                IsPositive = false;
                 Sign = Sign.Negative;
             }
             else
             {
-                IsPositive = true;
                 Sign = Sign.Positive;
             }
         }
 
-        public Literal(Clause clause, bool isPositive, Variable variable) : base()
+        #endregion
+
+        #region Methods
+
+        public override string ToString()
         {
-            this.ParentClause = clause;
-
-            Variable = variable;
-            IsPositive = isPositive;
+            return Value;
         }
-
 
         #endregion
     }

@@ -130,7 +130,7 @@ namespace SATCalculator.Classes {
                     {
                         // if the literal exists in the new clause but with opposite value
                         // then the clause is always true and can be discarded
-                        if (existingLiteral.IsPositive != literal.IsPositive)
+                        if (existingLiteral.Sign != literal.Sign)
                         {
                             Literal newLiteral = new Literal("TRUE");
                             newClause = new Clause();
@@ -156,7 +156,7 @@ namespace SATCalculator.Classes {
                     {
                         // if the literal exists in the new clause but with opposite value
                         // then the clause is always true and can be discarded
-                        if (existingLiteral.IsPositive != literal.IsPositive)
+                        if (existingLiteral.Sign != literal.Sign)
                         {
                             //newClause.Literals.Remove(existingLiteral);
                             Literal newLiteral = new Literal("TRUE");
@@ -169,6 +169,59 @@ namespace SATCalculator.Classes {
             }
 
             return newClause;
+        }
+
+        public static Tuple<Clause, Clause> Simplification(Variable variableToReplace, Clause positiveClause, Clause negativeClause, List<Variable> allowedVariables)
+        {
+            Clause newPositiveClause = new Clause();
+            Clause newNegativeClause = new Clause();
+
+            // pick a valid variable to use for simplification
+            Variable replacementVariable = null;
+            foreach(var allowedVariable in allowedVariables)
+            {
+                if ( !(positiveClause.Variables.ContainsKey(allowedVariable.Name) || negativeClause.Variables.ContainsKey(allowedVariable.Name)))
+                {
+                    replacementVariable = allowedVariable;
+                    break;
+                }
+            }
+
+            // if no valid replacement found then use the same variable as replacement
+            if (replacementVariable == null)
+                replacementVariable = variableToReplace;
+
+            // replace the variable in the positive clause
+            foreach (var literal in positiveClause.Literals)
+            {
+                string value = literal.Sign == Sign.Positive ? "+" : "-";
+
+                if (literal.Variable == variableToReplace)
+                    value += replacementVariable.Name;
+                else
+                    value += literal.Variable.Name;
+
+                Literal newLiteral = new Literal(value);
+                newPositiveClause.AddLiteral(newLiteral);
+            }
+
+            // replace the variable in the negative clause
+            foreach (var literal in negativeClause.Literals)
+            {
+                string value = literal.Sign == Sign.Positive ? "+" : "-";
+
+                if (literal.Variable == variableToReplace)
+                    value += replacementVariable.Name;
+                else
+                    value += literal.Variable.Name;
+
+                Literal newLiteral = new Literal(value);
+                newNegativeClause.AddLiteral(newLiteral);
+            }
+
+            Tuple<Clause, Clause> result = new Tuple<Clause, Clause>(newPositiveClause, newNegativeClause);
+
+            return result;
         }
 
         #endregion

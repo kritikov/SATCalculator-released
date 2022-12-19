@@ -424,13 +424,13 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <!--<ListView Grid.Row="1" ItemsSource="{Binding Resolution.Results}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding EditorSimplificationResult}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding Name}"/>
                                     </GridView>
                                 </ListView.View>
-                            </ListView>-->
+                            </ListView>
                         </Grid>
                         
                         <Grid Grid.Column="4">
@@ -451,6 +451,7 @@
                         </Grid>
 
                         <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
+                            <Button Content="Simplify selected clauses" Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
                             <Button Content="Reset" Click="ResetEditorFormula"/>
                             <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
                         </StackPanel>
@@ -525,7 +526,7 @@
                             </Grid.RowDefinitions>
 
                             <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="SelectedClauseChanged">
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="ResolutionSelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
@@ -541,7 +542,7 @@
                             </Grid.RowDefinitions>
 
                             <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="SelectedClauseChanged">
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="ResolutionSelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
@@ -556,7 +557,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding Resolution.Results}">
+                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionResults}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding Name}"/>

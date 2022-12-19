@@ -89,6 +89,15 @@ namespace SATCalculator.Classes {
         #endregion
 
 
+        #region Methods
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        #endregion
+
         //public override bool Equals(object @object)
         //{
         //    return @object is Variable variable &&
@@ -101,5 +110,5 @@ namespace SATCalculator.Classes {
         //}
     }
 
-    
+
 }
