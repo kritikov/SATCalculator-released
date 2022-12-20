@@ -440,7 +440,7 @@
                             </Grid.RowDefinitions>
 
                             <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesView}"
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                                      IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding Name}" />
@@ -452,7 +452,10 @@
 
                         <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
                             <Button Content="Simplify selected clauses" Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
+                            <Button Content="Test simplify all clauses" Click="EditorTestSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
+                            <Button Content="Simplify all clauses" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
                             <Button Content="Reset" Click="ResetEditorFormula"/>
+                            <Button Content="Delete selected clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
                             <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
                         </StackPanel>
                     </Grid>
@@ -585,7 +588,7 @@
 
                         <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
                             <Button Content="Resolution selected clauses" Click="ResolutionSelectedClauses"/>
-                            <Button Content="Test all variable clauses" Click="TestAllVariableClauses"/>
+                            <Button Content="Test all variable clauses" Click="ResolutionTestAllVariableClauses"/>
                             <Button Content="Resolution all variable clauses" Click="ResolutionAllVariableClauses"/>
                             <Button Content="Reset" Click="ResetResolutionFormula"/>
                             <Button Content="Save formula" Click="SaveResolutionFormulaAsSAT"/>

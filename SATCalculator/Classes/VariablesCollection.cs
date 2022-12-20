@@ -58,7 +58,9 @@ namespace SATCalculator.Classes {
 
         public VariablesCollection(Clause clause) : base() {
 
-            foreach(var literal in clause.Literals) {
+            List<Literal> literalsOrdered = clause.Literals.OrderBy(p => p.Variable.Name).ToList();
+
+            foreach (var literal in literalsOrdered) {
                 Items.Add(literal.Variable);
             }
 

@@ -15,14 +15,14 @@ namespace SATCalculator.Classes {
         #region Fields
 
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
-        public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
-        public Dictionary<string, VariablesCollection> VariablesPerClause { get; set; } = new Dictionary<string, VariablesCollection>();
+        public Dictionary<string, Variable> VariablesDict { get; set; } = new Dictionary<string, Variable>();
+        public Dictionary<string, VariablesCollection> VariablesPerClauseDict { get; set; } = new Dictionary<string, VariablesCollection>();
         public string DisplayValue => this.ToString();
         public int ClausesCount => Clauses.Count;
-        public int VariablesCount => Variables.Count;
-        public int VariablesPerClauseCount => VariablesPerClause.Count;
+        public int VariablesCount => VariablesDict.Count;
+        public int VariablesPerClauseCount => VariablesPerClauseDict.Count;
 
-        private Variable selectedVariable;
+        private Variable selectedVariable = null;
         public Variable SelectedVariable
         {
             get => selectedVariable;
@@ -74,22 +74,23 @@ namespace SATCalculator.Classes {
             // update the variables list
             foreach(var literal in clause.Literals)
             {
-                if (Variables.ContainsKey(literal.Variable.Name))
+                if (VariablesDict.ContainsKey(literal.Variable.Name))
                 {
                     // if the variable is allready exists in the list then use this one in the literal and its clause
-                    Variable existingVariable = Variables[literal.Variable.Name];
+                    Variable existingVariable = VariablesDict[literal.Variable.Name];
                     literal.Variable = existingVariable;
                     clause.Variables.Add(existingVariable.Name, existingVariable);
 
                     if (literal.Sign == Sign.Positive)
-                        Variables[literal.Variable.Name].ClausesWithPositiveAppearance.Add(clause);
+                        VariablesDict[literal.Variable.Name].ClausesWithPositiveAppearance.Add(clause);
                     else if (literal.Sign == Sign.Negative)
-                        Variables[literal.Variable.Name].ClausesWithNegativeAppearance.Add(clause);
+                        VariablesDict[literal.Variable.Name].ClausesWithNegativeAppearance.Add(clause);
                 }
                 else
                 {
                     // if the variable is not created yet in the clause then add it from the literal
-                    this.Variables.Add(literal.Variable.Name, literal.Variable);
+                    this.VariablesDict.Add(literal.Variable.Name, literal.Variable);
+                    clause.Variables.Add(literal.Variable.Name, literal.Variable);
                 }
             }
 
@@ -97,22 +98,21 @@ namespace SATCalculator.Classes {
 
 
             // update the variables collections
-            if (this.VariablesPerClause.ContainsKey(clause.VariablesCollection.Name))
+            if (this.VariablesPerClauseDict.ContainsKey(clause.VariablesCollection.Name))
             {
-                var existingCollection = this.VariablesPerClause[clause.VariablesCollection.Name];
+                var existingCollection = this.VariablesPerClauseDict[clause.VariablesCollection.Name];
                 existingCollection.References++;
                 clause.VariablesCollection = existingCollection;
             }
             else
             {
-                this.VariablesPerClause.Add(clause.VariablesCollection.Name, clause.VariablesCollection);
+                this.VariablesPerClauseDict.Add(clause.VariablesCollection.Name, clause.VariablesCollection);
             }
         }
 
         public void AddClause(List<string> parts, VariableCreationType creationType)
         {
             Clause clause = new Clause(parts, creationType);
-            clause.ParentFormula = this;
             this.AddClause(clause);
         }
 

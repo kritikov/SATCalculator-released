@@ -98,6 +98,8 @@ namespace SATCalculator.Classes {
                 literal.Variable.ClausesWithPositiveAppearance.Add(this);
             else if (literal.Sign == Sign.Negative)
                 literal.Variable.ClausesWithNegativeAppearance.Add(this);
+
+            VariablesCollection = new VariablesCollection(this);
         }
 
         /// return a clause from the resolution of two others 
@@ -180,7 +182,7 @@ namespace SATCalculator.Classes {
             Variable replacementVariable = null;
             foreach(var allowedVariable in allowedVariables)
             {
-                if ( !(positiveClause.Variables.ContainsKey(allowedVariable.Name) || negativeClause.Variables.ContainsKey(allowedVariable.Name)))
+                if ( !positiveClause.Variables.ContainsKey(allowedVariable.Name) && !negativeClause.Variables.ContainsKey(allowedVariable.Name) )
                 {
                     replacementVariable = allowedVariable;
                     break;
