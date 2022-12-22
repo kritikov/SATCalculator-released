@@ -45,7 +45,6 @@
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
                             </TextBlock>
-                            <!--<ListBox Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"/>-->
                             <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
@@ -68,7 +67,7 @@
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
                             </TextBlock>
                             <ListView Grid.Row="1"
-                                      ItemsSource="{Binding Formula.Variables}" 
+                                      ItemsSource="{Binding Formula.VariablesDict}" 
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
@@ -82,29 +81,6 @@
                                 </ListView.View>
                             </ListView>
                         </Grid>
-
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="combinations: "/>
-                                <Run Text="{Binding Formula.VariablesPerClauseCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.VariablesPerClause}"
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Value.Contents}" />
-                                        <GridViewColumn Header="References" Width="90" DisplayMemberBinding="{Binding Value.References}" />
-                                    </GridView>
-
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
                     </Grid>
                 </TabItem>
 
@@ -346,7 +322,8 @@
                                       ItemsSource="{Binding EditorVariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="EditorRelatedClausesGrid_SelectionChanged"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                                      SelectionChanged="EditorRelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
                                 <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
@@ -368,6 +345,14 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contradictions}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style>
+                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
                                     <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style>

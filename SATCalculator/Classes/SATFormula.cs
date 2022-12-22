@@ -16,11 +16,10 @@ namespace SATCalculator.Classes {
 
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
         public Dictionary<string, Variable> VariablesDict { get; set; } = new Dictionary<string, Variable>();
-        public Dictionary<string, VariablesCollection> VariablesPerClauseDict { get; set; } = new Dictionary<string, VariablesCollection>();
+        public HashSet<string> ClausesDict { get; set; } = new HashSet<string>();
         public string DisplayValue => this.ToString();
         public int ClausesCount => Clauses.Count;
         public int VariablesCount => VariablesDict.Count;
-        public int VariablesPerClauseCount => VariablesPerClauseDict.Count;
 
         private Variable selectedVariable = null;
         public Variable SelectedVariable
@@ -94,20 +93,7 @@ namespace SATCalculator.Classes {
                 }
             }
 
-            clause.VariablesCollection = new VariablesCollection(clause);
-
-
-            // update the variables collections
-            if (this.VariablesPerClauseDict.ContainsKey(clause.VariablesCollection.Name))
-            {
-                var existingCollection = this.VariablesPerClauseDict[clause.VariablesCollection.Name];
-                existingCollection.References++;
-                clause.VariablesCollection = existingCollection;
-            }
-            else
-            {
-                this.VariablesPerClauseDict.Add(clause.VariablesCollection.Name, clause.VariablesCollection);
-            }
+            ClausesDict.Add(clause.NameSorted);
         }
 
         public void AddClause(List<string> parts, VariableCreationType creationType)

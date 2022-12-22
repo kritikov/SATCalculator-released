@@ -26,6 +26,7 @@ namespace SATCalculator.Classes {
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int ClausesWithPositiveReferencesCount => ClausesWithPositiveAppearance.Count;
         public int ClausesWithNegativeReferencesCount => ClausesWithNegativeAppearance.Count;
+        public int Contradictions => Math.Min(ClausesWithPositiveAppearance.Count, ClausesWithNegativeAppearance.Count);
 
         #endregion
 

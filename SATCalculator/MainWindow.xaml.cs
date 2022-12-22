@@ -209,8 +209,6 @@ namespace SATCalculator {
             new VariableValue(){Value = VariableValueEnum.False, ValueAsString="false" }
         };
 
-        private List<Variable> allowedVariables = new List<Variable>();
-
         public bool ResolutionKeepTrueClauses { get; set; } = true;
         public bool EditorDeleteDuplicateClausesAfterSimplification { get; set; } = true;
         #endregion
@@ -454,15 +452,6 @@ namespace SATCalculator {
 
                 editorVariablesSource.Source = EditorFormula.VariablesDict;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
-
-                allowedVariables = new List<Variable>
-                {
-                    EditorFormula.VariablesDict["x1"],
-                    EditorFormula.VariablesDict["x2"],
-                    EditorFormula.VariablesDict["x3"],
-                    EditorFormula.VariablesDict["x4"]
-                };
-
             }
             else
             {
@@ -541,27 +530,26 @@ namespace SATCalculator {
             return false;
 
         }
-
-        private void ResolutionSelectedClausesTest()
+       
+        private List<Variable> GetAllowedVariables(SATFormula formula)
         {
-            ResolutionResults.Clear();
+            List<Variable> list = new List<Variable>();
 
-            if (ResolutionClausesWithPositiveReferencesView.CurrentItem != null && ResolutionClausesWithNegativeReferencesView.CurrentItem != null)
+            try
             {
-                // get the selected items from the lists to apply resolution
-                var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
-                var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
-                var selectedVariable = ResolutionFormula.SelectedVariable;
-
-                if (positiveClause != null && negativeClause != null)
-                {
-                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
-
-                    // add the new clause to the results
-                    if (newClause.Literals.Count > 0)
-                        ResolutionResults.Add(newClause);
-                }
+                list = new List<Variable>
+                    {
+                        formula.VariablesDict["x1"],
+                        formula.VariablesDict["x2"],
+                        formula.VariablesDict["x3"],
+                        formula.VariablesDict["x4"]
+                    };
             }
+            catch (Exception ex)
+            {
+
+            }
+            return list;
         }
 
         private void EditorSimplifyClausesTest()
@@ -577,6 +565,8 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
+                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
+
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     EditorSimplificationResult.Add(newClauses.Item1);
@@ -598,26 +588,44 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
+                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
+
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
-                    // remove old clauses from the formula
-                    EditorFormula.Clauses.Remove(positiveClause);
-                    EditorFormula.VariablesPerClauseDict.Remove(positiveClause.VariablesCollection.Name);
-                    EditorFormula.Clauses.Remove(negativeClause);
-                    EditorFormula.VariablesPerClauseDict.Remove(negativeClause.VariablesCollection.Name);
+                    // add the new positive clause if it is different from the old positive clause
+                    if (newClauses.Item1.NameSorted != positiveClause.NameSorted)
+                    {
+                        // remove old positive clause from the formula
+                        EditorFormula.Clauses.Remove(positiveClause);
 
-                    //add new clauses to the formula
-                    if (EditorDeleteDuplicateClausesAfterSimplification)
-                    {
-                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                        // add new positive clause in the formula if it is allowed
+                        if (EditorDeleteDuplicateClausesAfterSimplification)
+                        {
+                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item1.NameSorted))
+                                EditorFormula.Clauses.Add(newClauses.Item1);
+                        }
+                        else
+                        {
                             EditorFormula.Clauses.Add(newClauses.Item1);
-                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
-                            EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
                     }
-                    else
+
+                    // add the new negative clause if it is different from the old negative clause
+                    if (newClauses.Item2.NameSorted != negativeClause.NameSorted)
                     {
-                        EditorFormula.Clauses.Add(newClauses.Item1);
-                        EditorFormula.Clauses.Add(newClauses.Item2);
+                        // remove old negative clause from the formula
+                        EditorFormula.Clauses.Remove(negativeClause);
+
+                        // add new negative clause in the formula if it is allowed
+                        if (EditorDeleteDuplicateClausesAfterSimplification)
+                        {
+                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item2.NameSorted))
+                                EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
+                        else
+                        {
+                            EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
                     }
 
                     // create a new resolution formula
@@ -645,6 +653,8 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
+                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
+
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     EditorSimplificationResult.Add(newClauses.Item1);
@@ -658,7 +668,7 @@ namespace SATCalculator {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorSimplificationResult.Clear();
 
-            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            int pairsCount = selectedVariable.Contradictions;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
@@ -666,28 +676,45 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
+                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
+
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
-                    // remove old clauses from the formula
-                    EditorFormula.Clauses.Remove(positiveClause);
-                    EditorFormula.VariablesPerClauseDict.Remove(positiveClause.VariablesCollection.Name);
-                    EditorFormula.Clauses.Remove(negativeClause);
-                    EditorFormula.VariablesPerClauseDict.Remove(negativeClause.VariablesCollection.Name);
-
-                    //add new clauses to the formula
-                    if (EditorDeleteDuplicateClausesAfterSimplification)
+                    // add the new positive clause if it is different from the old positive clause
+                    if (newClauses.Item1.NameSorted != positiveClause.NameSorted)
                     {
-                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                        // remove old positive clause from the formula
+                        EditorFormula.Clauses.Remove(positiveClause);
+
+                        // add new positive clause in the formula if it is allowed
+                        if (EditorDeleteDuplicateClausesAfterSimplification)
+                        {
+                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item1.NameSorted))
+                                EditorFormula.Clauses.Add(newClauses.Item1);
+                        }
+                        else
+                        {
                             EditorFormula.Clauses.Add(newClauses.Item1);
-                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
-                            EditorFormula.Clauses.Add(newClauses.Item2);
-                    }
-                    else
-                    {
-                        EditorFormula.Clauses.Add(newClauses.Item1);
-                        EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
                     }
 
+                    // add the new negative clause if it is different from the old negative clause
+                    if (newClauses.Item2.NameSorted != negativeClause.NameSorted)
+                    {
+                        // remove old negative clause from the formula
+                        EditorFormula.Clauses.Remove(negativeClause);
+
+                        // add new negative clause in the formula if it is allowed
+                        if (EditorDeleteDuplicateClausesAfterSimplification)
+                        {
+                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item2.NameSorted))
+                                EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
+                        else
+                        {
+                            EditorFormula.Clauses.Add(newClauses.Item2);
+                        }
+                    }
                 }
             }
 
@@ -744,6 +771,28 @@ namespace SATCalculator {
             }
         }
 
+        private void ResolutionSelectedClausesTest()
+        {
+            ResolutionResults.Clear();
+
+            if (ResolutionClausesWithPositiveReferencesView.CurrentItem != null && ResolutionClausesWithNegativeReferencesView.CurrentItem != null)
+            {
+                // get the selected items from the lists to apply resolution
+                var positiveClause = ResolutionClausesWithPositiveReferencesView.CurrentItem as Clause;
+                var negativeClause = ResolutionClausesWithNegativeReferencesView.CurrentItem as Clause;
+                var selectedVariable = ResolutionFormula.SelectedVariable;
+
+                if (positiveClause != null && negativeClause != null)
+                {
+                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+                    // add the new clause to the results
+                    if (newClause.Literals.Count > 0)
+                        ResolutionResults.Add(newClause);
+                }
+            }
+        }
+
         private void ResolutionTestAllVariableClauses(object sender, RoutedEventArgs e)
         {
             var selectedVariable = ResolutionFormula.SelectedVariable;
@@ -770,7 +819,7 @@ namespace SATCalculator {
             var selectedVariable = ResolutionFormula.SelectedVariable;
             ResolutionResults.Clear();
 
-            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            int pairsCount = selectedVariable.Contradictions;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];

@@ -11,7 +11,6 @@ namespace SATCalculator.Classes {
 
         public SATFormula ParentFormula { get; set; } = new SATFormula();
         public List<Literal> Literals { get; set; } = new List<Literal>();
-        public VariablesCollection VariablesCollection { get; set; } = new VariablesCollection();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public VariableValueEnum Valuation {
             get {
@@ -69,7 +68,6 @@ namespace SATCalculator.Classes {
         public Clause()
         {
             Literals = new List<Literal>();
-            VariablesCollection = new VariablesCollection(this);
             Variables = new Dictionary<string, Variable>();
         }
 
@@ -83,8 +81,6 @@ namespace SATCalculator.Classes {
                     AddLiteral(literal);
                 }
             }
-
-            VariablesCollection = new VariablesCollection(this);
         }
 
         #endregion
@@ -118,8 +114,6 @@ namespace SATCalculator.Classes {
                 literal.Variable.ClausesWithPositiveAppearance.Add(this);
             else if (literal.Sign == Sign.Negative)
                 literal.Variable.ClausesWithNegativeAppearance.Add(this);
-
-            VariablesCollection = new VariablesCollection(this);
         }
 
         /// return a clause from the resolution of two others 
