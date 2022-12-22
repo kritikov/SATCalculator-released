@@ -209,7 +209,10 @@ namespace SATCalculator {
             new VariableValue(){Value = VariableValueEnum.False, ValueAsString="false" }
         };
 
+        private List<Variable> allowedVariables = new List<Variable>();
+
         public bool ResolutionKeepTrueClauses { get; set; } = true;
+        public bool EditorDeleteDuplicateClausesAfterSimplification { get; set; } = true;
         #endregion
 
 
@@ -452,6 +455,14 @@ namespace SATCalculator {
                 editorVariablesSource.Source = EditorFormula.VariablesDict;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
 
+                allowedVariables = new List<Variable>
+                {
+                    EditorFormula.VariablesDict["x1"],
+                    EditorFormula.VariablesDict["x2"],
+                    EditorFormula.VariablesDict["x3"],
+                    EditorFormula.VariablesDict["x4"]
+                };
+
             }
             else
             {
@@ -566,13 +577,6 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
-                    List<Variable> allowedVariables = new List<Variable>
-                    {
-                        EditorFormula.VariablesDict["x1"],
-                        EditorFormula.VariablesDict["x2"],
-                        EditorFormula.VariablesDict["x3"]
-                    };
-
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     EditorSimplificationResult.Add(newClauses.Item1);
@@ -594,26 +598,27 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
-                    List<Variable> allowedVariables = new List<Variable>
-                    {
-                        EditorFormula.VariablesDict["x1"],
-                        EditorFormula.VariablesDict["x2"],
-                        EditorFormula.VariablesDict["x3"],
-                        EditorFormula.VariablesDict["x4"]
-                    };
-
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     // remove old clauses from the formula
                     EditorFormula.Clauses.Remove(positiveClause);
+                    EditorFormula.VariablesPerClauseDict.Remove(positiveClause.VariablesCollection.Name);
                     EditorFormula.Clauses.Remove(negativeClause);
+                    EditorFormula.VariablesPerClauseDict.Remove(negativeClause.VariablesCollection.Name);
 
                     //add new clauses to the formula
-                    //add new clauses to the formula
-                    if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                    if (EditorDeleteDuplicateClausesAfterSimplification)
+                    {
+                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                            EditorFormula.Clauses.Add(newClauses.Item1);
+                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
+                            EditorFormula.Clauses.Add(newClauses.Item2);
+                    }
+                    else
+                    {
                         EditorFormula.Clauses.Add(newClauses.Item1);
-                    if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
                         EditorFormula.Clauses.Add(newClauses.Item2);
+                    }
 
                     // create a new resolution formula
                     EditorFormula = EditorFormula.CopyAsSATFormula();
@@ -640,13 +645,6 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
-                    List<Variable> allowedVariables = new List<Variable>
-                    {
-                        EditorFormula.VariablesDict["x1"],
-                        EditorFormula.VariablesDict["x2"],
-                        EditorFormula.VariablesDict["x3"]
-                    };
-
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     EditorSimplificationResult.Add(newClauses.Item1);
@@ -668,24 +666,28 @@ namespace SATCalculator {
 
                 if (positiveClause != null && negativeClause != null)
                 {
-                    List<Variable> allowedVariables = new List<Variable>
-                    {
-                        EditorFormula.VariablesDict["x1"],
-                        EditorFormula.VariablesDict["x2"],
-                        EditorFormula.VariablesDict["x3"]
-                    };
-
                     var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
 
                     // remove old clauses from the formula
                     EditorFormula.Clauses.Remove(positiveClause);
+                    EditorFormula.VariablesPerClauseDict.Remove(positiveClause.VariablesCollection.Name);
                     EditorFormula.Clauses.Remove(negativeClause);
+                    EditorFormula.VariablesPerClauseDict.Remove(negativeClause.VariablesCollection.Name);
 
                     //add new clauses to the formula
-                    if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                    if (EditorDeleteDuplicateClausesAfterSimplification)
+                    {
+                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item1.VariablesCollection.Name))
+                            EditorFormula.Clauses.Add(newClauses.Item1);
+                        if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
+                            EditorFormula.Clauses.Add(newClauses.Item2);
+                    }
+                    else
+                    {
                         EditorFormula.Clauses.Add(newClauses.Item1);
-                    if (!EditorFormula.VariablesPerClauseDict.ContainsKey(newClauses.Item2.VariablesCollection.Name))
                         EditorFormula.Clauses.Add(newClauses.Item2);
+                    }
+
                 }
             }
 

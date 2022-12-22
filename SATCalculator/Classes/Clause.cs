@@ -41,6 +41,26 @@ namespace SATCalculator.Classes {
             }
         }
 
+        public string Key
+        {
+            get
+            {
+                var variablesList = Variables.OrderBy(p => p.Key).ToArray();
+                string keyText = string.Join("-", variablesList);
+                return keyText;
+            }
+        }
+
+        public string NameSorted
+        {
+            get
+            {
+                var literalsList = Literals.Select(p=>p.Value).OrderBy(p=>p).ToArray();
+                string keyText = string.Join(" ∨ ", literalsList);
+                return keyText;
+            }
+        }
+
         #endregion
 
 
@@ -182,7 +202,7 @@ namespace SATCalculator.Classes {
             Variable replacementVariable = null;
             foreach(var allowedVariable in allowedVariables)
             {
-                if ( !positiveClause.Variables.ContainsKey(allowedVariable.Name) && !negativeClause.Variables.ContainsKey(allowedVariable.Name) )
+                if ( !positiveClause.Variables.ContainsKey(allowedVariable.Name) && !negativeClause.Variables.ContainsKey(allowedVariable.Name))
                 {
                     replacementVariable = allowedVariable;
                     break;
@@ -190,7 +210,7 @@ namespace SATCalculator.Classes {
             }
 
             // if no valid replacement found then use the same variable as replacement
-            if (replacementVariable == null)
+            if (replacementVariable == null || allowedVariables.Contains(variableToReplace))
                 replacementVariable = variableToReplace;
 
             // replace the variable in the positive clause

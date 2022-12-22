@@ -443,7 +443,7 @@
                                       IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding Name}" />
+                                        <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding NameSorted}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -457,6 +457,8 @@
                             <Button Content="Reset" Click="ResetEditorFormula"/>
                             <Button Content="Delete selected clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
                             <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
+                            <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
+                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>
