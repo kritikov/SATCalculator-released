@@ -411,39 +411,40 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="0" ItemsSource="{Binding EditorSimplificationResult}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                            <WrapPanel Grid.Row="1" Orientation="Vertical">
-                                <StackPanel  Orientation="Horizontal">
-                                    <Button Content="Simp." Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
-                                    <Button Content="Test all" Click="EditorTestSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
-                                    <Button Content="Simp. all" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
-                                </StackPanel>
-                                <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
-                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
-                            </WrapPanel>
-
-                            <ListView Grid.Row="2" ItemsSource="{Binding EditorResolutionResults}">
+                            <ListView Grid.Row="0" ItemsSource="{Binding EditorResolutionResults}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <WrapPanel Grid.Row="3" Orientation="Vertical">
+                            <WrapPanel Grid.Row="1" Orientation="Vertical">
                                 <StackPanel  Orientation="Horizontal">
                                     <Button Content="Res." Click="EditorResolutionSelectedClauses"/>
-                                    <Button Content="Test all" Click="EditorResolutionTestAllVariableClauses"/>
-                                    <Button Content="Res.all" Click="EditorResolutionAllVariableClauses"/>
+                                    <Button Content="Test all" Click="EditorResolutionAllClausesTest"/>
+                                    <Button Content="Res.all" Click="EditorResolutionAllClauses"/>
                                 </StackPanel>
                                 <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
                                       ToolTip="Keep the clauses that are TRUE after a resolution"/>
                             </WrapPanel>
+                            
+                            <ListView Grid.Row="2" ItemsSource="{Binding EditorSimplificationResult}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <WrapPanel Grid.Row="3" Orientation="Vertical">
+                                <StackPanel  Orientation="Horizontal">
+                                    <Button Content="Simp." Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
+                                    <Button Content="Test all" Click="EditorSimplifyAllClausesTest" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
+                                    <Button Content="Simp. all" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
+                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
+                            </WrapPanel>
+                            
                         </Grid>
                         
                         <Grid Grid.Column="4">
@@ -466,7 +467,8 @@
                         <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
                             <Button Content="Reset" Click="ResetEditorFormula"/>
                             <Button Content="Delete selected clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
-                            <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
+                            <Button Content="Save formula as SAT" Click="SaveEditorFormulaAsSAT"/>
+                            <Button Content="Save formula as CNF" Click="SaveEditorFormulaAsCNF"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

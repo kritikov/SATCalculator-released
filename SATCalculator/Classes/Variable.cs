@@ -10,7 +10,7 @@ namespace SATCalculator.Classes {
 
         #region Fields
 
-        private static string DefaultVariableName = "x";
+        public static string DefaultVariableName = "x";
 
         public Guid Id = Guid.NewGuid();
         public string Name { get; set; }

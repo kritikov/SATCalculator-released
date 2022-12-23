@@ -280,14 +280,39 @@ namespace SATCalculator {
         {
             if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
             {
-                EditorSimplifyClausesTest();
-                EditorResolutionSelectedClausesTest();
+                SimplifySelectedClausesTest();
+                ResolutionSelectedClausesTest();
             }
         }
 
         private void EditorSimplifySelectedClauses(object sender, RoutedEventArgs e)
         {
-            EditorSimplifyClauses();
+            SimplifySelectedClauses();
+        }
+
+        private void EditorSimplifyAllClausesTest(object sender, RoutedEventArgs e)
+        {
+            SimplifyAllClausesTest();
+        }
+
+        private void EditorSimplifyAllClauses(object sender, RoutedEventArgs e)
+        {
+            SimplifyAllClauses();
+        }
+        
+        private void EditorResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            ResolutionSelectedClauses();
+        }
+
+        private void EditorResolutionAllClausesTest(object sender, RoutedEventArgs e)
+        {
+            ResolutionAllClausesTest();
+        }
+
+        private void EditorResolutionAllClauses(object sender, RoutedEventArgs e)
+        {
+            ResolutionAllClauses();
         }
 
         private void EditorDeleteSelectedClauseFromFormula(object sender, RoutedEventArgs e)
@@ -325,6 +350,10 @@ namespace SATCalculator {
             SaveFormulaAsSAT(EditorFormula);
         }
 
+        private void SaveEditorFormulaAsCNF(object sender, RoutedEventArgs e)
+        {
+            SaveFormulaAsCNF(EditorFormula);
+        }
         #endregion
 
 
@@ -369,11 +398,7 @@ namespace SATCalculator {
                 variablesSource.Source = Formula.VariablesDict;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
 
-                editorClausesSource.Source = EditorFormula.Clauses;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
-
-                editorVariablesSource.Source = EditorFormula.VariablesDict;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
+                RefreshEditorViews();
             }
             else
             {
@@ -452,28 +477,11 @@ namespace SATCalculator {
 
         }
        
-        private List<Variable> GetAllowedVariables(SATFormula formula)
-        {
-            List<Variable> list = new List<Variable>();
-
-            try
-            {
-                list = new List<Variable>
-                    {
-                        formula.VariablesDict["x1"],
-                        formula.VariablesDict["x2"],
-                        formula.VariablesDict["x3"],
-                        formula.VariablesDict["x4"]
-                    };
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return list;
-        }
-
-        private void EditorSimplifyClausesTest()
+        /// <summary>
+        /// Simplify the selected clauses in the positive and negative lists of the selected variable
+        /// without updating the formula 
+        /// </summary>
+        private void SimplifySelectedClausesTest()
         {
             EditorSimplificationResult.Clear();
 
@@ -496,7 +504,10 @@ namespace SATCalculator {
             }
         }
 
-        private void EditorSimplifyClauses()
+        /// <summary>
+        /// Simplify the selected clauses in the positive and negative lists of the selected variable
+        /// </summary>
+        private void SimplifySelectedClauses()
         {
             EditorSimplificationResult.Clear();
 
@@ -552,21 +563,21 @@ namespace SATCalculator {
                     // create a new resolution formula
                     EditorFormula = EditorFormula.CopyAsSATFormula();
 
-                    editorClausesSource.Source = EditorFormula.Clauses;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
-
-                    editorVariablesSource.Source = EditorFormula.VariablesDict;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
+                    RefreshEditorViews();
                 }
             }
         }
 
-        private void EditorTestSimplifyAllClauses(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Simplify all clauses in the positive and negative lists of the selected variables
+        /// without updating the formula
+        /// </summary>
+        private void SimplifyAllClausesTest()
         {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorSimplificationResult.Clear();
 
-            int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            int pairsCount = selectedVariable.Contradictions;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
@@ -584,7 +595,10 @@ namespace SATCalculator {
             }
         }
 
-        private void EditorSimplifyAllClauses(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Simplify all clauses in the positive and negative lists of the selected variables
+        /// </summary>
+        private void SimplifyAllClauses()
         {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorSimplificationResult.Clear();
@@ -642,6 +656,14 @@ namespace SATCalculator {
             // create a new resolution formula
             EditorFormula = EditorFormula.CopyAsSATFormula();
 
+            RefreshEditorViews();
+        }
+
+        /// <summary>
+        /// Refresh the editor views
+        /// </summary>
+        private void RefreshEditorViews()
+        {
             editorClausesSource.Source = EditorFormula.Clauses;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
 
@@ -649,7 +671,10 @@ namespace SATCalculator {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
         }
 
-        private void EditorResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Resolution the selected clauses in the positive and negative lists of the selected variable
+        /// </summary>
+        private void ResolutionSelectedClauses()
         {
             var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
             var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
@@ -683,15 +708,15 @@ namespace SATCalculator {
                 // create a new resolution formula
                 EditorFormula = EditorFormula.CopyAsSATFormula();
 
-                editorClausesSource.Source = EditorFormula.Clauses;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
-
-                editorVariablesSource.Source = EditorFormula.VariablesDict;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
+                RefreshEditorViews();
             }
         }
 
-        private void EditorResolutionSelectedClausesTest()
+        /// <summary>
+        /// Simplify the selected clauses in the positive and negative lists of the selected variable
+        /// without updating the formula 
+        /// </summary>
+        private void ResolutionSelectedClausesTest()
         {
             EditorResolutionResults.Clear();
 
@@ -712,8 +737,12 @@ namespace SATCalculator {
                 }
             }
         }
-
-        private void EditorResolutionTestAllVariableClauses(object sender, RoutedEventArgs e)
+ 
+        /// <summary>
+        /// esolutionA all clauses in the positive and negative lists of the selected variables
+        /// without updating the formula
+        /// </summary>
+        private void ResolutionAllClausesTest()
         {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorResolutionResults.Clear();
@@ -735,7 +764,10 @@ namespace SATCalculator {
             }
         }
 
-        private void EditorResolutionAllVariableClauses(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Resolution all clauses in the positive and negative lists of the selected variables
+        /// </summary>
+        private void ResolutionAllClauses()
         {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorResolutionResults.Clear();
@@ -761,22 +793,39 @@ namespace SATCalculator {
             // create a new resolution formula
             EditorFormula = EditorFormula.CopyAsSATFormula();
 
-            editorClausesSource.Source = EditorFormula.Clauses;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesView"));
+            RefreshEditorViews();
+        }
 
-            editorVariablesSource.Source = EditorFormula.VariablesDict;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
+        /// <summary>
+        /// Save a formula in a file at sat format
+        /// </summary>
+        /// <param name="formula"></param>
+        private void SaveFormulaAsSAT(SATFormula formula)
+        {
+            List<string> lines = formula.GetSATLines();
+            SaveLines(lines, "sat");
         }
 
         /// <summary>
         /// Save a formula in a file at cnf format
         /// </summary>
         /// <param name="formula"></param>
-        private void SaveFormulaAsSAT(SATFormula formula)
+        private void SaveFormulaAsCNF(SATFormula formula)
+        {
+            List<string> lines = formula.GetCNFLines();
+            SaveLines(lines, "cnf");
+        }
+
+        /// <summary>
+        /// Save a list of lines in a file
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <param name="extension"></param>
+        private void SaveLines(List<string> lines, string extension)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "sat file|*.sat";
-            saveFileDialog.Title = "Save a sat file";
+            saveFileDialog.Filter = $"{extension} file|*.{extension}";
+            saveFileDialog.Title = $"Save a {extension} file";
             saveFileDialog.ShowDialog();
 
             // If the file name is not an empty string open it for saving.
@@ -784,23 +833,40 @@ namespace SATCalculator {
             {
                 StreamWriter file = new StreamWriter($"{saveFileDialog.FileName}");
 
-                List<string> cnfLines = formula.GetSATLines();
-
-                foreach (string line in cnfLines)
+                foreach (string line in lines)
                 {
-                    file.WriteLineAsync(line);
+                    file.WriteLine(line);
                 }
 
                 file.Close();
             }
         }
 
+        private List<Variable> GetAllowedVariables(SATFormula formula)
+        {
+            List<Variable> list = new List<Variable>();
 
+            try
+            {
+                list = new List<Variable>
+                    {
+                        formula.VariablesDict["x1"],
+                        formula.VariablesDict["x2"],
+                        formula.VariablesDict["x3"],
+                        formula.VariablesDict["x4"]
+                    };
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return list;
+        }
 
 
 
         #endregion
 
-        
+
     }
 }
