@@ -14,7 +14,7 @@
     </Window.Resources>
 
     <DockPanel>
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
             <Button Content="Load formula" Click="LoadFormula"/>
             <Button Content="Analyze" Click="AnalyzeFormula"/>
         </StackPanel>
@@ -405,17 +405,45 @@
 
                         <Grid Grid.Column="3">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding EditorSimplificationResult}">
+                            <ListView Grid.Row="0" ItemsSource="{Binding EditorSimplificationResult}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
+                            <WrapPanel Grid.Row="1" Orientation="Vertical">
+                                <StackPanel  Orientation="Horizontal">
+                                    <Button Content="Simp." Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
+                                    <Button Content="Test all" Click="EditorTestSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
+                                    <Button Content="Simp. all" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
+                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
+                            </WrapPanel>
+
+                            <ListView Grid.Row="2" ItemsSource="{Binding EditorResolutionResults}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <WrapPanel Grid.Row="3" Orientation="Vertical">
+                                <StackPanel  Orientation="Horizontal">
+                                    <Button Content="Res." Click="EditorResolutionSelectedClauses"/>
+                                    <Button Content="Test all" Click="EditorResolutionTestAllVariableClauses"/>
+                                    <Button Content="Res.all" Click="EditorResolutionAllVariableClauses"/>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
+                                      ToolTip="Keep the clauses that are TRUE after a resolution"/>
+                            </WrapPanel>
                         </Grid>
                         
                         <Grid Grid.Column="4">
@@ -436,154 +464,13 @@
                         </Grid>
 
                         <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
-                            <Button Content="Simplify selected clauses" Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
-                            <Button Content="Test simplify all clauses" Click="EditorTestSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
-                            <Button Content="Simplify all clauses" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
                             <Button Content="Reset" Click="ResetEditorFormula"/>
                             <Button Content="Delete selected clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
                             <Button Content="Save formula" Click="SaveEditorFormulaAsSAT"/>
-                            <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
-                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>
-
-                <TabItem Header="Resolution">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="200"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
-                                      ItemsSource="{Binding ResolutionVariablesView}" 
-                                      ScrollViewer.CanContentScroll="True" 
-                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="ResolutionRelatedClausesGrid_SelectionChanged"
-                                      SelectionMode="Single">
-                                <DataGrid.Resources>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.Resources>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="ResolutionSelectedClauseChanged">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}"
-                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="ResolutionSelectedClauseChanged">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <Grid Grid.Column="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionResults}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <Grid Grid.Column="4">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <ListView Grid.Row="1" ItemsSource="{Binding ResolutionClausesView}"
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding Name}" />
-                                    </GridView>
-
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
-                            <Button Content="Resolution selected clauses" Click="ResolutionSelectedClauses"/>
-                            <Button Content="Test all variable clauses" Click="ResolutionTestAllVariableClauses"/>
-                            <Button Content="Resolution all variable clauses" Click="ResolutionAllVariableClauses"/>
-                            <Button Content="Reset" Click="ResetResolutionFormula"/>
-                            <Button Content="Save formula" Click="SaveResolutionFormulaAsSAT"/>
-                            <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
-                                      ToolTip="Keep the clauses that are TRUE after a resolution"/>
-                        </StackPanel>
-                    </Grid>
-                </TabItem>
+                
             </TabControl>
         </Grid>
 
