@@ -381,7 +381,7 @@
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -397,7 +397,7 @@
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
