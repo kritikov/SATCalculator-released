@@ -153,7 +153,49 @@ namespace SATCalculator.Classes {
 
             return cnfLines;
         } 
+        /// <summary>
+        /// Get the literals of the clauses in a list to be saved in a SAT file
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetCNFLines()
+        {
+            List<string> cnfLines = new List<string>();
 
+            ReformatAsCnf();
+
+            foreach (var clause in this.Clauses)
+            {
+                string line = "";
+                foreach (var literal in clause.Literals)
+                {
+                    if (line != "")
+                        line += " ";
+
+                    if (literal.Sign == Sign.Positive)
+                        line += literal.Variable.CnfIndex.ToString();
+                    else
+                        line += "-" + literal.Variable.CnfIndex.ToString();
+                }
+                line += $" 0";
+                cnfLines.Add(line);
+            }
+
+            return cnfLines;
+        } 
+
+        /// <summary>
+        /// Recreates cnf indexes in the variables of the formula
+        /// </summary>
+        public void ReformatAsCnf()
+        {
+            int cnfIndex = 0;
+            foreach(var variableDict in VariablesDict)
+            {
+                Variable variable = variableDict.Value;
+                variable.CnfIndex = ++cnfIndex;
+                variable.Name = $"{Variable.DefaultVariableName}{cnfIndex}";
+            }
+        }
         #endregion
     }
 }
