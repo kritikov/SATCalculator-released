@@ -20,13 +20,14 @@ namespace SATCalculator.Classes {
 
         // usefull for fast searching
         public SATFormula ParentFormula { get; set; }
+        public List<Clause> ClausesWithAppearance { get; set; } = new List<Clause>();
         public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
         public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
 
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int ClausesWithPositiveReferencesCount => ClausesWithPositiveAppearance.Count;
         public int ClausesWithNegativeReferencesCount => ClausesWithNegativeAppearance.Count;
-        public int Contradictions => Math.Min(ClausesWithPositiveAppearance.Count, ClausesWithNegativeAppearance.Count);
+        public int Contrasts => Math.Min(ClausesWithPositiveAppearance.Count, ClausesWithNegativeAppearance.Count);
 
         #endregion
 

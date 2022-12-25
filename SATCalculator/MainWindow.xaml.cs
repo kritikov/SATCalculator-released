@@ -105,6 +105,15 @@ namespace SATCalculator {
             }
         }
 
+        private readonly CollectionViewSource editorClausesWithReferencesSource = new CollectionViewSource();
+        public ICollectionView EditorClausesWithReferencesView
+        {
+            get
+            {
+                return this.editorClausesWithReferencesSource.View;
+            }
+        }
+
         private readonly CollectionViewSource editorClausesWithPositiveReferencesSource = new CollectionViewSource();
         public ICollectionView EditorClausesWithPositiveReferencesView
         {
@@ -266,6 +275,9 @@ namespace SATCalculator {
 
                     EditorFormula.SelectedVariable= selectedItem.Value;
                     if (EditorFormula.SelectedVariable != null) {
+                        editorClausesWithReferencesSource.Source = EditorFormula.SelectedVariable.ClausesWithAppearance;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithReferencesView"));
+
                         editorClausesWithPositiveReferencesSource.Source = EditorFormula.SelectedVariable.ClausesWithPositiveAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithPositiveReferencesView"));
 
@@ -577,7 +589,7 @@ namespace SATCalculator {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorSimplificationResult.Clear();
 
-            int pairsCount = selectedVariable.Contradictions;
+            int pairsCount = selectedVariable.Contrasts;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
@@ -603,7 +615,7 @@ namespace SATCalculator {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorSimplificationResult.Clear();
 
-            int pairsCount = selectedVariable.Contradictions;
+            int pairsCount = selectedVariable.Contrasts;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
@@ -772,7 +784,7 @@ namespace SATCalculator {
             var selectedVariable = EditorFormula.SelectedVariable;
             EditorResolutionResults.Clear();
 
-            int pairsCount = selectedVariable.Contradictions;
+            int pairsCount = selectedVariable.Contrasts;
             for (int i = 0; i < pairsCount; i++)
             {
                 var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];

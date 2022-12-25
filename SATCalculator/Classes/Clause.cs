@@ -110,6 +110,7 @@ namespace SATCalculator.Classes {
                 this.Variables.Add(literal.Variable.Name, literal.Variable);
             }
 
+            literal.Variable.ClausesWithAppearance.Add(this);
             if (literal.Sign == Sign.Positive)
                 literal.Variable.ClausesWithPositiveAppearance.Add(this);
             else if (literal.Sign == Sign.Negative)

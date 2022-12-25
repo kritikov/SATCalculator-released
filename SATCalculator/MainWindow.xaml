@@ -308,8 +308,8 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
 
                         <Grid Grid.Column="0">
@@ -345,7 +345,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contradictions}" IsReadOnly="True">
+                                    <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style>
                                                 <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -377,6 +377,22 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
+                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithReferencesView}"
+                                      IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="clauses appearances" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                        
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
                             <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithPositiveReferencesView}"
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
                                 <ListView.View>
@@ -387,7 +403,7 @@
                             </ListView>
                         </Grid>
 
-                        <Grid Grid.Column="2">
+                        <Grid Grid.Column="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
@@ -403,7 +419,7 @@
                             </ListView>
                         </Grid>
 
-                        <Grid Grid.Column="3">
+                        <Grid Grid.Column="4">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
@@ -447,13 +463,13 @@
                             
                         </Grid>
                         
-                        <Grid Grid.Column="4">
+                        <Grid Grid.Column="5">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesView}"
+                            <ListView Grid.Row="0" ItemsSource="{Binding EditorClausesView}"
                                       IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
@@ -462,14 +478,15 @@
 
                                 </ListView.View>
                             </ListView>
+                            <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Delete" Width="60" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
+                                <Button Content="Reset" MaxWidth="60" Click="ResetEditorFormula"/>
+                                <Button Content="Save SAT" Click="SaveEditorFormulaAsSAT"/>
+                                <Button Content="Save CNF" Click="SaveEditorFormulaAsCNF"/>
+                            </WrapPanel>
                         </Grid>
 
-                        <StackPanel Grid.Column="5" Orientation="Vertical" HorizontalAlignment="Center">
-                            <Button Content="Reset" Click="ResetEditorFormula"/>
-                            <Button Content="Delete selected clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
-                            <Button Content="Save formula as SAT" Click="SaveEditorFormulaAsSAT"/>
-                            <Button Content="Save formula as CNF" Click="SaveEditorFormulaAsCNF"/>
-                        </StackPanel>
+                        
                     </Grid>
                 </TabItem>
                 

@@ -80,6 +80,7 @@ namespace SATCalculator.Classes {
                     literal.Variable = existingVariable;
                     clause.Variables.Add(existingVariable.Name, existingVariable);
 
+                    VariablesDict[literal.Variable.Name].ClausesWithAppearance.Add(clause);
                     if (literal.Sign == Sign.Positive)
                         VariablesDict[literal.Variable.Name].ClausesWithPositiveAppearance.Add(clause);
                     else if (literal.Sign == Sign.Negative)
