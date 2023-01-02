@@ -19,7 +19,8 @@ namespace SATCalculator.Classes
         public Guid Id = Guid.NewGuid();
         public string Name
         {
-            get {
+            get
+            {
                 if (CnfIndex == -1)
                     return "TRUE";
                 else if (CnfIndex == -2)

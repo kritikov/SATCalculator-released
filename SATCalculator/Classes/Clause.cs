@@ -4,18 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATCalculator.Classes {
-    public class Clause {
+namespace SATCalculator.Classes
+{
+    public class Clause
+    {
 
         #region Fields
 
         public SATFormula ParentFormula { get; set; } = new SATFormula();
         public List<Literal> Literals { get; set; } = new List<Literal>();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
-        public VariableValueEnum Valuation {
-            get {
+        public VariableValueEnum Valuation
+        {
+            get
+            {
 
-                if (Literals.Count(p=>p.Valuation == VariableValueEnum.True) == Literals.Count)
+                if (Literals.Count(p => p.Valuation == VariableValueEnum.True) == Literals.Count)
                     return VariableValueEnum.True;
 
                 if (Literals.Count(p => p.Valuation == VariableValueEnum.False) == Literals.Count)
@@ -25,11 +29,14 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public string Name {
-            get {
+        public string Name
+        {
+            get
+            {
 
                 string name = "";
-                foreach(var literal in Literals) {
+                foreach (var literal in Literals)
+                {
                     if (name != "")
                         name += " ∨ ";
 
@@ -54,7 +61,7 @@ namespace SATCalculator.Classes {
         {
             get
             {
-                var literalsList = Literals.OrderBy(p=>p.Variable.CnfIndex).Select(p => p.Value).ToArray();
+                var literalsList = Literals.OrderBy(p => p.Variable.CnfIndex).Select(p => p.Value).ToArray();
                 string keyText = string.Join(" ∨ ", literalsList);
                 return keyText;
             }
@@ -71,7 +78,7 @@ namespace SATCalculator.Classes {
             Variables = new Dictionary<string, Variable>();
         }
 
-        public Clause(List<string> parts) :base()
+        public Clause(List<string> parts) : base()
         {
             foreach (string part in parts)
             {
@@ -88,7 +95,8 @@ namespace SATCalculator.Classes {
 
         #region Methods
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return Name;
         }
 
@@ -187,7 +195,7 @@ namespace SATCalculator.Classes {
 
             return newClause;
         }
-       
+
         #endregion
 
 

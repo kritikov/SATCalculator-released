@@ -5,29 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace SATCalculator.Classes {
-    public class Literal {
+namespace SATCalculator.Classes
+{
+    public class Literal
+    {
 
         #region Fields
 
         public Clause ParentClause = new Clause();
         public Variable Variable { get; set; } = new Variable();
         public Sign Sign { get; set; }
-        public string Value {
-            get {
+        public string Value
+        {
+            get
+            {
                 if (Sign == Sign.Positive)
                     return Variable.Name;
                 else
                     return "-" + Variable.Name;
             }
         }
-        public VariableValueEnum Valuation {
-            get {
+        public VariableValueEnum Valuation
+        {
+            get
+            {
 
                 if (Variable == null || Variable?.Valuation == VariableValueEnum.Null)
                     return VariableValueEnum.Null;
 
-                if (Sign == Sign.Positive) {
+                if (Sign == Sign.Positive)
+                {
                     return Variable.Valuation;
                 }
 

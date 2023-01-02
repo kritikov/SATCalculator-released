@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using SATCalculator.Classes;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,23 +17,25 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Win32;
-using SATCalculator.Classes;
 
-namespace SATCalculator {
+namespace SATCalculator
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged {
+    public partial class MainWindow : Window, INotifyPropertyChanged
+    {
 
         #region VARIABLES AND NESTED CLASSES
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private SATFormula formula;
-        public SATFormula Formula {
+        public SATFormula Formula
+        {
             get => formula;
-            set {
+            set
+            {
                 formula = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Formula"));
             }
@@ -40,22 +44,28 @@ namespace SATCalculator {
         public SATFormula EditorFormula { get; set; } = new SATFormula();
 
         private readonly CollectionViewSource relatedClausesSource = new CollectionViewSource();
-        public ICollectionView RelatedClausesView {
-            get {
+        public ICollectionView RelatedClausesView
+        {
+            get
+            {
                 return this.relatedClausesSource.View;
             }
         }
 
         private readonly CollectionViewSource clausesWithPositiveReferencesSource = new CollectionViewSource();
-        public ICollectionView ClausesWithPositiveReferencesView {
-            get {
+        public ICollectionView ClausesWithPositiveReferencesView
+        {
+            get
+            {
                 return this.clausesWithPositiveReferencesSource.View;
             }
         }
 
         private readonly CollectionViewSource clausesWithNegativeReferencesSource = new CollectionViewSource();
-        public ICollectionView ClausesWithNegativeReferencesView {
-            get {
+        public ICollectionView ClausesWithNegativeReferencesView
+        {
+            get
+            {
                 return this.clausesWithNegativeReferencesSource.View;
             }
         }
@@ -145,9 +155,11 @@ namespace SATCalculator {
 
 
         private Variable selectedVariable;
-        public Variable SelectedVariable {
+        public Variable SelectedVariable
+        {
             get => selectedVariable;
-            set {
+            set
+            {
                 selectedVariable = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
             }
@@ -181,7 +193,8 @@ namespace SATCalculator {
 
         #region CONSTRUCTORS
 
-        public MainWindow() {
+        public MainWindow()
+        {
             InitializeComponent();
             this.DataContext = this;
         }
@@ -191,7 +204,8 @@ namespace SATCalculator {
 
         #region EVENTS
 
-        private void AnalyzeFormula(object sender, RoutedEventArgs e) {
+        private void AnalyzeFormula(object sender, RoutedEventArgs e)
+        {
             //AnalysisResults = Formula.Analyze();
         }
 
@@ -199,7 +213,7 @@ namespace SATCalculator {
         {
             var headerClicked = e.OriginalSource as GridViewColumnHeader;
             var control = (e.Source as ListView);
-            ListSortDirection direction;
+            //ListSortDirection direction;
 
             if (headerClicked != null)
             {
@@ -255,15 +269,19 @@ namespace SATCalculator {
             }
         }
 
-        private void EditorRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (EditorFormula != null) {
+        private void EditorRelatedClausesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EditorFormula != null)
+            {
                 var grid = sender as DataGrid;
 
-                if (grid.SelectedItem != null) {
+                if (grid.SelectedItem != null)
+                {
                     var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
 
-                    EditorFormula.SelectedVariable= selectedItem.Value;
-                    if (EditorFormula.SelectedVariable != null) {
+                    EditorFormula.SelectedVariable = selectedItem.Value;
+                    if (EditorFormula.SelectedVariable != null)
+                    {
                         editorClausesWithReferencesSource.Source = EditorFormula.SelectedVariable.ClausesWithAppearance;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithReferencesView"));
 
@@ -535,7 +553,7 @@ namespace SATCalculator {
                 }
             }
         }
- 
+
         /// <summary>
         /// esolutionA all clauses in the positive and negative lists of the selected variables
         /// without updating the formula
@@ -644,7 +662,7 @@ namespace SATCalculator {
                         formula.VariablesDict["x4"]
                     };
             }
-            catch (Exception ex)
+            catch
             {
 
             }

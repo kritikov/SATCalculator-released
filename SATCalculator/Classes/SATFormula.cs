@@ -5,7 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
-namespace SATCalculator.Classes {
+namespace SATCalculator.Classes
+{
 
     public class SATFormula : INotifyPropertyChanged
     {
@@ -36,7 +37,8 @@ namespace SATCalculator.Classes {
 
         #region Constructors
 
-        public SATFormula() {
+        public SATFormula()
+        {
 
         }
 
@@ -45,14 +47,16 @@ namespace SATCalculator.Classes {
 
         #region Methods
 
-        public override string ToString() {
+        public override string ToString()
+        {
             string value = "";
 
-            foreach (Clause clause in Clauses) {
+            foreach (Clause clause in Clauses)
+            {
                 if (value != "")
                     value += " ^ ";
 
-                value += $"({clause})" ;
+                value += $"({clause})";
             }
 
             value += ")";
@@ -71,7 +75,7 @@ namespace SATCalculator.Classes {
             clause.Variables.Clear();
 
             // update the formula variables list
-            foreach(var literal in clause.Literals)
+            foreach (var literal in clause.Literals)
             {
                 if (VariablesDict.ContainsKey(literal.Variable.Name))
                 {
@@ -135,23 +139,23 @@ namespace SATCalculator.Classes {
         {
             List<string> cnfLines = new List<string>();
 
-            foreach(var clause in this.Clauses)
+            foreach (var clause in this.Clauses)
             {
                 string line = "";
-                foreach(var literal in clause.Literals)
+                foreach (var literal in clause.Literals)
                 {
                     if (line != "")
                         line += " ";
 
                     line += literal.Value;
-                    
+
                 }
                 line += $" 0";
                 cnfLines.Add(line);
             }
 
             return cnfLines;
-        } 
+        }
         /// <summary>
         /// Get the literals of the clauses in a list to be saved in a SAT file
         /// </summary>
@@ -180,7 +184,7 @@ namespace SATCalculator.Classes {
             }
 
             return cnfLines;
-        } 
+        }
 
         /// <summary>
         /// Recreates cnf indexes in the variables of the formula
@@ -188,7 +192,7 @@ namespace SATCalculator.Classes {
         public void ReformatAsCnf()
         {
             int cnfIndex = 0;
-            foreach(var variableDict in VariablesDict)
+            foreach (var variableDict in VariablesDict)
             {
                 Variable variable = variableDict.Value;
                 variable.CnfIndex = ++cnfIndex;

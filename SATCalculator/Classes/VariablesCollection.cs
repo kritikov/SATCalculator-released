@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATCalculator.Classes {
-    
-    public class VariablesCollection {
+namespace SATCalculator.Classes
+{
+
+    public class VariablesCollection
+    {
 
         #region Fields
 
@@ -56,11 +58,13 @@ namespace SATCalculator.Classes {
 
         }
 
-        public VariablesCollection(Clause clause) : base() {
+        public VariablesCollection(Clause clause) : base()
+        {
 
             List<Literal> literalsOrdered = clause.Literals.OrderBy(p => p.Variable.Name).ToList();
 
-            foreach (var literal in literalsOrdered) {
+            foreach (var literal in literalsOrdered)
+            {
                 Items.Add(literal.Variable);
             }
 
@@ -72,7 +76,8 @@ namespace SATCalculator.Classes {
 
         #region Methods
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return Contents;
         }
 
