@@ -28,8 +28,8 @@ namespace SATCalculator {
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private SAT3Formula formula;
-        public SAT3Formula Formula {
+        private SATFormula formula;
+        public SATFormula Formula {
             get => formula;
             set {
                 formula = value;
@@ -132,17 +132,6 @@ namespace SATCalculator {
             }
         }
 
-        private ObservableCollection<Clause> editorSimplificationResult = new ObservableCollection<Clause>();
-        public ObservableCollection<Clause> EditorSimplificationResult
-        {
-            get => editorSimplificationResult;
-            set
-            {
-                editorSimplificationResult = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorSimplificationResult"));
-            }
-        }
-
         private ObservableCollection<Clause> editorResolutionResults = new ObservableCollection<Clause>();
         public ObservableCollection<Clause> EditorResolutionResults
         {
@@ -186,7 +175,7 @@ namespace SATCalculator {
         };
 
         public bool ResolutionKeepTrueClauses { get; set; } = true;
-        public bool EditorDeleteDuplicateClausesAfterSimplification { get; set; } = true;
+
         #endregion
 
 
@@ -292,26 +281,10 @@ namespace SATCalculator {
         {
             if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
             {
-                SimplifySelectedClausesTest();
                 ResolutionSelectedClausesTest();
             }
         }
 
-        private void EditorSimplifySelectedClauses(object sender, RoutedEventArgs e)
-        {
-            SimplifySelectedClauses();
-        }
-
-        private void EditorSimplifyAllClausesTest(object sender, RoutedEventArgs e)
-        {
-            SimplifyAllClausesTest();
-        }
-
-        private void EditorSimplifyAllClauses(object sender, RoutedEventArgs e)
-        {
-            SimplifyAllClauses();
-        }
-        
         private void EditorResolutionSelectedClauses(object sender, RoutedEventArgs e)
         {
             ResolutionSelectedClauses();
@@ -392,7 +365,7 @@ namespace SATCalculator {
             {
                 // Open document
                 string filename = dialog.FileName;
-                Formula = SAT3Formula.GetFromCnfFile(filename);
+                Formula = SATFormula.GetFromCnfFile(filename);
                 EditorFormula = Formula.CopyAsSATFormula();
 
                 // update the source of the views
@@ -488,188 +461,6 @@ namespace SATCalculator {
             return false;
 
         }
-       
-        /// <summary>
-        /// Simplify the selected clauses in the positive and negative lists of the selected variable
-        /// without updating the formula 
-        /// </summary>
-        private void SimplifySelectedClausesTest()
-        {
-            EditorSimplificationResult.Clear();
-
-            if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
-            {
-                // get the selected items from the lists to apply resolution
-                var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
-                var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
-                var selectedVariable = EditorFormula.SelectedVariable;
-
-                if (positiveClause != null && negativeClause != null)
-                {
-                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
-
-                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
-
-                    EditorSimplificationResult.Add(newClauses.Item1);
-                    EditorSimplificationResult.Add(newClauses.Item2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Simplify the selected clauses in the positive and negative lists of the selected variable
-        /// </summary>
-        private void SimplifySelectedClauses()
-        {
-            EditorSimplificationResult.Clear();
-
-            if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
-            {
-                // get the selected items from the lists to apply resolution
-                var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
-                var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
-                var selectedVariable = EditorFormula.SelectedVariable;
-
-                if (positiveClause != null && negativeClause != null)
-                {
-                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
-
-                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
-
-                    // add the new positive clause if it is different from the old positive clause
-                    if (newClauses.Item1.NameSorted != positiveClause.NameSorted)
-                    {
-                        // remove old positive clause from the formula
-                        EditorFormula.Clauses.Remove(positiveClause);
-
-                        // add new positive clause in the formula if it is allowed
-                        if (EditorDeleteDuplicateClausesAfterSimplification)
-                        {
-                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item1.NameSorted))
-                                EditorFormula.Clauses.Add(newClauses.Item1);
-                        }
-                        else
-                        {
-                            EditorFormula.Clauses.Add(newClauses.Item1);
-                        }
-                    }
-
-                    // add the new negative clause if it is different from the old negative clause
-                    if (newClauses.Item2.NameSorted != negativeClause.NameSorted)
-                    {
-                        // remove old negative clause from the formula
-                        EditorFormula.Clauses.Remove(negativeClause);
-
-                        // add new negative clause in the formula if it is allowed
-                        if (EditorDeleteDuplicateClausesAfterSimplification)
-                        {
-                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item2.NameSorted))
-                                EditorFormula.Clauses.Add(newClauses.Item2);
-                        }
-                        else
-                        {
-                            EditorFormula.Clauses.Add(newClauses.Item2);
-                        }
-                    }
-
-                    // create a new resolution formula
-                    EditorFormula = EditorFormula.CopyAsSATFormula();
-
-                    RefreshEditorViews();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Simplify all clauses in the positive and negative lists of the selected variables
-        /// without updating the formula
-        /// </summary>
-        private void SimplifyAllClausesTest()
-        {
-            var selectedVariable = EditorFormula.SelectedVariable;
-            EditorSimplificationResult.Clear();
-
-            int pairsCount = selectedVariable.Contrasts;
-            for (int i = 0; i < pairsCount; i++)
-            {
-                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
-
-                if (positiveClause != null && negativeClause != null)
-                {
-                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
-
-                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
-
-                    EditorSimplificationResult.Add(newClauses.Item1);
-                    EditorSimplificationResult.Add(newClauses.Item2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Simplify all clauses in the positive and negative lists of the selected variables
-        /// </summary>
-        private void SimplifyAllClauses()
-        {
-            var selectedVariable = EditorFormula.SelectedVariable;
-            EditorSimplificationResult.Clear();
-
-            int pairsCount = selectedVariable.Contrasts;
-            for (int i = 0; i < pairsCount; i++)
-            {
-                var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-                var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
-
-                if (positiveClause != null && negativeClause != null)
-                {
-                    List<Variable> allowedVariables = GetAllowedVariables(EditorFormula);
-
-                    var newClauses = Clause.Simplification(selectedVariable, positiveClause, negativeClause, allowedVariables);
-
-                    // add the new positive clause if it is different from the old positive clause
-                    if (newClauses.Item1.NameSorted != positiveClause.NameSorted)
-                    {
-                        // remove old positive clause from the formula
-                        EditorFormula.Clauses.Remove(positiveClause);
-
-                        // add new positive clause in the formula if it is allowed
-                        if (EditorDeleteDuplicateClausesAfterSimplification)
-                        {
-                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item1.NameSorted))
-                                EditorFormula.Clauses.Add(newClauses.Item1);
-                        }
-                        else
-                        {
-                            EditorFormula.Clauses.Add(newClauses.Item1);
-                        }
-                    }
-
-                    // add the new negative clause if it is different from the old negative clause
-                    if (newClauses.Item2.NameSorted != negativeClause.NameSorted)
-                    {
-                        // remove old negative clause from the formula
-                        EditorFormula.Clauses.Remove(negativeClause);
-
-                        // add new negative clause in the formula if it is allowed
-                        if (EditorDeleteDuplicateClausesAfterSimplification)
-                        {
-                            if (!EditorFormula.ClausesDict.Contains(newClauses.Item2.NameSorted))
-                                EditorFormula.Clauses.Add(newClauses.Item2);
-                        }
-                        else
-                        {
-                            EditorFormula.Clauses.Add(newClauses.Item2);
-                        }
-                    }
-                }
-            }
-
-            // create a new resolution formula
-            EditorFormula = EditorFormula.CopyAsSATFormula();
-
-            RefreshEditorViews();
-        }
 
         /// <summary>
         /// Refresh the editor views
@@ -725,7 +516,7 @@ namespace SATCalculator {
         }
 
         /// <summary>
-        /// Simplify the selected clauses in the positive and negative lists of the selected variable
+        /// Resolution the selected clauses in the positive and negative lists of the selected variable
         /// without updating the formula 
         /// </summary>
         private void ResolutionSelectedClausesTest()

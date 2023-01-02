@@ -423,8 +423,6 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
                             <ListView Grid.Row="0" ItemsSource="{Binding EditorResolutionResults}">
@@ -443,24 +441,6 @@
                                 <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
                                       ToolTip="Keep the clauses that are TRUE after a resolution"/>
                             </WrapPanel>
-                            
-                            <ListView Grid.Row="2" ItemsSource="{Binding EditorSimplificationResult}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="simplification result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                            <WrapPanel Grid.Row="3" Orientation="Vertical">
-                                <StackPanel  Orientation="Horizontal">
-                                    <Button Content="Simp." Click="EditorSimplifySelectedClauses" ToolTip="Simplify the selected clauses without changing the original formula"/>
-                                    <Button Content="Test all" Click="EditorSimplifyAllClausesTest" ToolTip="Simplify all clauses as appear in the lists without changing the original formula"/>
-                                    <Button Content="Simp. all" Click="EditorSimplifyAllClauses" ToolTip="Simplify all clauses as appear in the lists"/>
-                                </StackPanel>
-                                <CheckBox IsChecked="{Binding EditorDeleteDuplicateClausesAfterSimplification, Mode=TwoWay}" Content="Delete duplicate clauses"
-                                      ToolTip="Delete the duplicate clauses after a simplification from the formula"/>
-                            </WrapPanel>
-                            
                         </Grid>
                         
                         <Grid Grid.Column="5">

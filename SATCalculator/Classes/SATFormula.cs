@@ -197,6 +197,47 @@ namespace SATCalculator.Classes {
                 variable.Name = $"{Variable.DefaultVariableName}{cnfIndex}";
             }
         }
+
+        /// <summary>
+        /// Create an instance of SAT3Formula from a cnf file
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static SATFormula GetFromCnfFile(string filename)
+        {
+
+            SATFormula formula = new SATFormula();
+
+            try
+            {
+                string[] lines = File.ReadAllLines(filename);
+
+                foreach (string line in lines)
+                {
+                    var lineParts = line.Trim().Split(' ').ToList();
+
+                    if (lineParts[0] == "c")
+                        continue;
+
+                    if (lineParts[0] == "p")
+                        continue;
+
+                    if (lineParts[0] == "0")
+                        continue;
+
+                    formula.AddClause(lineParts, VariableCreationType.Cnf);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+
+            return formula;
+        }
+
         #endregion
     }
 }
