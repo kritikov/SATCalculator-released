@@ -61,7 +61,7 @@ namespace SATCalculator.Classes {
         }
 
         /// <summary>
-        /// Add a clause to the formula. Thiw method will synchronize also the variables of the formula and the literals
+        /// Add a clause to the formula. This method will synchronize also the variables of the formula and the literals
         /// </summary>
         /// <param name="clause"></param>
         public void AddClause(Clause clause)
@@ -70,12 +70,12 @@ namespace SATCalculator.Classes {
             this.Clauses.Add(clause);
             clause.Variables.Clear();
 
-            // update the variables list
+            // update the formula variables list
             foreach(var literal in clause.Literals)
             {
                 if (VariablesDict.ContainsKey(literal.Variable.Name))
                 {
-                    // if the variable is allready exists in the list then use this one in the literal and its clause
+                    // if the variable allready exists in the list then use this one in the literal and its clause
                     Variable existingVariable = VariablesDict[literal.Variable.Name];
                     literal.Variable = existingVariable;
                     clause.Variables.Add(existingVariable.Name, existingVariable);
