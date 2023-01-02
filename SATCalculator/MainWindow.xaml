@@ -14,21 +14,27 @@
     </Window.Resources>
 
     <DockPanel>
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-            <Button Content="Load formula" Click="LoadFormula"/>
-            <Button Content="Analyze" Click="AnalyzeFormula"/>
-        </StackPanel>
-
+        
         <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
             <TextBox Background="Transparent" BorderThickness="0" Text="{Binding Formula.DisplayValue, Mode=OneWay}" 
                      IsReadOnly="True" TextWrapping="NoWrap" />
         </ScrollViewer>
+
+        <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <TextBlock Text="{Binding Message}"/>
+        </StatusBar>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <Button Content="Load formula" Click="LoadFormula"/>
+            <Button Content="Analyze" Click="AnalyzeFormula"/>
+        </StackPanel>
 
         <Grid>
             <TabControl>
                 <TabItem Header="Formula">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
@@ -49,7 +55,7 @@
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Clause" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                        <GridViewColumn Header="Clause" Width="250" DisplayMemberBinding="{Binding Name}" />
                                     </GridView>
 
                                 </ListView.View>
@@ -57,45 +63,6 @@
                         </Grid>
 
                         <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="variables: "/>
-                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <ListView Grid.Row="1"
-                                      ItemsSource="{Binding Formula.VariablesDict}" 
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <!--<GridViewColumn Header="Key" DisplayMemberBinding="{Binding Key}" />-->
-                                        <GridViewColumn Header="Name" Width="50" DisplayMemberBinding="{Binding Value.Name}" />
-                                        <GridViewColumn Header="Refs" Width="40" DisplayMemberBinding="{Binding Value.References}" />
-                                        <GridViewColumn Header="+" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithPositiveReferencesCount}" />
-                                        <GridViewColumn Header="-" Width="40" DisplayMemberBinding="{Binding Value.ClausesWithNegativeReferencesCount}" />
-                                    </GridView>
-
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-                    </Grid>
-                </TabItem>
-
-                <TabItem Header="Tester">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
@@ -162,7 +129,7 @@
                             </DataGrid>
                         </Grid>
 
-                        <Grid Grid.Column="1">
+                        <Grid Grid.Column="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
@@ -194,64 +161,7 @@
                             </ListView>
                         </Grid>
 
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="related variables"/>
-                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding RelatedVariablesView}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Variable" Width="100" DisplayMemberBinding="{Binding Value.Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
                         <Grid Grid.Column="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="clauses with pos. refs."/>
-                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithPositiveReferencesView}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <Grid Grid.Column="4">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="clauses with neg. refs."/>
-                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesWithNegativeReferencesView}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Clause" Width="auto" DisplayMemberBinding="{Binding Name}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <Grid Grid.Column="5">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
@@ -297,7 +207,7 @@
                                 </ListView.ItemContainerStyle>-->
                             </ListView>
                         </Grid>
-
+                        
                     </Grid>
                 </TabItem>
 
@@ -467,6 +377,10 @@
 
                         
                     </Grid>
+                </TabItem>
+
+                <TabItem Header="Logs">
+                    <ListBox ItemsSource="{Binding LogsView}"/>
                 </TabItem>
                 
             </TabControl>
