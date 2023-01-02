@@ -62,20 +62,6 @@ namespace SATCalculator.Classes {
             }
         }
 
-        public Literal(string displayValue, VariableCreationType creationType) : base()
-        {
-            Variable = new Variable(displayValue, creationType);
-
-            if (displayValue[0] == '-')
-            {
-                Sign = Sign.Negative;
-            }
-            else
-            {
-                Sign = Sign.Positive;
-            }
-        }
-
         #endregion
 
         #region Methods

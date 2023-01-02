@@ -461,8 +461,7 @@
                             <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button Content="Delete" Width="60" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
                                 <Button Content="Reset" MaxWidth="60" Click="ResetEditorFormula"/>
-                                <Button Content="Save SAT" Click="SaveEditorFormulaAsSAT"/>
-                                <Button Content="Save CNF" Click="SaveEditorFormulaAsCNF"/>
+                                <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
                             </WrapPanel>
                         </Grid>
 

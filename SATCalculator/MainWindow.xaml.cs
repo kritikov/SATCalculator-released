@@ -330,11 +330,6 @@ namespace SATCalculator {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorVariablesView"));
         }
 
-        private void SaveEditorFormulaAsSAT(object sender, RoutedEventArgs e)
-        {
-            SaveFormulaAsSAT(EditorFormula);
-        }
-
         private void SaveEditorFormulaAsCNF(object sender, RoutedEventArgs e)
         {
             SaveFormulaAsCNF(EditorFormula);
@@ -597,16 +592,6 @@ namespace SATCalculator {
             EditorFormula = EditorFormula.CopyAsSATFormula();
 
             RefreshEditorViews();
-        }
-
-        /// <summary>
-        /// Save a formula in a file at sat format
-        /// </summary>
-        /// <param name="formula"></param>
-        private void SaveFormulaAsSAT(SATFormula formula)
-        {
-            List<string> lines = formula.GetSATLines();
-            SaveLines(lines, "sat");
         }
 
         /// <summary>

@@ -97,9 +97,9 @@ namespace SATCalculator.Classes {
             ClausesDict.Add(clause.NameSorted);
         }
 
-        public void AddClause(List<string> parts, VariableCreationType creationType)
+        public void AddClause(List<string> parts)
         {
-            Clause clause = new Clause(parts, creationType);
+            Clause clause = new Clause(parts);
             this.AddClause(clause);
         }
 
@@ -117,12 +117,10 @@ namespace SATCalculator.Classes {
                 parts = new List<string>();
                 foreach (var literal in clause.Literals)
                 {
-                    string pros = literal.Sign == Sign.Positive ? "+" : "-";
-
-                    parts.Add($"{pros}{literal.Variable.Name}");
+                    parts.Add(literal.Value);
                 }
 
-                formula.AddClause(parts, VariableCreationType.Default);
+                formula.AddClause(parts);
 
             }
 
@@ -162,7 +160,7 @@ namespace SATCalculator.Classes {
         {
             List<string> cnfLines = new List<string>();
 
-            ReformatAsCnf();
+            //ReformatAsCnf();
 
             foreach (var clause in this.Clauses)
             {
@@ -194,7 +192,6 @@ namespace SATCalculator.Classes {
             {
                 Variable variable = variableDict.Value;
                 variable.CnfIndex = ++cnfIndex;
-                variable.Name = $"{Variable.DefaultVariableName}{cnfIndex}";
             }
         }
 
@@ -206,7 +203,6 @@ namespace SATCalculator.Classes {
         /// <exception cref="Exception"></exception>
         public static SATFormula GetFromCnfFile(string filename)
         {
-
             SATFormula formula = new SATFormula();
 
             try
@@ -217,23 +213,22 @@ namespace SATCalculator.Classes {
                 {
                     var lineParts = line.Trim().Split(' ').ToList();
 
-                    if (lineParts[0] == "c")
-                        continue;
+                    if (lineParts.Count > 0)
+                    {
+                        if (lineParts[0].Length > 0)
+                        {
+                            if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
+                                continue;
 
-                    if (lineParts[0] == "p")
-                        continue;
-
-                    if (lineParts[0] == "0")
-                        continue;
-
-                    formula.AddClause(lineParts, VariableCreationType.Cnf);
+                            formula.AddClause(lineParts);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
 
             return formula;
         }
