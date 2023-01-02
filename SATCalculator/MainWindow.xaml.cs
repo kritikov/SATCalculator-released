@@ -648,29 +648,6 @@ namespace SATCalculator
             }
         }
 
-        private List<Variable> GetAllowedVariables(SATFormula formula)
-        {
-            List<Variable> list = new List<Variable>();
-
-            try
-            {
-                list = new List<Variable>
-                    {
-                        formula.VariablesDict["x1"],
-                        formula.VariablesDict["x2"],
-                        formula.VariablesDict["x3"],
-                        formula.VariablesDict["x4"]
-                    };
-            }
-            catch
-            {
-
-            }
-            return list;
-        }
-
-
-
         #endregion
 
 
