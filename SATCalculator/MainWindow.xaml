@@ -10,193 +10,203 @@
 
     <Window.Resources>
         <Converters:ValuationToColor x:Key="ValuationToColor"/>
-
     </Window.Resources>
 
     <DockPanel>
-        
-        <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-            <TextBox Background="Transparent" BorderThickness="0" Text="{Binding Formula.DisplayValue, Mode=OneWay}" 
-                     IsReadOnly="True" TextWrapping="NoWrap" />
-        </ScrollViewer>
-
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <TextBlock Text="{Binding Message}"/>
         </StatusBar>
 
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-            <Button Content="Load formula" Click="LoadFormula"/>
-            <Button Content="Analyze" Click="AnalyzeFormula"/>
-        </StackPanel>
-
         <Grid>
-            <TabControl>
-                <TabItem Header="Formula">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="clauses: "/>
-                                <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding Formula.Clauses}"
-                                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Clause" Width="250" DisplayMemberBinding="{Binding Name}" />
-                                    </GridView>
+                <DataGrid Grid.Row="0" AutoGenerateColumns="False" 
+                                      ItemsSource="{Binding ClausesView}" 
+                                      ScrollViewer.CanContentScroll="True" 
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                       CanUserAddRows="False"
+                                      SelectionMode="Single">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Clauses" Width="*" Binding="{Binding NameSorted}" IsReadOnly="True" SortMemberPath="NameSorted">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Left" />
+                                    <Setter Property="TextBlock.Padding" Value="10, 1, 5, 1" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Load" Click="LoadFormula"/>
+                    <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
+                    <Button Content="Reset" MaxWidth="60" Click="ResetEditorFormula"/>
+                    <Button Content="Delete clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
+                </WrapPanel>
+            </Grid>
 
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
+            <Grid Grid.Column="1">
+                <TabControl >
+                    <TabItem Header="Formula">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="variables: "/>
                                 <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
+                                </TextBlock>
+                                <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
                                       ItemsSource="{Binding VariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
-                                <DataGrid.Resources>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.Resources>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTemplateColumn Header="Value" IsReadOnly="False" Width="100">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox Grid.Column="4"
+                                    <DataGrid.Resources>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.Resources>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTemplateColumn Header="Value" IsReadOnly="False" Width="100">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox Grid.Column="4"
                                                       ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
                                                         Path=DataContext.VariableValues}"
                                                       DisplayMemberPath="ValueAsString"
                                                       SelectedValuePath="Value"
                                                       SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                                </ComboBox>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
+                                                    </ComboBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
 
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="related clauses"/>
                                 <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
-                            </TextBlock>
-                            <ListView Grid.Row="1" Name="RelatedClausesList" ItemsSource="{Binding RelatedClausesView}" 
+                                </TextBlock>
+                                <ListView Grid.Row="1" Name="RelatedClausesList" ItemsSource="{Binding RelatedClausesView}" 
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Clause" Width="120">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        <TextBlock Text=" ∨ "/>
-                                                        <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        <TextBlock Text=" ∨ "/>
-                                                        <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Clause" Width="120">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                            <TextBlock Text=" ∨ "/>
+                                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                            <TextBlock Text=" ∨ "/>
+                                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
 
-                        <Grid Grid.Column="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <ListView Grid.Row="1" ItemsSource="{Binding ClausesView}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Clause" Width="120" >
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        <TextBlock Text=" ∨ "/>
-                                                        <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        <TextBlock Text=" ∨ "/>
-                                                        <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Valuation" Width="90" DisplayMemberBinding="{Binding Valuation}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Valuation}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                                <!--<ListView.ItemContainerStyle>
+                                </TextBlock>
+                                <ListView Grid.Row="1" ItemsSource="{Binding FormulaClausesView}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Clause" Width="120" >
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                            <TextBlock Text=" ∨ "/>
+                                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                            <TextBlock Text=" ∨ "/>
+                                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Valuation" Width="90" DisplayMemberBinding="{Binding Valuation}">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Valuation}" Foreground="{Binding Valuation, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                    <!--<ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Style.Resources>
                                             <Style TargetType="TextBlock">
@@ -205,185 +215,238 @@
                                         </Style.Resources>
                                     </Style>
                                 </ListView.ItemContainerStyle>-->
-                            </ListView>
+                                </ListView>
+                            </Grid>
+
                         </Grid>
-                        
-                    </Grid>
-                </TabItem>
+                    </TabItem>
 
-                <TabItem Header="Editor">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <TabItem Header="Editor">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
+                                <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
                                       ItemsSource="{Binding EditorVariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                                       SelectionChanged="EditorRelatedClausesGrid_SelectionChanged"
                                       SelectionMode="Single">
-                                <DataGrid.Resources>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.Resources>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
+                                    <DataGrid.Resources>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.Resources>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
 
-                                    <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style>
-                                                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
+                                        <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
 
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithReferencesView}"
+                                <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithReferencesView}"
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="clauses appearances" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-                        
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="clauses appearances" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithPositiveReferencesView}"
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithPositiveReferencesView}"
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="clauses with pos. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
 
-                        <Grid Grid.Column="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithNegativeReferencesView}"
+                                <ListView Grid.Row="1" ItemsSource="{Binding EditorClausesWithNegativeReferencesView}"
                                       IsSynchronizedWithCurrentItem="True" SelectionChanged="EditorSelectedClauseChanged">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="clauses with neg. refs." Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
 
-                        <Grid Grid.Column="4">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
 
-                            <ListView Grid.Row="0" ItemsSource="{Binding EditorResolutionResults}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                            <WrapPanel Grid.Row="1" Orientation="Vertical">
-                                <StackPanel  Orientation="Horizontal">
-                                    <Button Content="Res." Click="EditorResolutionSelectedClauses"/>
-                                    <Button Content="Test all" Click="EditorResolutionAllClausesTest"/>
-                                    <Button Content="Res.all" Click="EditorResolutionAllClauses"/>
-                                </StackPanel>
-                                <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
+                                <ListView Grid.Row="0" ItemsSource="{Binding EditorResolutionResults}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="resolution result" Width="140" DisplayMemberBinding="{Binding NameSorted}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <WrapPanel Grid.Row="1" Orientation="Vertical">
+                                    <StackPanel  Orientation="Horizontal">
+                                        <Button Content="Res." Click="EditorResolutionSelectedClauses"/>
+                                        <Button Content="Test all" Click="EditorResolutionAllClausesTest"/>
+                                        <Button Content="Res.all" Click="EditorResolutionAllClauses"/>
+                                    </StackPanel>
+                                    <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
                                       ToolTip="Keep the clauses that are TRUE after a resolution"/>
-                            </WrapPanel>
+                                </WrapPanel>
+                            </Grid>
+
+                            
                         </Grid>
-                        
-                        <Grid Grid.Column="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
+                    </TabItem>
 
-                            <ListView Grid.Row="0" ItemsSource="{Binding EditorClausesView}"
-                                      IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Formula clauses" Width="160" DisplayMemberBinding="{Binding NameSorted}" />
-                                    </GridView>
+                    <TabItem Header="Algorithm">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                                </ListView.View>
-                            </ListView>
-                            <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Delete" Width="60" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
-                                <Button Content="Reset" MaxWidth="60" Click="ResetEditorFormula"/>
-                                <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
-                            </WrapPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid Grid.Row="0" AutoGenerateColumns="False" 
+                                      ItemsSource="{Binding EditorVariablesView}" 
+                                      ScrollViewer.CanContentScroll="True" 
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                                      SelectionMode="Single">
+                                    <DataGrid.Resources>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.Resources>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="Pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Analyze" Click="AnalyzeFormula"/>
+                                </WrapPanel>
+                            </Grid>
                         </Grid>
+                    </TabItem>
 
-                        
-                    </Grid>
-                </TabItem>
+                    <TabItem Header="Logs">
+                        <ListBox ItemsSource="{Binding LogsView}"/>
+                    </TabItem>
 
-                <TabItem Header="Logs">
-                    <ListBox ItemsSource="{Binding LogsView}"/>
-                </TabItem>
-                
-            </TabControl>
+                </TabControl>
+            </Grid>
+            
         </Grid>
 
     </DockPanel>

@@ -33,7 +33,6 @@ namespace SATCalculator.Classes
         {
             get
             {
-
                 string name = "";
                 foreach (var literal in Literals)
                 {
