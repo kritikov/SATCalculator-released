@@ -55,8 +55,8 @@
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Load" Click="LoadFormula"/>
                     <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
-                    <Button Content="Reset" MaxWidth="60" Click="ResetEditorFormula"/>
-                    <Button Content="Delete clause" Click="EditorDeleteSelectedClauseFromFormula" ToolTip="Delete the selected clause from the formula"/>
+                    <Button Content="Reset" MaxWidth="60" Click="ResetFormula"/>
+                    <Button Content="Delete clause" Click="DeleteSelectedClause" ToolTip="Delete the selected clause from the formula"/>
                 </WrapPanel>
             </Grid>
 
@@ -86,7 +86,7 @@
                                       ItemsSource="{Binding VariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="RelatedClausesGrid_SelectionChanged"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionChanged="FormulaVariablesGrid_SelectionChanged"
                                       SelectionMode="Single">
                                     <DataGrid.Resources>
                                         <Style TargetType="DataGridColumnHeader">
@@ -146,23 +146,48 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="related clauses"/>
-                                <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                                    <Run Text="related clauses"/>
+                                    <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
                                 </TextBlock>
-                                <ListView Grid.Row="1" Name="RelatedClausesList" ItemsSource="{Binding RelatedClausesView}" 
+                                
+                                <ListView Grid.Row="1" ItemsSource="{Binding FormulaRelatedClausesView}" 
                                       GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="Clause" Width="120">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                            <TextBlock Text=" ∨ "/>
-                                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                            <TextBlock Text=" ∨ "/>
-                                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        </StackPanel>
+                                                        <ItemsControl ItemsSource="{Binding Literals}">
+                                                            <ItemsControl.Template>
+                                                                <ControlTemplate TargetType="ItemsControl">
+                                                                    <ItemsPresenter/>
+                                                                </ControlTemplate>
+                                                            </ItemsControl.Template>
+                                                            
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text=" ∨ "/>
+                                                                        <TextBlock Text="{Binding Path=Value}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+
+                                                        <DataTemplate.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                                <Setter Property="Padding" Value="2"/>
+                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
+                                                            </Style>
+                                                        </DataTemplate.Resources>
+
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -187,13 +212,37 @@
                                             <GridViewColumn Header="Clause" Width="120" >
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding Literals[0].Value}" Foreground="{Binding Literals[0].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                            <TextBlock Text=" ∨ "/>
-                                                            <TextBlock Text="{Binding Literals[1].Value}" Foreground="{Binding Literals[1].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                            <TextBlock Text=" ∨ "/>
-                                                            <TextBlock Text="{Binding Literals[2].Value}" Foreground="{Binding Literals[2].Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                        </StackPanel>
+                                                        <ItemsControl ItemsSource="{Binding Literals}">
+                                                            <ItemsControl.Template>
+                                                                <ControlTemplate TargetType="ItemsControl">
+                                                                    <ItemsPresenter/>
+                                                                </ControlTemplate>
+                                                            </ItemsControl.Template>
+
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text=" ∨ "/>
+                                                                        <TextBlock Text="{Binding Path=Value}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+
+                                                        <DataTemplate.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                                <Setter Property="Padding" Value="2"/>
+                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
+                                                            </Style>
+                                                        </DataTemplate.Resources>
+
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -206,15 +255,6 @@
                                             </GridViewColumn>
                                         </GridView>
                                     </ListView.View>
-                                    <!--<ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Style.Resources>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                            </Style>
-                                        </Style.Resources>
-                                    </Style>
-                                </ListView.ItemContainerStyle>-->
                                 </ListView>
                             </Grid>
 
@@ -239,11 +279,11 @@
                                 </Grid.RowDefinitions>
 
                                 <DataGrid Grid.Row="1" AutoGenerateColumns="False" 
-                                      ItemsSource="{Binding EditorVariablesView}" 
+                                      ItemsSource="{Binding VariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                                      SelectionChanged="EditorRelatedClausesGrid_SelectionChanged"
+                                      SelectionChanged="EditorVariablesGrid_SelectionChanged"
                                       SelectionMode="Single">
                                     <DataGrid.Resources>
                                         <Style TargetType="DataGridColumnHeader">
@@ -383,7 +423,7 @@
                                 </Grid.RowDefinitions>
 
                                 <DataGrid Grid.Row="0" AutoGenerateColumns="False" 
-                                      ItemsSource="{Binding EditorVariablesView}" 
+                                      ItemsSource="{Binding VariablesView}" 
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto" 

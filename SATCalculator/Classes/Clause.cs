@@ -18,8 +18,7 @@ namespace SATCalculator.Classes
         {
             get
             {
-
-                if (Literals.Count(p => p.Valuation == VariableValueEnum.True) == Literals.Count)
+                if (Literals.Any(p => p.Valuation == VariableValueEnum.True))
                     return VariableValueEnum.True;
 
                 if (Literals.Count(p => p.Valuation == VariableValueEnum.False) == Literals.Count)
