@@ -57,29 +57,44 @@ namespace SATCalculator.Classes
 
         public Variable(string value) : base()
         {
-            if (value == "TRUE" || value == "+TRUE" || value == "-TRUE")
+            try
             {
-                CnfIndex = -1;
-            }
-            else if (value == "FALSE" || value == "+FALSE" || value == "-FALSE")
-            {
-                CnfIndex = -2;
-            }
-            else
-            {
-                value = value.Trim();
-
-                if (value[0] == '-' || value[0] == '+')
+                if (value == "TRUE" || value == "+TRUE" || value == "-TRUE")
                 {
-                    string text = value.Substring(1, value.Length - 1);
-                    string numbers = new String(text.Where(Char.IsDigit).ToArray());
-                    CnfIndex = Convert.ToInt32(numbers);
+                    CnfIndex = -1;
+                }
+                else if (value == "FALSE" || value == "+FALSE" || value == "-FALSE")
+                {
+                    CnfIndex = -2;
                 }
                 else
                 {
-                    string numbers = new String(value.Where(Char.IsDigit).ToArray());
-                    CnfIndex = Convert.ToInt32(numbers);
+                    value = value.Trim();
+
+                    if (value[0] == '-' || value[0] == '+')
+                    {
+                        string text = value.Substring(1, value.Length - 1);
+                        string numbers = new String(text.Where(Char.IsDigit).ToArray());
+
+                        if (String.IsNullOrEmpty(numbers))
+                            numbers = "0";
+
+                        CnfIndex = Convert.ToInt32(numbers);
+                    }
+                    else
+                    {
+                        string numbers = new String(value.Where(Char.IsDigit).ToArray());
+
+                        if (String.IsNullOrEmpty(numbers))
+                            numbers = "0";
+
+                        CnfIndex = Convert.ToInt32(numbers);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Logs.Write(ex.Message);
             }
         }
 

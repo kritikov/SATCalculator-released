@@ -57,15 +57,22 @@ namespace SATCalculator.Classes
 
         public Literal(string displayValue) : base()
         {
-            Variable = new Variable(displayValue);
+            try
+            {
+                Variable = new Variable(displayValue);
 
-            if (displayValue[0] == '-')
-            {
-                Sign = Sign.Negative;
+                if (displayValue[0] == '-')
+                {
+                    Sign = Sign.Negative;
+                }
+                else
+                {
+                    Sign = Sign.Positive;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Sign = Sign.Positive;
+                Logs.Write(ex.Message);
             }
         }
 

@@ -34,7 +34,7 @@
                                       ScrollViewer.CanContentScroll="True" 
                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                       CanUserAddRows="False"
+                                       CanUserAddRows="False" IsSynchronizedWithCurrentItem="True"
                                       SelectionMode="Single">
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader">
@@ -54,6 +54,7 @@
                 </DataGrid>
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Load" Click="LoadFormula"/>
+                    <Button Content="New" Click="NewFormula"/>
                     <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
                     <Button Content="Reset" MaxWidth="60" Click="ResetFormula"/>
                     <Button Content="Delete clause" Click="DeleteSelectedClause" ToolTip="Delete the selected clause from the formula"/>

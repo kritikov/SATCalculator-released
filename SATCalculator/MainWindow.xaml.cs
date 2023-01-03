@@ -190,6 +190,25 @@ namespace SATCalculator
 
         #region EVENTS
 
+        private void NewFormula(object sender, RoutedEventArgs e)
+        {
+            CreateNewFormula();
+        }
+
+        private void LoadFormula(object sender, RoutedEventArgs e)
+        {
+            LoadFormula();
+        }
+
+        private void ResetFormula(object sender, RoutedEventArgs e)
+        {
+            Formula = formulaOriginal.CopyAsSATFormula();
+
+            SelectedVariable = null;
+
+            RefreshViews();
+        }
+
         private void AnalyzeFormula(object sender, RoutedEventArgs e)
         {
             //AnalysisResults = Formula.Analyze();
@@ -301,15 +320,6 @@ namespace SATCalculator
             }
         }
 
-        private void ResetFormula(object sender, RoutedEventArgs e)
-        {
-            Formula = formulaOriginal.CopyAsSATFormula();
-
-            SelectedVariable = null;
-
-            RefreshViews();
-        }
-
         private void SaveEditorFormulaAsCNF(object sender, RoutedEventArgs e)
         {
             SaveFormulaAsCNF(Formula);
@@ -320,7 +330,7 @@ namespace SATCalculator
 
         #region METHODS
 
-        private void LoadFormula(object sender, RoutedEventArgs e)
+        private void LoadFormula()
         {
             try
             {
@@ -346,7 +356,6 @@ namespace SATCalculator
                     formulaOriginal = SATFormula.GetFromCnfFile(filename);
                     Formula = formulaOriginal.CopyAsSATFormula();
                     SelectedVariable = null;
-
                     RefreshViews();
                 }
                 else
@@ -358,8 +367,9 @@ namespace SATCalculator
             {
                 Message = ex.Message;
             }
-            
         }
+
+        
 
         /// <summary>
         /// Sort a ListView by a field
@@ -443,14 +453,28 @@ namespace SATCalculator
         /// </summary>
         private void RefreshEditorViews()
         {
-            editorClausesWithReferencesSource.Source = Formula.SelectedVariable.ClausesWithAppearance;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithReferencesView"));
+            try
+            {
+                if (Formula.SelectedVariable != null)
+                {
+                    editorClausesWithReferencesSource.Source = Formula.SelectedVariable.ClausesWithAppearance;
+                    editorClausesWithPositiveReferencesSource.Source = Formula.SelectedVariable.ClausesWithPositiveAppearance;
+                    editorClausesWithNegativeReferencesSource.Source = Formula.SelectedVariable.ClausesWithNegativeAppearance;
+                }
+                else
+                {
+                    editorClausesWithReferencesSource.Source = null;
+                    editorClausesWithPositiveReferencesSource.Source = null;
+                    editorClausesWithNegativeReferencesSource.Source = null;
+                }
 
-            editorClausesWithPositiveReferencesSource.Source = Formula.SelectedVariable.ClausesWithPositiveAppearance;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithPositiveReferencesView"));
-
-            editorClausesWithNegativeReferencesSource.Source = Formula.SelectedVariable.ClausesWithNegativeAppearance;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithNegativeReferencesView"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithReferencesView"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithPositiveReferencesView"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithNegativeReferencesView"));
+            }
+            catch (Exception ex) {
+                Message = ex.Message;
+            }
         }
 
          /// <summary>
@@ -654,6 +678,20 @@ namespace SATCalculator
             catch(Exception ex)
             {
                 Message = ex.Message;
+            }
+        }
+
+        private void CreateNewFormula()
+        {
+            NewFormulaWindow newFormulaWindow = new NewFormulaWindow();
+            newFormulaWindow.ShowDialog();
+
+            if (newFormulaWindow.FormulaCnfLines.Count > 0)
+            {
+                formulaOriginal = SATFormula.GetFromCnf(newFormulaWindow.FormulaCnfLines);
+                Formula = formulaOriginal.CopyAsSATFormula();
+                SelectedVariable = null;
+                RefreshViews();
             }
         }
 

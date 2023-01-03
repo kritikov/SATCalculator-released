@@ -101,26 +101,33 @@ namespace SATCalculator.Classes
         // Add a literal in the clause and update its variable with proper clauses references
         public void AddLiteral(Literal literal)
         {
-            literal.ParentClause = this;
-            Literals.Add(literal);
-
-            if (Variables.ContainsKey(literal.Variable.Name))
+            try
             {
-                // if the variable is allready exists in the clause then use this one in the literal
-                Variable existingVariable = Variables[literal.Variable.Name];
-                literal.Variable = existingVariable;
-            }
-            else
-            {
-                // if the variable is not created yet in the clause then add it from the literal
-                this.Variables.Add(literal.Variable.Name, literal.Variable);
-            }
+                literal.ParentClause = this;
+                Literals.Add(literal);
 
-            literal.Variable.ClausesWithAppearance.Add(this);
-            if (literal.Sign == Sign.Positive)
-                literal.Variable.ClausesWithPositiveAppearance.Add(this);
-            else if (literal.Sign == Sign.Negative)
-                literal.Variable.ClausesWithNegativeAppearance.Add(this);
+                if (Variables.ContainsKey(literal.Variable.Name))
+                {
+                    // if the variable is allready exists in the clause then use this one in the literal
+                    Variable existingVariable = Variables[literal.Variable.Name];
+                    literal.Variable = existingVariable;
+                }
+                else
+                {
+                    // if the variable is not created yet in the clause then add it from the literal
+                    this.Variables.Add(literal.Variable.Name, literal.Variable);
+                }
+
+                literal.Variable.ClausesWithAppearance.Add(this);
+                if (literal.Sign == Sign.Positive)
+                    literal.Variable.ClausesWithPositiveAppearance.Add(this);
+                else if (literal.Sign == Sign.Negative)
+                    literal.Variable.ClausesWithNegativeAppearance.Add(this);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+            }
         }
 
         /// return a clause from the resolution of two others 
@@ -128,67 +135,74 @@ namespace SATCalculator.Classes
         {
             Clause newClause = new Clause();
 
-            if (positiveClause.Literals.Count == 1 && negativeClause.Literals.Count == 1 &&
-                positiveClause.Literals[0].Variable == variable &&
-                negativeClause.Literals[0].Variable == variable)
+            try
             {
-                Literal newLiteral = new Literal("FALSE");
-                newClause = new Clause();
-                newClause.AddLiteral(newLiteral);
-                return newClause;
-            }
-
-            // check the literals in the clause with the positive reference of the variable
-            foreach (var literal in positiveClause.Literals)
-            {
-                if (literal.Variable != variable)
+                if (positiveClause.Literals.Count == 1 && negativeClause.Literals.Count == 1 &&
+                    positiveClause.Literals[0].Variable == variable &&
+                    negativeClause.Literals[0].Variable == variable)
                 {
-                    // if the literal doesnt exists allready in the new clause add it
-                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                    if (existingLiteral == null)
+                    Literal newLiteral = new Literal("FALSE");
+                    newClause = new Clause();
+                    newClause.AddLiteral(newLiteral);
+                    return newClause;
+                }
+
+                // check the literals in the clause with the positive reference of the variable
+                foreach (var literal in positiveClause.Literals)
+                {
+                    if (literal.Variable != variable)
                     {
-                        newClause.Literals.Add(literal);
-                    }
-                    else
-                    {
-                        // if the literal exists in the new clause but with opposite value
-                        // then the clause is always true and can be discarded
-                        if (existingLiteral.Sign != literal.Sign)
+                        // if the literal doesnt exists allready in the new clause add it
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
                         {
-                            Literal newLiteral = new Literal("TRUE");
-                            newClause = new Clause();
-                            newClause.AddLiteral(newLiteral);
-                            return newClause;
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            // if the literal exists in the new clause but with opposite value
+                            // then the clause is always true and can be discarded
+                            if (existingLiteral.Sign != literal.Sign)
+                            {
+                                Literal newLiteral = new Literal("TRUE");
+                                newClause = new Clause();
+                                newClause.AddLiteral(newLiteral);
+                                return newClause;
+                            }
+                        }
+                    }
+                }
+
+                // check the literals in the clause with the negative reference of the variable
+                foreach (var literal in negativeClause.Literals)
+                {
+                    if (literal.Variable != variable)
+                    {
+                        // if the literal doesnt exists allready in the new clause add it
+                        Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
+                        if (existingLiteral == null)
+                        {
+                            newClause.Literals.Add(literal);
+                        }
+                        else
+                        {
+                            // if the literal exists in the new clause but with opposite value
+                            // then the clause is always true and can be discarded
+                            if (existingLiteral.Sign != literal.Sign)
+                            {
+                                //newClause.Literals.Remove(existingLiteral);
+                                Literal newLiteral = new Literal("TRUE");
+                                newClause = new Clause();
+                                newClause.AddLiteral(newLiteral);
+                                return newClause;
+                            }
                         }
                     }
                 }
             }
-
-            // check the literals in the clause with the negative reference of the variable
-            foreach (var literal in negativeClause.Literals)
+            catch (Exception ex)
             {
-                if (literal.Variable != variable)
-                {
-                    // if the literal doesnt exists allready in the new clause add it
-                    Literal existingLiteral = newClause.Literals.Where(p => p.Variable == literal.Variable).FirstOrDefault();
-                    if (existingLiteral == null)
-                    {
-                        newClause.Literals.Add(literal);
-                    }
-                    else
-                    {
-                        // if the literal exists in the new clause but with opposite value
-                        // then the clause is always true and can be discarded
-                        if (existingLiteral.Sign != literal.Sign)
-                        {
-                            //newClause.Literals.Remove(existingLiteral);
-                            Literal newLiteral = new Literal("TRUE");
-                            newClause = new Clause();
-                            newClause.AddLiteral(newLiteral);
-                            return newClause;
-                        }
-                    }
-                }
+                Logs.Write(ex.Message);
             }
 
             return newClause;

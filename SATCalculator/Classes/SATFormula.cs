@@ -32,6 +32,7 @@ namespace SATCalculator.Classes
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
             }
         }
+
         #endregion
 
 
@@ -214,6 +215,36 @@ namespace SATCalculator.Classes
                 string[] lines = File.ReadAllLines(filename);
 
                 foreach (string line in lines)
+                {
+                    var lineParts = line.Trim().Split(' ').ToList();
+
+                    if (lineParts.Count > 0)
+                    {
+                        if (lineParts[0].Length > 0)
+                        {
+                            if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
+                                continue;
+
+                            formula.AddClause(lineParts);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return formula;
+        }
+
+        public static SATFormula GetFromCnf(List<string> cnfLines)
+        {
+            SATFormula formula = new SATFormula();
+
+            try
+            {
+                foreach (string line in cnfLines)
                 {
                     var lineParts = line.Trim().Split(' ').ToList();
 
