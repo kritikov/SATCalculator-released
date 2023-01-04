@@ -268,6 +268,10 @@ namespace SATCalculator.Classes
             return formula;
         }
 
+        
+
         #endregion
     }
+
+    
 }

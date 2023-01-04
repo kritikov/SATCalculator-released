@@ -211,7 +211,7 @@ namespace SATCalculator
 
         private void AnalyzeFormula(object sender, RoutedEventArgs e)
         {
-            //AnalysisResults = Formula.Analyze();
+            AnalyzeFormula(Formula);
         }
 
         public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
@@ -695,6 +695,14 @@ namespace SATCalculator
             }
         }
 
+        /// <summary>
+        /// Analyze a formula with the algorithm
+        /// </summary>
+        /// <param name="formula"></param>
+        public void AnalyzeFormula(SATFormula formula)
+        {
+            AnalysisResults analysisResults = AnalysisResults.Analyze(Formula);
+        }
         #endregion
 
     }

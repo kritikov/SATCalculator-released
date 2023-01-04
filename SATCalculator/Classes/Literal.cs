@@ -25,6 +25,16 @@ namespace SATCalculator.Classes
                     return "-" + Variable.Name;
             }
         }
+        public string CnfName
+        {
+            get
+            {
+                if (Sign == Sign.Positive)
+                    return Variable.CnfIndex.ToString();
+                else
+                    return "-" + Variable.CnfIndex.ToString();
+            }
+        }
         public VariableValueEnum Valuation
         {
             get
