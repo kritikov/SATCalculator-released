@@ -172,7 +172,7 @@
     </Style>
 
     <!-- TextBlock -->
-    <Style TargetType="TextBlock" x:Key="InformationsTextBlock">
+    <Style TargetType="TextBlock" x:Key="InformationsTextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="Padding" Value="5"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="#FF475AA5"/>
@@ -180,4 +180,21 @@
         <Setter Property="TextAlignment" Value="Center"/>
     </Style>
 
+    <Style TargetType="DataGrid" x:Key="DataGridStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
+        <Setter Property="SelectionUnit" Value="FullRow"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Style.Resources>
+            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+        </Style.Resources>
+    </Style>
+    
 </ResourceDictionary>
