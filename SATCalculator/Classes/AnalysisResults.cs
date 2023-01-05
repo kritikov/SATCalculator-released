@@ -47,7 +47,9 @@ namespace SATCalculator.Classes
             foreach (var variable in variables)
             {
                 VariablePair variablePair = new VariablePair();
-                Variable variableParent = null;
+                Variable variableParent = new Variable();
+                variableParent.CnfIndex = variable.CnfIndex;
+                variablePair.Variable = variableParent;
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the clauses in the proper list
@@ -60,25 +62,28 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            // create a clause based on the original clause
-                            positiveClause.AddLiteral(new Literal(literal.Value));
+                            Literal newLiteral = new Literal(literal.Value);
 
                             if (literal.Variable != variable)
-                            {
-                                reducedClause.AddLiteral(new Literal(literal.Value));
-                            }
-                            else if (variableParent == null)
-                            {
-                                Literal removedLiteral = new Literal(literal.Value);
-                                variableParent = removedLiteral.Variable;
-                            }
+                                reducedClause.AddLiteral(newLiteral);
+                            else
+                                newLiteral.Variable = variableParent;
+
+                            positiveClause.AddLiteral(newLiteral);
                         }
-                        variablePair.Variable = variableParent;
+                        
                         variablePair.PositiveClauses.Add(positiveClause);
                         variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
                         clause.Used = true;
                     }
                 }
+
+                //if (reducedClause.Literals.Count == 0)
+                //{
+                //    Literal newLiteral = new Literal($"+{variableParent}");
+                //    newLiteral.Variable = variableParent;
+                //}
+
 
                 // get the clauses with the negative appearances, remove the negative appearances of the variable
                 // and add the clauses in the proper list
@@ -91,24 +96,40 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            // create a clause based on the original clause
-                            negativeClause.AddLiteral(new Literal(literal.Value));
+                            Literal newLiteral = new Literal(literal.Value);
 
                             if (literal.Variable != variable)
-                            {
-                                reducedClause.AddLiteral(new Literal(literal.Value));
-                            }
-                            else if (variableParent == null)
-                            {
-                                Literal removedLiteral = new Literal(literal.Value);
-                                variableParent = removedLiteral.Variable;
-                            }
+                                reducedClause.AddLiteral(newLiteral);
+                            else
+                                newLiteral.Variable = variableParent;
+
+                            negativeClause.AddLiteral(newLiteral);
                         }
-                        variablePair.Variable = variableParent;
+
                         variablePair.NegativeClauses.Add(negativeClause);
                         variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
+                        clause.Used = true;
                     }
                 }
+
+                if (variablePair.ClausesWhenPositiveIsTrue.Count == 0)
+                {
+                    Literal newLiteral = new Literal($"+{variableParent}");
+                    newLiteral.Variable = variableParent;
+                    Clause reducedClause = new Clause();
+                    reducedClause.AddLiteral(newLiteral);
+                    variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
+                }
+
+                if (variablePair.ClausesWhenNegativeIsTrue.Count == 0)
+                {
+                    Literal newLiteral = new Literal($"-{variableParent}");
+                    newLiteral.Variable = variableParent;
+                    Clause reducedClause = new Clause();
+                    reducedClause.AddLiteral(newLiteral);
+                    variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
+                }
+
                 analysisResults.VariablePairList.Add(variablePair);
             }
 
