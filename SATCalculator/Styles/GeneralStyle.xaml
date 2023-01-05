@@ -187,7 +187,7 @@
         <Setter Property="SelectionUnit" Value="FullRow"/>
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="HeadersVisibility" Value="Column"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         <Style.Resources>

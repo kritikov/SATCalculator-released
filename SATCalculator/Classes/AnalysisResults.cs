@@ -10,7 +10,7 @@ namespace SATCalculator.Classes
     {
         #region VARIABLES AND NESTED CLASSES
 
-        public List<VariablePair> VariablePairList = new List<VariablePair>();
+        public List<VariablePair> VariablePairList { get; set; } = new List<VariablePair>();
 
         #endregion
 
@@ -39,6 +39,10 @@ namespace SATCalculator.Classes
             // get a list with the variables sorted by the contrasts?
             var variables = formula.VariablesDict.Select(p => p.Value).OrderByDescending(p => p.Contrasts).ToList();
 
+            // reset the used flag on formula clauses
+            foreach(var clause in formula.Clauses)
+                clause.Used = false;
+
             // create a list with the variables and their connected clauses
             foreach (var variable in variables)
             {
@@ -49,55 +53,61 @@ namespace SATCalculator.Classes
                 // and add the clauses in the proper list
                 foreach (var clause in variable.ClausesWithPositiveAppearance)
                 {
-                    Clause positiveClause = new Clause();
-                    Clause reducedClause = new Clause();
-
-                    foreach(var literal in clause.Literals)
+                    if (!clause.Used)
                     {
-                        // create a clause based on the original clause
-                        positiveClause.AddLiteral(new Literal(literal.Value));
+                        Clause positiveClause = new Clause();
+                        Clause reducedClause = new Clause();
 
-                        if (literal.Variable != variable)
+                        foreach (var literal in clause.Literals)
                         {
-                            reducedClause.AddLiteral(new Literal(literal.Value));
+                            // create a clause based on the original clause
+                            positiveClause.AddLiteral(new Literal(literal.Value));
+
+                            if (literal.Variable != variable)
+                            {
+                                reducedClause.AddLiteral(new Literal(literal.Value));
+                            }
+                            else if (variableParent == null)
+                            {
+                                Literal removedLiteral = new Literal(literal.Value);
+                                variableParent = removedLiteral.Variable;
+                            }
                         }
-                        else if (variableParent == null)
-                        {
-                            Literal removedLiteral = new Literal(literal.Value);
-                            variableParent = removedLiteral.Variable;
-                        }
+                        variablePair.Variable = variableParent;
+                        variablePair.PositiveClauses.Add(positiveClause);
+                        variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
+                        clause.Used = true;
                     }
-                    variablePair.Variable = variableParent;
-                    variablePair.PositiveClauses.Add(positiveClause);
-                    variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
-
                 }
 
                 // get the clauses with the negative appearances, remove the negative appearances of the variable
                 // and add the clauses in the proper list
                 foreach (var clause in variable.ClausesWithNegativeAppearance)
                 {
-                    Clause negativeClause = new Clause();
-                    Clause reducedClause = new Clause();
-
-                    foreach (var literal in clause.Literals)
+                    if (!clause.Used)
                     {
-                        // create a clause based on the original clause
-                        negativeClause.AddLiteral(new Literal(literal.Value));
+                        Clause negativeClause = new Clause();
+                        Clause reducedClause = new Clause();
 
-                        if (literal.Variable != variable)
+                        foreach (var literal in clause.Literals)
                         {
-                            reducedClause.AddLiteral(new Literal(literal.Value));
+                            // create a clause based on the original clause
+                            negativeClause.AddLiteral(new Literal(literal.Value));
+
+                            if (literal.Variable != variable)
+                            {
+                                reducedClause.AddLiteral(new Literal(literal.Value));
+                            }
+                            else if (variableParent == null)
+                            {
+                                Literal removedLiteral = new Literal(literal.Value);
+                                variableParent = removedLiteral.Variable;
+                            }
                         }
-                        else if (variableParent == null)
-                        {
-                            Literal removedLiteral = new Literal(literal.Value);
-                            variableParent = removedLiteral.Variable;
-                        }
+                        variablePair.Variable = variableParent;
+                        variablePair.NegativeClauses.Add(negativeClause);
+                        variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
                     }
-                    variablePair.Variable = variableParent;
-                    variablePair.NegativeClauses.Add(negativeClause);
-                    variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
                 }
                 analysisResults.VariablePairList.Add(variablePair);
             }
@@ -111,15 +121,11 @@ namespace SATCalculator.Classes
 
     public class VariablePair
     {
-        public Variable Variable = new Variable();
-        public List<Clause> PositiveClauses = new List<Clause>();
-        public List<Clause> NegativeClauses = new List<Clause>();
-        public List<Clause> ClausesWhenPositiveIsTrue = new List<Clause>();
-        public List<Clause> ClausesWhenNegativeIsTrue = new List<Clause>();
+        public Variable Variable { get; set; } = new Variable();
+        public List<Clause> PositiveClauses { get; set; } = new List<Clause>();
+        public List<Clause> NegativeClauses { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWhenPositiveIsTrue { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWhenNegativeIsTrue { get; set; } = new List<Clause>();
 
-        public VariablePair()
-        {
-            
-        }
     }
 }

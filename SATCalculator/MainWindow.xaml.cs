@@ -62,6 +62,17 @@ namespace SATCalculator
 
         public SATFormula AlgorithmFormula { get; set; } = new SATFormula();
 
+        private AnalysisResults algorithmAnalysisResults = new AnalysisResults();
+        public AnalysisResults AlgorithmAnalysisResults
+        {
+            get => algorithmAnalysisResults;
+            set
+            {
+                algorithmAnalysisResults = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResults"));
+            }
+        }
+
         private ObservableCollection<Clause> editorResolutionResults = new ObservableCollection<Clause>();
         public ObservableCollection<Clause> EditorResolutionResults
         {
@@ -167,6 +178,15 @@ namespace SATCalculator
             get
             {
                 return this.editorClausesWithNegativeReferencesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource algorithmAnalysisResultsSource = new CollectionViewSource();
+        public ICollectionView AlgorithmAnalysisResultsView
+        {
+            get
+            {
+                return this.algorithmAnalysisResultsSource.View;
             }
         }
 
@@ -482,7 +502,8 @@ namespace SATCalculator
         /// </summary>
         private void RefreshAlgorithmViews()
         {
-
+            algorithmAnalysisResultsSource.Source = AlgorithmAnalysisResults.VariablePairList;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResultsView"));
         }
 
         /// <summary>
@@ -701,7 +722,9 @@ namespace SATCalculator
         /// <param name="formula"></param>
         public void AnalyzeFormula(SATFormula formula)
         {
-            AnalysisResults analysisResults = AnalysisResults.Analyze(Formula);
+            AlgorithmAnalysisResults = AnalysisResults.Analyze(Formula);
+
+            RefreshAlgorithmViews();
         }
         #endregion
 

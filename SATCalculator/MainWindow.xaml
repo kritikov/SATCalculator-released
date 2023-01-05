@@ -494,12 +494,10 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Grid>
+                            <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="auto"/>
@@ -552,6 +550,106 @@
                                     <Button Content="Analyze" Click="AnalyzeFormula"/>
                                 </WrapPanel>
                             </Grid>
+
+                            <TabControl Grid.Column="1">
+                                <TabItem Header="Step 1">
+                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmAnalysisResultsView}" >
+                                        <DataGrid.Resources>
+                                            <Style TargetType="{x:Type DataGridCell}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                                        <Setter Property="Background" Value="Transparent" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="steps" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <DataTemplate.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                                <Setter Property="Margin" Value="5"/>
+                                                            </Style>
+                                                            <Style TargetType="{x:Type ListView}">
+                                                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                                                <Setter Property="Background" Value="Transparent" />
+                                                                <Setter Property="BorderBrush" Value="Transparent" />
+
+                                                                <Style.Resources>
+                                                                    <Style TargetType="{x:Type ListViewItem}">
+                                                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                                                        <Setter Property="Background" Value="Bisque" />
+                                                                        <Setter Property="BorderBrush" Value="Black" />
+                                                                        <Setter Property="Padding" Value="0" />
+                                                                        <Setter Property="Margin" Value="0, 2, 0, 2" />
+                                                                    </Style>
+                                                                </Style.Resources>
+                                                            </Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="BorderBrush" Value="Black"/>
+                                                                <Setter Property="BorderThickness" Value="1"/>
+                                                                <Setter Property="Background" Value="AliceBlue"/>
+                                                                <Setter Property="CornerRadius" Value="8"/>
+                                                            </Style>
+                                                        </DataTemplate.Resources>
+                                                        
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="1*"/>
+                                                                <ColumnDefinition Width="1*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0" Orientation="Vertical">
+                                                                <Border Width="50">
+                                                                    <TextBlock>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                    </TextBlock>
+                                                                </Border>
+                                                                <TextBlock Text="|"/>
+                                                                <ListView ItemsSource="{Binding PositiveClauses}"/>
+                                                                <TextBlock Text="|"/>
+                                                                <Border Width="150">
+                                                                    <TextBlock>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        <Run Text="=TRUE"/>
+                                                                    </TextBlock>
+                                                                </Border>
+                                                                <TextBlock Text="|" />
+                                                                <ListView ItemsSource="{Binding ClausesWhenPositiveIsTrue}"/>
+                                                            </StackPanel>
+
+                                                            <StackPanel Grid.Column="1" Orientation="Vertical">
+                                                                <Border Width="50">
+                                                                    <TextBlock>
+                                                                        <Run Text="-"/>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                    </TextBlock>
+                                                                </Border>
+                                                                <TextBlock Text="|"/>
+                                                                <ListView ItemsSource="{Binding NegativeClauses}"/>
+                                                                <TextBlock Text="|"/>
+                                                                <Border Width="150">
+                                                                    <TextBlock>
+                                                                        <Run Text="-"/>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        <Run Text="=TRUE"/>
+                                                                    </TextBlock>
+                                                                </Border>
+                                                                <TextBlock Text="|"/>
+                                                                <ListView ItemsSource="{Binding ClausesWhenNegativeIsTrue}"/>
+                                                            </StackPanel>
+                                                            
+                                                        </Grid>
+
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </TabItem>
+                            </TabControl>
                         </Grid>
                     </TabItem>
 

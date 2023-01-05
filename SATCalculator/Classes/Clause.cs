@@ -65,6 +65,8 @@ namespace SATCalculator.Classes
             }
         }
 
+        public bool Used { get; set; } = false;
+
         #endregion
 
 
