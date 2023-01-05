@@ -85,6 +85,7 @@ namespace SATCalculator
         private bool FormatFormulaStringAsCnf()
         {
             Message = "";
+            //(1, 4)^(2, -4)^(-2, 5)^(1, -5)^(-1, 6)^(3,-6)^(-1,7)^(-7,-3)
 
             try
             {
@@ -104,6 +105,7 @@ namespace SATCalculator
                         return false;
                     }
 
+                    newClause = newClause.Substring(1, newClause.Length-2);
                     var literalsArray = newClause.Split(',');
 
                     // check if the clause is empty

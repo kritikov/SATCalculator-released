@@ -632,9 +632,8 @@
                                                                 <TextBlock Text="|"/>
                                                                 <Border Width="150">
                                                                     <TextBlock>
-                                                                        <Run Text="-"/>
                                                                         <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
-                                                                        <Run Text="=TRUE"/>
+                                                                        <Run Text="=FALSE"/>
                                                                     </TextBlock>
                                                                 </Border>
                                                                 <TextBlock Text="|"/>
