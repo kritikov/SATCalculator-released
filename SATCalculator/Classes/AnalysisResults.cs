@@ -12,6 +12,9 @@ namespace SATCalculator.Classes
 
         public List<VariablePair> VariablePairList { get; set; } = new List<VariablePair>();
 
+        public int VariablesCount { get; set; } = 0;
+        public Dictionary<string, EndingVariablesAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariablesAppearances>();
+
         #endregion
 
 
@@ -33,6 +36,7 @@ namespace SATCalculator.Classes
         public static AnalysisResults Analyze(SATFormula formula)
         {
             AnalysisResults analysisResults = new AnalysisResults();
+            analysisResults.VariablesCount = formula.VariablesCount;
 
             // check the number of the variables per clause
 
@@ -77,13 +81,6 @@ namespace SATCalculator.Classes
                         clause.Used = true;
                     }
                 }
-
-                //if (reducedClause.Literals.Count == 0)
-                //{
-                //    Literal newLiteral = new Literal($"+{variableParent}");
-                //    newLiteral.Variable = variableParent;
-                //}
-
 
                 // get the clauses with the negative appearances, remove the negative appearances of the variable
                 // and add the clauses in the proper list
@@ -133,6 +130,31 @@ namespace SATCalculator.Classes
                 analysisResults.VariablePairList.Add(variablePair);
             }
 
+            // create the array with the appearances
+            //foreach(var pair in analysisResults.VariablePairList)
+            //{
+            //    EndingVariablesAppearances endingClausesAppearances = new EndingVariablesAppearances();
+            //    endingClausesAppearances.Variable = pair.Variable;
+
+            //    foreach(var item in pair.ClausesWhenPositiveIsTrue)
+            //    {
+
+            //    }
+            //}
+            
+
+            //if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(variable.Name))
+            //{
+            //    endingClausesAppearances = analysisResults.EndingVariablesAppearancesDict[variable.Name];
+            //}
+            //else
+            //{
+            //    endingClausesAppearances = new EndingVariablesAppearances();
+            //    endingClausesAppearances.Variable = variableParent;
+            //    analysisResults.EndingVariablesAppearancesDict[variable.Name] = endingClausesAppearances;
+            //}
+
+
             return analysisResults;
         }
 
@@ -147,6 +169,14 @@ namespace SATCalculator.Classes
         public List<Clause> NegativeClauses { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenPositiveIsTrue { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenNegativeIsTrue { get; set; } = new List<Clause>();
+    }
 
+    public class EndingVariablesAppearances
+    {
+        public Variable Variable { get; set; } = new Variable();
+        public Literal FirstAppearance { get; set; }
+        public Literal SecondAppearance { get; set; }
+
+        public List<int> AppearancesPerVariable { get; set; }
     }
 }

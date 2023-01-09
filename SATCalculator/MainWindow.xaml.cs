@@ -181,12 +181,12 @@ namespace SATCalculator
             }
         }
 
-        private readonly CollectionViewSource algorithmAnalysisResultsSource = new CollectionViewSource();
-        public ICollectionView AlgorithmAnalysisResultsView
+        private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
+        public ICollectionView AlgorithmFlowView
         {
             get
             {
-                return this.algorithmAnalysisResultsSource.View;
+                return this.algorithmFlowSource.View;
             }
         }
 
@@ -502,8 +502,8 @@ namespace SATCalculator
         /// </summary>
         private void RefreshAlgorithmViews()
         {
-            algorithmAnalysisResultsSource.Source = AlgorithmAnalysisResults.VariablePairList;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResultsView"));
+            algorithmFlowSource.Source = AlgorithmAnalysisResults.VariablePairList;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmFlowView"));
         }
 
         /// <summary>

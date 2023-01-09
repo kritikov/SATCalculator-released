@@ -552,8 +552,8 @@
                             </Grid>
 
                             <TabControl Grid.Column="1">
-                                <TabItem Header="Step 1">
-                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmAnalysisResultsView}" >
+                                <TabItem Header="flow">
+                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" >
                                         <DataGrid.Resources>
                                             <Style TargetType="{x:Type DataGridCell}">
                                                 <Style.Triggers>
@@ -648,6 +648,11 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </TabItem>
+
+                                <TabItem Header="Problems">
+                                    
+                                </TabItem>
+                            
                             </TabControl>
                         </Grid>
                     </TabItem>
