@@ -13,7 +13,8 @@ namespace SATCalculator.Classes
         public List<VariablePair> VariablePairList { get; set; } = new List<VariablePair>();
 
         public int VariablesCount { get; set; } = 0;
-        public Dictionary<string, EndingVariablesAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariablesAppearances>();
+        public Dictionary<string, EndingVariableAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariableAppearances>();
+        public Dictionary<Variable, int> VariablesColumns = new Dictionary<Variable, int>();
 
         #endregion
 
@@ -131,50 +132,99 @@ namespace SATCalculator.Classes
             }
 
             // create the array with the appearances
-            List<string> headers = new List<string>();
-            List<string[]> appearances = new List<string[]>();
 
-            // create the headers
-            headers.Add("first appearance");
-            headers.Add("second appearance");
+            // create the columns
+            int i = 0;
             foreach (var pair in analysisResults.VariablePairList)
             {
-                headers.Add(pair.Variable.Name + "n");
-                headers.Add(pair.Variable.Name + "c");
-                headers.Add("-" + pair.Variable.Name + "n");
-                headers.Add("-" + pair.Variable.Name + "c");
+                analysisResults.VariablesColumns[pair.Variable] = i++;
             }
 
-            // create the values
-            foreach(var pair in analysisResults.VariablePairList)
+            // create the lines
+            foreach (var pair in analysisResults.VariablePairList)
             {
-                var variableAppearances = new string[analysisResults.VariablesCount * 4 + 2];
+                int columnIndex = analysisResults.VariablesColumns[pair.Variable] * 4;
+
+                foreach (var positiveClause in pair.ClausesWhenPositiveIsTrue)
+                {
+                    if (positiveClause.Literals.Count == 1)
+                    {
+                        Literal literal = positiveClause.Literals[0];
+
+                        EndingVariableAppearances variableAppearances;
+                        if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(literal.Variable.Name))
+                        {
+                            variableAppearances = analysisResults.EndingVariablesAppearancesDict[literal.Variable.Name];
+                        }
+                        else
+                        {
+                            variableAppearances = new EndingVariableAppearances();
+                            variableAppearances.AppearancesPerVariable = new int[analysisResults.VariablesCount * 4];
+                            variableAppearances.FoundOnce = true;
+                            variableAppearances.FirstAppearanceSign = literal.Sign;
+                            variableAppearances.VariableValue = literal.Variable.Name;
+
+                            analysisResults.EndingVariablesAppearancesDict.Add(literal.Variable.Name, variableAppearances);
+                        }
+
+                        if (variableAppearances.FoundOnce == false)
+                        {
+                            variableAppearances.AppearancesPerVariable[columnIndex] = 1;
+                        }
+                        else
+                        {
+                            if (variableAppearances.FirstAppearanceSign == literal.Sign)
+                            {
+                                variableAppearances.AppearancesPerVariable[columnIndex] = 1;
+                            }
+                            else
+                            {
+                                variableAppearances.AppearancesPerVariable[columnIndex + 1] = 1;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var negativeClause in pair.ClausesWhenNegativeIsTrue)
+                {
+                    if (negativeClause.Literals.Count == 1)
+                    {
+                        Literal literal = negativeClause.Literals[0];
+
+                        EndingVariableAppearances variableAppearances;
+                        if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(literal.Variable.Name))
+                        {
+                            variableAppearances = analysisResults.EndingVariablesAppearancesDict[literal.Variable.Name];
+                        }
+                        else
+                        {
+                            variableAppearances = new EndingVariableAppearances();
+                            variableAppearances.AppearancesPerVariable = new int[analysisResults.VariablesCount * 4];
+                            variableAppearances.FoundOnce = true;
+                            variableAppearances.FirstAppearanceSign = literal.Sign;
+                            variableAppearances.VariableValue = literal.Variable.Name;
+
+                            analysisResults.EndingVariablesAppearancesDict.Add(literal.Variable.Name, variableAppearances);
+                        }
+
+                        if (variableAppearances.FoundOnce == false)
+                        {
+                            variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
+                        }
+                        else
+                        {
+                            if (variableAppearances.FirstAppearanceSign == literal.Sign)
+                            {
+                                variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
+                            }
+                            else
+                            {
+                                variableAppearances.AppearancesPerVariable[columnIndex + 3] = 1;
+                            }
+                        }
+                    }
+                }
             }
-
-
-            //foreach(var pair in analysisResults.VariablePairList) 1
-            //{
-            //    EndingVariablesAppearances endingClausesAppearances = new EndingVariablesAppearances();
-            //    endingClausesAppearances.Variable = pair.Variable;
-
-            //    foreach(var item in pair.ClausesWhenPositiveIsTrue)
-            //    {
-
-            //    }
-            //}
-
-
-            //if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(variable.Name))
-            //{
-            //    endingClausesAppearances = analysisResults.EndingVariablesAppearancesDict[variable.Name];
-            //}
-            //else
-            //{
-            //    endingClausesAppearances = new EndingVariablesAppearances();
-            //    endingClausesAppearances.Variable = variableParent;
-            //    analysisResults.EndingVariablesAppearancesDict[variable.Name] = endingClausesAppearances;
-            //}
-
 
             return analysisResults;
         }
@@ -192,12 +242,13 @@ namespace SATCalculator.Classes
         public List<Clause> ClausesWhenNegativeIsTrue { get; set; } = new List<Clause>();
     }
 
-    public class EndingVariablesAppearances
+    public class EndingVariableAppearances
     {
-        public Variable Variable { get; set; } = new Variable();
-        public Literal FirstAppearance { get; set; }
-        public Literal SecondAppearance { get; set; }
+        public string VariableValue { get; set; }
+        public bool FoundOnce { get; set; } = false;
+        public Sign? FirstAppearanceSign { get; set; }
+        public Sign? SecondAppearanceSign { get; set; }
 
-        public List<int> AppearancesPerVariable { get; set; }
+        public int[] AppearancesPerVariable { get; set; }
     }
 }
