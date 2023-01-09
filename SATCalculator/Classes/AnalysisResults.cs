@@ -131,7 +131,28 @@ namespace SATCalculator.Classes
             }
 
             // create the array with the appearances
-            //foreach(var pair in analysisResults.VariablePairList)
+            List<string> headers = new List<string>();
+            List<string[]> appearances = new List<string[]>();
+
+            // create the headers
+            headers.Add("first appearance");
+            headers.Add("second appearance");
+            foreach (var pair in analysisResults.VariablePairList)
+            {
+                headers.Add(pair.Variable.Name + "n");
+                headers.Add(pair.Variable.Name + "c");
+                headers.Add("-" + pair.Variable.Name + "n");
+                headers.Add("-" + pair.Variable.Name + "c");
+            }
+
+            // create the values
+            foreach(var pair in analysisResults.VariablePairList)
+            {
+                var variableAppearances = new string[analysisResults.VariablesCount * 4 + 2];
+            }
+
+
+            //foreach(var pair in analysisResults.VariablePairList) 1
             //{
             //    EndingVariablesAppearances endingClausesAppearances = new EndingVariablesAppearances();
             //    endingClausesAppearances.Variable = pair.Variable;
@@ -141,7 +162,7 @@ namespace SATCalculator.Classes
 
             //    }
             //}
-            
+
 
             //if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(variable.Name))
             //{
