@@ -649,10 +649,18 @@
                                     </DataGrid>
                                 </TabItem>
 
-                                <TabItem Header="Problems">
-                                    
+                                <TabItem Header="Appearances">
+                                    <DataGrid ItemsSource="{Binding AlgorithmAppearancesView}"
+                                              AutoGenerateColumns ="True"
+                                              HeadersVisibility="Column"
+                                              CanUserAddRows="False">
+                                    </DataGrid>
                                 </TabItem>
-                            
+
+                                <TabItem Header="Problems">
+
+                                </TabItem>
+
                             </TabControl>
                         </Grid>
                     </TabItem>

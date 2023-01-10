@@ -190,6 +190,15 @@ namespace SATCalculator
             }
         }
 
+        private readonly CollectionViewSource algorithmAppearancesSource = new CollectionViewSource();
+        public ICollectionView AlgorithmAppearancesView
+        {
+            get
+            {
+                return this.algorithmAppearancesSource.View;
+            }
+        }
+
         #endregion
 
 
@@ -504,6 +513,9 @@ namespace SATCalculator
         {
             algorithmFlowSource.Source = AlgorithmAnalysisResults.VariablePairList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmFlowView"));
+
+            algorithmAppearancesSource.Source = AlgorithmAnalysisResults.AppearancesDataTable;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
         }
 
         /// <summary>

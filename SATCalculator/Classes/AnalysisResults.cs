@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,8 @@ namespace SATCalculator.Classes
         public int VariablesCount { get; set; } = 0;
         public Dictionary<string, EndingVariableAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariableAppearances>();
         public Dictionary<Variable, int> VariablesColumns = new Dictionary<Variable, int>();
+        public string[,] AppearancesArray { get; set; }
+        public DataTable AppearancesDataTable { get; set; }
 
         #endregion
 
@@ -224,6 +228,37 @@ namespace SATCalculator.Classes
                         }
                     }
                 }
+            }
+
+            // create the datatable to display the results
+            analysisResults.AppearancesDataTable = new DataTable();
+            analysisResults.AppearancesDataTable.Columns.Add("", typeof(string));
+            analysisResults.AppearancesDataTable.Columns.Add("", typeof(string));
+            foreach (var column in analysisResults.VariablesColumns)
+            {
+                analysisResults.AppearancesDataTable.Columns.Add(column.Key.ToString() + "n", typeof(string));
+                analysisResults.AppearancesDataTable.Columns.Add(column.Key.ToString() + "c", typeof(string));
+                analysisResults.AppearancesDataTable.Columns.Add("-" + column.Key.ToString() + "n", typeof(string));
+                analysisResults.AppearancesDataTable.Columns.Add("-" + column.Key.ToString() + "c", typeof(string));
+            }
+
+            foreach (var item in analysisResults.EndingVariablesAppearancesDict)
+            {
+                DataRow row = analysisResults.AppearancesDataTable.NewRow();
+                string firstValue = item.Value.FirstAppearanceSign == Sign.Positive ? item.Key.ToString() : "-" + item.Key.ToString();
+                string secondValue = item.Value.FirstAppearanceSign == Sign.Positive ? "-" + item.Key.ToString() : item.Key.ToString();
+
+                row[0] = firstValue;
+                row[1] = secondValue;
+
+                int j = 2;
+                foreach (var value in item.Value.AppearancesPerVariable)
+                {
+                    row[j] = value.ToString();
+                    j++;
+                }
+
+                analysisResults.AppearancesDataTable.Rows.Add(row);
             }
 
             return analysisResults;
