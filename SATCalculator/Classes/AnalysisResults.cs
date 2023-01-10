@@ -17,8 +17,8 @@ namespace SATCalculator.Classes
         public int VariablesCount { get; set; } = 0;
         public Dictionary<string, EndingVariableAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariableAppearances>();
         public Dictionary<Variable, int> VariablesColumns = new Dictionary<Variable, int>();
-        public string[,] AppearancesArray { get; set; }
         public DataTable AppearancesDataTable { get; set; }
+        public List<string> ProblemsList { get; set; } = new List<string>();
 
         #endregion
 
@@ -174,16 +174,19 @@ namespace SATCalculator.Classes
                         if (variableAppearances.FoundOnce == false)
                         {
                             variableAppearances.AppearancesPerVariable[columnIndex] = 1;
+                            variableAppearances.NormalAppearances.Add(pair.Variable.Name);
                         }
                         else
                         {
                             if (variableAppearances.FirstAppearanceSign == literal.Sign)
                             {
                                 variableAppearances.AppearancesPerVariable[columnIndex] = 1;
+                                variableAppearances.NormalAppearances.Add(pair.Variable.Name);
                             }
                             else
                             {
                                 variableAppearances.AppearancesPerVariable[columnIndex + 1] = 1;
+                                variableAppearances.ContrastAppearances.Add(pair.Variable.Name);
                             }
                         }
                     }
@@ -214,16 +217,19 @@ namespace SATCalculator.Classes
                         if (variableAppearances.FoundOnce == false)
                         {
                             variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
+                            variableAppearances.NormalAppearances.Add(pair.Variable.Name);
                         }
                         else
                         {
                             if (variableAppearances.FirstAppearanceSign == literal.Sign)
                             {
                                 variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
+                                variableAppearances.NormalAppearances.Add("-" + pair.Variable.Name);
                             }
                             else
                             {
                                 variableAppearances.AppearancesPerVariable[columnIndex + 3] = 1;
+                                variableAppearances.ContrastAppearances.Add("-" + pair.Variable.Name);
                             }
                         }
                     }
@@ -261,6 +267,19 @@ namespace SATCalculator.Classes
                 analysisResults.AppearancesDataTable.Rows.Add(row);
             }
 
+            // create the problems list
+            foreach(var item in analysisResults.EndingVariablesAppearancesDict)
+            {
+                foreach(var normalAppearance in item.Value.NormalAppearances)
+                {
+                    foreach (var contrastAppearance in item.Value.ContrastAppearances)
+                    {
+                        string problem = $"When {normalAppearance}=A and {contrastAppearance}=A then contrast at {item.Value.VariableValue}";
+                        analysisResults.ProblemsList.Add(problem);
+                    }
+                }
+            }
+
             return analysisResults;
         }
 
@@ -280,6 +299,8 @@ namespace SATCalculator.Classes
     public class EndingVariableAppearances
     {
         public string VariableValue { get; set; }
+        public List<string> NormalAppearances = new List<string>();
+        public List<string> ContrastAppearances = new List<string>();
         public bool FoundOnce { get; set; } = false;
         public Sign? FirstAppearanceSign { get; set; }
         public Sign? SecondAppearanceSign { get; set; }

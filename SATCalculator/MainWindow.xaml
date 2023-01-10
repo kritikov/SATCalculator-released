@@ -658,7 +658,7 @@
                                 </TabItem>
 
                                 <TabItem Header="Problems">
-
+                                    <ListView ItemsSource="{Binding AlgorithmProblemsView}"/>
                                 </TabItem>
 
                             </TabControl>
