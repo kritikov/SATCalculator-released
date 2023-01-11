@@ -16,6 +16,7 @@ namespace SATCalculator.Classes
 
         public int VariablesCount { get; set; } = 0;
         public Dictionary<string, EndingVariableAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariableAppearances>();
+        public Dictionary<Variable, Conflict> ConflictsDict = new Dictionary<Variable, Conflict>();
         public Dictionary<Variable, int> VariablesColumns = new Dictionary<Variable, int>();
         public DataTable AppearancesDataTable { get; set; }
         public List<string> ProblemsList { get; set; } = new List<string>();
@@ -46,19 +47,17 @@ namespace SATCalculator.Classes
             // check the number of the variables per clause
 
             // get a list with the variables sorted by the contrasts?
-            var variables = formula.VariablesDict.Select(p => p.Value).OrderByDescending(p => p.Contrasts).ToList();
+            var variablesSequence = formula.VariablesDict.Select(p => p.Value).OrderByDescending(p => p.Contrasts).ToList();
 
             // reset the used flag on formula clauses
             foreach(var clause in formula.Clauses)
                 clause.Used = false;
 
             // create a list with the variables and their connected clauses
-            foreach (var variable in variables)
+            foreach (var variable in variablesSequence)
             {
                 VariablePair variablePair = new VariablePair();
-                Variable variableParent = new Variable();
-                variableParent.CnfIndex = variable.CnfIndex;
-                variablePair.Variable = variableParent;
+                variablePair.Variable = variable;
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the clauses in the proper list
@@ -71,16 +70,21 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            Literal newLiteral = new Literal(literal.Value);
+                            Literal newLiteral = new Literal(literal.Variable, literal.Sign);
 
                             if (literal.Variable != variable)
-                                reducedClause.AddLiteral(newLiteral);
-                            else
-                                newLiteral.Variable = variableParent;
+                            {
+                                reducedClause.Literals.Add(newLiteral);
+                                if (!reducedClause.Variables.ContainsKey(literal.Variable.Name))
+                                    reducedClause.Variables.Add(literal.Variable.Name, literal.Variable);
+                            }
 
-                            positiveClause.AddLiteral(newLiteral);
+                            positiveClause.AddLiteralSimple(newLiteral);
+                            //positiveClause.Literals.Add(newLiteral);
+                            //if (!positiveClause.Variables.ContainsKey(literal.Variable.Name))
+                            //    positiveClause.Variables.Add(literal.Variable.Name, literal.Variable);
                         }
-                        
+
                         variablePair.PositiveClauses.Add(positiveClause);
                         variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
                         clause.Used = true;
@@ -98,14 +102,19 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            Literal newLiteral = new Literal(literal.Value);
+                            Literal newLiteral = new Literal(literal.Variable, literal.Sign);
 
                             if (literal.Variable != variable)
-                                reducedClause.AddLiteral(newLiteral);
-                            else
-                                newLiteral.Variable = variableParent;
+                            {
+                                reducedClause.Literals.Add(newLiteral);
+                                if (!reducedClause.Variables.ContainsKey(literal.Variable.Name))
+                                    reducedClause.Variables.Add(literal.Variable.Name, literal.Variable);
+                            }
 
-                            negativeClause.AddLiteral(newLiteral);
+                            negativeClause.AddLiteralSimple(newLiteral);
+                            negativeClause.Literals.Add(newLiteral);
+                            if (!negativeClause.Variables.ContainsKey(literal.Variable.Name))
+                                negativeClause.Variables.Add(literal.Variable.Name, literal.Variable);
                         }
 
                         variablePair.NegativeClauses.Add(negativeClause);
@@ -116,27 +125,36 @@ namespace SATCalculator.Classes
 
                 if (variablePair.ClausesWhenPositiveIsTrue.Count == 0)
                 {
-                    Literal newLiteral = new Literal($"+{variableParent}");
-                    newLiteral.Variable = variableParent;
+                    Literal newLiteral = new Literal($"+{variable}");
+                    newLiteral.Variable = variable;
                     Clause reducedClause = new Clause();
-                    reducedClause.AddLiteral(newLiteral);
+                    reducedClause.AddLiteralSimple(newLiteral);
+                    //reducedClause.Literals.Add(newLiteral);
+                    //if (!reducedClause.Variables.ContainsKey(newLiteral.Variable.Name))
+                    //    reducedClause.Variables.Add(newLiteral.Variable.Name, newLiteral.Variable);
                     variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
                 }
 
                 if (variablePair.ClausesWhenNegativeIsTrue.Count == 0)
                 {
-                    Literal newLiteral = new Literal($"-{variableParent}");
-                    newLiteral.Variable = variableParent;
+                    Literal newLiteral = new Literal($"-{variable}");
+                    newLiteral.Variable = variable;
                     Clause reducedClause = new Clause();
-                    reducedClause.AddLiteral(newLiteral);
+                    reducedClause.AddLiteralSimple(newLiteral);
+                    //reducedClause.Literals.Add(newLiteral);
+                    //if (!reducedClause.Variables.ContainsKey(newLiteral.Variable.Name))
+                    //    reducedClause.Variables.Add(newLiteral.Variable.Name, newLiteral.Variable);
                     variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
                 }
 
                 analysisResults.VariablePairList.Add(variablePair);
             }
 
-            // create the array with the appearances
+            // reset the used flag on formula clauses
+            foreach (var clause in formula.Clauses)
+                clause.Used = false;
 
+            // OBSOLETE: create the array with the appearances
             // create the columns
             int i = 0;
             foreach (var pair in analysisResults.VariablePairList)
@@ -267,18 +285,81 @@ namespace SATCalculator.Classes
                 analysisResults.AppearancesDataTable.Rows.Add(row);
             }
 
-            // create the problems list
-            foreach(var item in analysisResults.EndingVariablesAppearancesDict)
+            // create the array with the appearances
+            foreach (var pair in analysisResults.VariablePairList)
             {
-                foreach(var normalAppearance in item.Value.NormalAppearances)
+                foreach (var positiveClause in pair.ClausesWhenPositiveIsTrue)
                 {
-                    foreach (var contrastAppearance in item.Value.ContrastAppearances)
+                    if (positiveClause.Literals.Count == 1)
                     {
-                        string problem = $"When {normalAppearance}=A and {contrastAppearance}=A then contrast at {item.Value.VariableValue}";
+                        Literal literal = positiveClause.Literals[0];
+
+                        Conflict variableAppearances;
+                        if (analysisResults.ConflictsDict.ContainsKey(literal.Variable))
+                        {
+                            variableAppearances = analysisResults.ConflictsDict[literal.Variable];
+                        }
+                        else
+                        {
+                            variableAppearances = new Conflict();
+                            variableAppearances.Variable = literal.Variable;
+                            analysisResults.ConflictsDict.Add(literal.Variable, variableAppearances);
+                        }
+
+                        variableAppearances.PositiveAppearances.Add(new Tuple<Variable, Sign>(pair.Variable, Sign.Positive));
+                    }
+                }
+
+                foreach (var negativeClause in pair.ClausesWhenNegativeIsTrue)
+                {
+                    if (negativeClause.Literals.Count == 1)
+                    {
+                        Literal literal = negativeClause.Literals[0];
+
+                        Conflict variableAppearances;
+                        if (analysisResults.ConflictsDict.ContainsKey(literal.Variable))
+                        {
+                            variableAppearances = analysisResults.ConflictsDict[literal.Variable];
+                        }
+                        else
+                        {
+                            variableAppearances = new Conflict();
+                            variableAppearances.Variable = literal.Variable;
+                            analysisResults.ConflictsDict.Add(literal.Variable, variableAppearances);
+                        }
+                        variableAppearances.NegativeAppearances.Add(new Tuple<Variable, Sign>(pair.Variable, Sign.Negative));
+                    }
+                }
+            }
+
+
+            // create the problems list
+            foreach (var item in analysisResults.ConflictsDict)
+            {
+                foreach (var positiveAppearance in item.Value.PositiveAppearances)
+                {
+                    foreach (var negativeAppearance in item.Value.NegativeAppearances)
+                    {
+                        string firstLiteral = positiveAppearance.Item2 == Sign.Positive ? positiveAppearance.Item1.Name : "-" + positiveAppearance.Item1.Name;
+                        string secondLiteral = negativeAppearance.Item2 == Sign.Positive ? negativeAppearance.Item1.Name : "-" + negativeAppearance.Item1.Name;
+
+                        string problem = $"When {firstLiteral}=A and {secondLiteral}=A then contrast at {item.Value.Variable.Name}";
                         analysisResults.ProblemsList.Add(problem);
                     }
                 }
             }
+
+            //foreach (var item in analysisResults.EndingVariablesAppearancesDict)
+            //{
+            //    foreach (var normalAppearance in item.Value.NormalAppearances)
+            //    {
+            //        foreach (var contrastAppearance in item.Value.ContrastAppearances)
+            //        {
+            //            string problem = $"When {normalAppearance}=A and {contrastAppearance}=A then contrast at {item.Value.VariableValue}";
+            //            analysisResults.ProblemsList.Add(problem);
+            //        }
+            //    }
+            //}
 
             return analysisResults;
         }
@@ -294,6 +375,14 @@ namespace SATCalculator.Classes
         public List<Clause> NegativeClauses { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenPositiveIsTrue { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenNegativeIsTrue { get; set; } = new List<Clause>();
+    }
+
+    public class Conflict
+    {
+        public Variable Variable { get; set; }
+        public List<Tuple<Variable, Sign>> PositiveAppearances = new List<Tuple<Variable, Sign>>();
+        public List<Tuple<Variable, Sign>> NegativeAppearances = new List<Tuple<Variable, Sign>>();
+
     }
 
     public class EndingVariableAppearances

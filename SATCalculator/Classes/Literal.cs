@@ -86,6 +86,12 @@ namespace SATCalculator.Classes
             }
         }
 
+        public Literal(Variable variable, Sign sign)
+        {
+            Variable = variable;
+            Sign = sign;
+        }
+
         #endregion
 
         #region Methods

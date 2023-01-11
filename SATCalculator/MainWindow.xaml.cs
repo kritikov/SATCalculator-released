@@ -746,7 +746,7 @@ namespace SATCalculator
         /// <param name="formula"></param>
         public void AnalyzeFormula(SATFormula formula)
         {
-            AlgorithmAnalysisResults = AnalysisResults.Analyze(Formula);
+            AlgorithmAnalysisResults = AnalysisResults.Analyze(formula);
 
             RefreshAlgorithmViews();
         }

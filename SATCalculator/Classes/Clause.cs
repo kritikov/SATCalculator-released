@@ -132,6 +132,17 @@ namespace SATCalculator.Classes
             }
         }
 
+        /// <summary>
+        /// Adds a literal without inform its variables with statistics
+        /// </summary>
+        /// <param name="literal"></param>
+        public void AddLiteralSimple(Literal literal)
+        {
+            Literals.Add(literal);
+            if (!Variables.ContainsKey(literal.Variable.Name))
+                Variables.Add(literal.Variable.Name, literal.Variable);
+        }
+
         /// return a clause from the resolution of two others 
         public static Clause Resolution(Variable variable, Clause positiveClause, Clause negativeClause)
         {
