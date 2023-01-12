@@ -32,6 +32,7 @@ namespace SATCalculator.Classes
             }
         }
         public int CnfIndex { get; set; } = 0;
+        public int ConflictTableIndex { get; set; } = 0;
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
 
 

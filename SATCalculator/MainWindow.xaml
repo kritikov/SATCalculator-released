@@ -661,6 +661,14 @@
                                     </DataGrid>
                                 </TabItem>
 
+                                <TabItem Header="Conflicts">
+                                    <DataGrid ItemsSource="{Binding AlgorithmConflictsView}"
+                                              AutoGenerateColumns ="True"
+                                              HeadersVisibility="Column"
+                                              CanUserAddRows="False">
+                                    </DataGrid>
+                                </TabItem>
+
                             </TabControl>
                         </Grid>
                     </TabItem>

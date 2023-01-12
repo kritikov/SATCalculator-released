@@ -199,6 +199,15 @@ namespace SATCalculator
             }
         }
 
+        private readonly CollectionViewSource algorithmConflictsSource = new CollectionViewSource();
+        public ICollectionView AlgorithmConflictsView
+        {
+            get
+            {
+                return this.algorithmConflictsSource.View;
+            }
+        }
+
         private readonly CollectionViewSource algorithmProblemsSource = new CollectionViewSource();
         public ICollectionView AlgorithmProblemsView
         {
@@ -525,6 +534,9 @@ namespace SATCalculator
 
             algorithmAppearancesSource.Source = AlgorithmAnalysisResults.AppearancesDataTable;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
+
+            algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsDataTable;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
 
             algorithmProblemsSource.Source = AlgorithmAnalysisResults.ProblemsList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmProblemsView"));
