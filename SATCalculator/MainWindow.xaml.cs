@@ -529,13 +529,13 @@ namespace SATCalculator
         /// </summary>
         private void RefreshAlgorithmViews()
         {
-            algorithmFlowSource.Source = AlgorithmAnalysisResults.VariablePairList;
+            algorithmFlowSource.Source = AlgorithmAnalysisResults.VariableSelectionStepsList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmFlowView"));
 
-            algorithmAppearancesSource.Source = AlgorithmAnalysisResults.AppearancesDataTable;
+            algorithmAppearancesSource.Source = AlgorithmAnalysisResults.EndVariableAppearancesTable;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
 
-            algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsDataTable;
+            algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsTable;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
 
             algorithmProblemsSource.Source = AlgorithmAnalysisResults.ProblemsList;

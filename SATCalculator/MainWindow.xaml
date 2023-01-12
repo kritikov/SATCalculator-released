@@ -655,6 +655,7 @@
                                 
                                 <TabItem Header="Appearances">
                                     <DataGrid ItemsSource="{Binding AlgorithmAppearancesView}"
+                                              Style="{StaticResource DataGridFromDataTableStyle}"
                                               AutoGenerateColumns ="True"
                                               HeadersVisibility="Column"
                                               CanUserAddRows="False">
@@ -663,6 +664,7 @@
 
                                 <TabItem Header="Conflicts">
                                     <DataGrid ItemsSource="{Binding AlgorithmConflictsView}"
+                                              Style="{StaticResource DataGridFromDataTableStyle}"
                                               AutoGenerateColumns ="True"
                                               HeadersVisibility="Column"
                                               CanUserAddRows="False">

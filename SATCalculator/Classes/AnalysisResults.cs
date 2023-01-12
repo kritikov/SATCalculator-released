@@ -12,14 +12,12 @@ namespace SATCalculator.Classes
     {
         #region VARIABLES AND NESTED CLASSES
 
-        public List<VariablePair> VariablePairList { get; set; } = new List<VariablePair>();
+        public List<VariableSelectionStep> VariableSelectionStepsList { get; set; } = new List<VariableSelectionStep>();
 
         public int VariablesCount { get; set; } = 0;
-        public Dictionary<string, EndingVariableAppearances> EndingVariablesAppearancesDict = new Dictionary<string, EndingVariableAppearances>();
         public Dictionary<Variable, EndVariableAppearances> EndVariablesDict = new Dictionary<Variable, EndVariableAppearances>();
-        public Dictionary<Variable, int> VariableIndexInSequenceDict = new Dictionary<Variable, int>();
-        public DataTable AppearancesDataTable { get; set; }
-        public DataTable ConflictsDataTable { get; set; }
+        public DataTable ConflictsTable { get; set; }
+        public DataTable EndVariableAppearancesTable { get; set; }
         public List<string> ProblemsList { get; set; } = new List<string>();
 
         #endregion
@@ -53,14 +51,11 @@ namespace SATCalculator.Classes
             // get a list with the variables sorted by the contrasts?
             var variablesSequence = editFormula.VariablesDict.Select(p => p.Value).OrderByDescending(p => p.Contrasts).ToList();
 
-            // reset the used flag on formula clauses
-            foreach(var clause in editFormula.Clauses)
-                clause.Used = false;
-
-            // create a list with the variables and their connected clauses
+            #region CREATE A LIST WITH THE VARIABLES AND THEIR CONNECTED CLAUSES
+            
             foreach (var variable in variablesSequence)
             {
-                VariablePair variablePair = new VariablePair();
+                VariableSelectionStep variablePair = new VariableSelectionStep();
                 variablePair.Variable = variable;
 
                 if (conflictTableColumnIndex == 0)
@@ -68,7 +63,7 @@ namespace SATCalculator.Classes
                 else
                     conflictTableColumnIndex = conflictTableColumnIndex + 2;
 
-                variablePair.Variable.ConflictTableColumnIndex = conflictTableColumnIndex;
+                variablePair.Variable.SequenceIndex = conflictTableColumnIndex;
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the clauses in the proper list
@@ -146,143 +141,14 @@ namespace SATCalculator.Classes
                     variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
                 }
 
-                analysisResults.VariablePairList.Add(variablePair);
+                analysisResults.VariableSelectionStepsList.Add(variablePair);
             }
 
-            // create the columns
-            int i = 0;
-            foreach (var variable in variablesSequence)
-            {
-                analysisResults.VariableIndexInSequenceDict[variable] = i++;
-            }
+            #endregion
 
-            // OBSOLETE: create the array with the appearances
-            // create the lines
-            foreach (var pair in analysisResults.VariablePairList)
-            {
-                int columnIndex = analysisResults.VariableIndexInSequenceDict[pair.Variable] * 4;
+            #region CREATE THE LIST WITH THE END-VARIABLES APPEARANCES
 
-                foreach (var positiveClause in pair.ClausesWhenPositiveIsTrue)
-                {
-                    if (positiveClause.Literals.Count == 1)
-                    {
-                        Literal literal = positiveClause.Literals[0];
-
-                        EndingVariableAppearances variableAppearances;
-                        if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(literal.Variable.Name))
-                        {
-                            variableAppearances = analysisResults.EndingVariablesAppearancesDict[literal.Variable.Name];
-                        }
-                        else
-                        {
-                            variableAppearances = new EndingVariableAppearances();
-                            variableAppearances.AppearancesPerVariable = new int[analysisResults.VariablesCount * 4];
-                            variableAppearances.FoundOnce = true;
-                            variableAppearances.FirstAppearanceSign = literal.Sign;
-                            variableAppearances.VariableValue = literal.Variable.Name;
-
-                            analysisResults.EndingVariablesAppearancesDict.Add(literal.Variable.Name, variableAppearances);
-                        }
-
-                        if (variableAppearances.FoundOnce == false)
-                        {
-                            variableAppearances.AppearancesPerVariable[columnIndex] = 1;
-                            variableAppearances.NormalAppearances.Add(pair.Variable.Name);
-                        }
-                        else
-                        {
-                            if (variableAppearances.FirstAppearanceSign == literal.Sign)
-                            {
-                                variableAppearances.AppearancesPerVariable[columnIndex] = 1;
-                                variableAppearances.NormalAppearances.Add(pair.Variable.Name);
-                            }
-                            else
-                            {
-                                variableAppearances.AppearancesPerVariable[columnIndex + 1] = 1;
-                                variableAppearances.ContrastAppearances.Add(pair.Variable.Name);
-                            }
-                        }
-                    }
-                }
-
-                foreach (var negativeClause in pair.ClausesWhenNegativeIsTrue)
-                {
-                    if (negativeClause.Literals.Count == 1)
-                    {
-                        Literal literal = negativeClause.Literals[0];
-
-                        EndingVariableAppearances variableAppearances;
-                        if (analysisResults.EndingVariablesAppearancesDict.ContainsKey(literal.Variable.Name))
-                        {
-                            variableAppearances = analysisResults.EndingVariablesAppearancesDict[literal.Variable.Name];
-                        }
-                        else
-                        {
-                            variableAppearances = new EndingVariableAppearances();
-                            variableAppearances.AppearancesPerVariable = new int[analysisResults.VariablesCount * 4];
-                            variableAppearances.FoundOnce = true;
-                            variableAppearances.FirstAppearanceSign = literal.Sign;
-                            variableAppearances.VariableValue = literal.Variable.Name;
-
-                            analysisResults.EndingVariablesAppearancesDict.Add(literal.Variable.Name, variableAppearances);
-                        }
-
-                        if (variableAppearances.FoundOnce == false)
-                        {
-                            variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
-                            variableAppearances.NormalAppearances.Add(pair.Variable.Name);
-                        }
-                        else
-                        {
-                            if (variableAppearances.FirstAppearanceSign == literal.Sign)
-                            {
-                                variableAppearances.AppearancesPerVariable[columnIndex + 2] = 1;
-                                variableAppearances.NormalAppearances.Add("-" + pair.Variable.Name);
-                            }
-                            else
-                            {
-                                variableAppearances.AppearancesPerVariable[columnIndex + 3] = 1;
-                                variableAppearances.ContrastAppearances.Add("-" + pair.Variable.Name);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // create the datatable to display the results
-            analysisResults.AppearancesDataTable = new DataTable();
-            analysisResults.AppearancesDataTable.Columns.Add("", typeof(string));
-            analysisResults.AppearancesDataTable.Columns.Add("", typeof(string));
-            foreach (var column in analysisResults.VariableIndexInSequenceDict)
-            {
-                analysisResults.AppearancesDataTable.Columns.Add(column.Key.ToString() + "n", typeof(string));
-                analysisResults.AppearancesDataTable.Columns.Add(column.Key.ToString() + "c", typeof(string));
-                analysisResults.AppearancesDataTable.Columns.Add("-" + column.Key.ToString() + "n", typeof(string));
-                analysisResults.AppearancesDataTable.Columns.Add("-" + column.Key.ToString() + "c", typeof(string));
-            }
-
-            foreach (var item in analysisResults.EndingVariablesAppearancesDict)
-            {
-                DataRow row = analysisResults.AppearancesDataTable.NewRow();
-                string firstValue = item.Value.FirstAppearanceSign == Sign.Positive ? item.Key.ToString() : "-" + item.Key.ToString();
-                string secondValue = item.Value.FirstAppearanceSign == Sign.Positive ? "-" + item.Key.ToString() : item.Key.ToString();
-
-                row[0] = firstValue;
-                row[1] = secondValue;
-
-                int j = 2;
-                foreach (var value in item.Value.AppearancesPerVariable)
-                {
-                    row[j] = value.ToString();
-                    j++;
-                }
-
-                analysisResults.AppearancesDataTable.Rows.Add(row);
-            }
-
-
-            // create the list with the end-variables appearances
-            foreach (var pair in analysisResults.VariablePairList)
+            foreach (var pair in analysisResults.VariableSelectionStepsList)
             {
                 foreach (var positiveClause in pair.ClausesWhenPositiveIsTrue)
                 {
@@ -334,28 +200,30 @@ namespace SATCalculator.Classes
                 }
             }
 
-            // CREATE THE CONFLICTS DATATABLE TO DISPLAY THE RESULTS
+            #endregion
 
-            analysisResults.ConflictsDataTable = new DataTable();
-            analysisResults.ConflictsDataTable.Columns.Add("", typeof(string));
+            #region CREATE THE CONFLICTS DATATABLE TO DISPLAY THE RESULTS
+
+            analysisResults.ConflictsTable = new DataTable();
+            analysisResults.ConflictsTable.Columns.Add("", typeof(string));
 
             // create the columns
             foreach (var variable in variablesSequence)
             {
-                analysisResults.ConflictsDataTable.Columns.Add(variable.Name, typeof(string), "");
-                analysisResults.ConflictsDataTable.Columns.Add("-" + variable.Name, typeof(string), "");
+                analysisResults.ConflictsTable.Columns.Add(variable.Name, typeof(string), "");
+                analysisResults.ConflictsTable.Columns.Add("-" + variable.Name, typeof(string), "");
             }
 
             // create the rows
             foreach (var variable in variablesSequence)
             {
-                DataRow rowPos = analysisResults.ConflictsDataTable.NewRow();
+                DataRow rowPos = analysisResults.ConflictsTable.NewRow();
                 rowPos[0] = variable.Name;
-                analysisResults.ConflictsDataTable.Rows.Add(rowPos);
+                analysisResults.ConflictsTable.Rows.Add(rowPos);
 
-                DataRow rowNeg = analysisResults.ConflictsDataTable.NewRow();
+                DataRow rowNeg = analysisResults.ConflictsTable.NewRow();
                 rowNeg[0] = "-" + variable.Name;
-                analysisResults.ConflictsDataTable.Rows.Add(rowNeg);
+                analysisResults.ConflictsTable.Rows.Add(rowNeg);
             }
 
             // fill the table
@@ -363,18 +231,18 @@ namespace SATCalculator.Classes
             {
                 foreach (var positiveAppearance in endVariable.Value.PositiveAppearances)
                 {
-                    int columnIndex = positiveAppearance.Item1.ConflictTableColumnIndex;
+                    int columnIndex = positiveAppearance.Item1.SequenceIndex;
                     if (positiveAppearance.Item2 == Sign.Negative)
                         columnIndex++;
 
                     foreach (var negativeAppearance in endVariable.Value.NegativeAppearances)
                     {
                         // forward
-                        int rowIndex = negativeAppearance.Item1.ConflictTableColumnIndex - 1;
+                        int rowIndex = negativeAppearance.Item1.SequenceIndex - 1;
                         if (negativeAppearance.Item2 == Sign.Negative)
                             rowIndex++;
 
-                        DataRow row = analysisResults.ConflictsDataTable.Rows[rowIndex];
+                        DataRow row = analysisResults.ConflictsTable.Rows[rowIndex];
                         row[columnIndex] = "x";
                         if (positiveAppearance.Item2 == Sign.Negative)
                             row[columnIndex-1] = "v";
@@ -384,7 +252,7 @@ namespace SATCalculator.Classes
                         // backward
                         int rowIndex2 = columnIndex - 1;
                         int columnIndex2 = rowIndex + 1;
-                        row = analysisResults.ConflictsDataTable.Rows[rowIndex2];
+                        row = analysisResults.ConflictsTable.Rows[rowIndex2];
                         row[columnIndex2] = "x";
                         if (negativeAppearance.Item2 == Sign.Negative)
                             row[columnIndex2 - 1] = "v";
@@ -394,6 +262,48 @@ namespace SATCalculator.Classes
                 }
             }
 
+            #endregion
+
+            #region CREATE THE END VARIABLE APPEARANCES DATATABLE
+
+            analysisResults.EndVariableAppearancesTable = new DataTable();
+            analysisResults.EndVariableAppearancesTable.Columns.Add("", typeof(string));
+
+            // create the columns
+            foreach (var variable in variablesSequence)
+            {
+                analysisResults.EndVariableAppearancesTable.Columns.Add(variable.Name, typeof(string), "");
+                analysisResults.EndVariableAppearancesTable.Columns.Add("-" + variable.Name, typeof(string), "");
+            }
+
+            // fill the table
+            foreach (var endVariable in analysisResults.EndVariablesDict)
+            {
+                DataRow rowPos = analysisResults.EndVariableAppearancesTable.NewRow();
+                rowPos[0] = endVariable.Value.Variable.Name;
+
+                foreach (var positiveAppearance in endVariable.Value.PositiveAppearances)
+                {
+                    int columnIndex = positiveAppearance.Item1.SequenceIndex;
+                    if (positiveAppearance.Item2 == Sign.Negative)
+                        columnIndex++;
+
+                    rowPos[columnIndex] = "+";
+                }
+
+                foreach (var negativeAppearance in endVariable.Value.NegativeAppearances)
+                {
+                    int columnIndex = negativeAppearance.Item1.SequenceIndex;
+                    if (negativeAppearance.Item2 == Sign.Negative)
+                        columnIndex++;
+
+                    rowPos[columnIndex] = "-";
+                }
+
+                analysisResults.EndVariableAppearancesTable.Rows.Add(rowPos);
+            }
+
+            #endregion
 
 
             // CREATE THE PROBLEMS LIST
@@ -419,7 +329,7 @@ namespace SATCalculator.Classes
         #endregion
     }
 
-    public class VariablePair
+    public class VariableSelectionStep
     {
         public Variable Variable { get; set; } = new Variable();
         public List<Clause> PositiveClauses { get; set; } = new List<Clause>();
@@ -435,16 +345,5 @@ namespace SATCalculator.Classes
         public List<Tuple<Variable, Sign>> NegativeAppearances = new List<Tuple<Variable, Sign>>();
 
     }
-
-    public class EndingVariableAppearances
-    {
-        public string VariableValue { get; set; }
-        public List<string> NormalAppearances = new List<string>();
-        public List<string> ContrastAppearances = new List<string>();
-        public bool FoundOnce { get; set; } = false;
-        public Sign? FirstAppearanceSign { get; set; }
-        public Sign? SecondAppearanceSign { get; set; }
-
-        public int[] AppearancesPerVariable { get; set; }
-    }
+ 
 }
