@@ -43,7 +43,7 @@ namespace SATCalculator.Classes
         public static AnalysisResults Analyze(SATFormula Formula)
         {
             SATFormula editFormula = Formula.CopyAsSATFormula();
-            int conflictTableIndex = 0;
+            int conflictTableColumnIndex = 0;
 
             AnalysisResults analysisResults = new AnalysisResults();
             analysisResults.VariablesCount = editFormula.VariablesCount;
@@ -62,8 +62,13 @@ namespace SATCalculator.Classes
             {
                 VariablePair variablePair = new VariablePair();
                 variablePair.Variable = variable;
-                conflictTableIndex = conflictTableIndex * 2 + 1;
-                variablePair.Variable.ConflictTableIndex = conflictTableIndex;
+
+                if (conflictTableColumnIndex == 0)
+                    conflictTableColumnIndex = 1;
+                else
+                    conflictTableColumnIndex = conflictTableColumnIndex + 2;
+
+                variablePair.Variable.ConflictTableColumnIndex = conflictTableColumnIndex;
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the clauses in the proper list
@@ -356,21 +361,37 @@ namespace SATCalculator.Classes
             // fill the table
             foreach(var endVariable in analysisResults.EndVariablesDict)
             {
-                DataRow row = analysisResults.ConflictsDataTable.Rows[endVariable.Value.Variable.ConflictTableIndex];
-
                 foreach (var positiveAppearance in endVariable.Value.PositiveAppearances)
                 {
+                    int columnIndex = positiveAppearance.Item1.ConflictTableColumnIndex;
+                    if (positiveAppearance.Item2 == Sign.Negative)
+                        columnIndex++;
+
                     foreach (var negativeAppearance in endVariable.Value.NegativeAppearances)
                     {
-                        //string firstLiteral = positiveAppearance.Item2 == Sign.Positive ? positiveAppearance.Item1.Name : "-" + positiveAppearance.Item1.Name;
-                        //string secondLiteral = negativeAppearance.Item2 == Sign.Positive ? negativeAppearance.Item1.Name : "-" + negativeAppearance.Item1.Name;
+                        // forward
+                        int rowIndex = negativeAppearance.Item1.ConflictTableColumnIndex - 1;
+                        if (negativeAppearance.Item2 == Sign.Negative)
+                            rowIndex++;
 
-                        //string problem = $"When {firstLiteral}=A and {secondLiteral}=A then contrast at {endVariable.Value.Variable.Name}";
-                        //analysisResults.ProblemsList.Add(problem);
+                        DataRow row = analysisResults.ConflictsDataTable.Rows[rowIndex];
+                        row[columnIndex] = "x";
+                        if (positiveAppearance.Item2 == Sign.Negative)
+                            row[columnIndex-1] = "v";
+                        else
+                            row[columnIndex+1] = "v";
+
+                        // backward
+                        int rowIndex2 = columnIndex - 1;
+                        int columnIndex2 = rowIndex + 1;
+                        row = analysisResults.ConflictsDataTable.Rows[rowIndex2];
+                        row[columnIndex2] = "x";
+                        if (negativeAppearance.Item2 == Sign.Negative)
+                            row[columnIndex2 - 1] = "v";
+                        else
+                            row[columnIndex2 + 1] = "v";
                     }
                 }
-
-                
             }
 
 
