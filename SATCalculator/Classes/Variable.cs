@@ -35,6 +35,9 @@ namespace SATCalculator.Classes
         public int SequenceIndex { get; set; } = 0;
         public VariableValueEnum Valuation { get; set; } = VariableValueEnum.Null;
 
+        public Literal LiteralPositive;
+        public Literal LiteralNegative;
+
 
         // usefull for fast searching
         public SATFormula ParentFormula { get; set; }
@@ -53,7 +56,8 @@ namespace SATCalculator.Classes
         #region Constructors
         public Variable()
         {
-
+            LiteralPositive = new Literal(this, Sign.Positive);
+            LiteralNegative = new Literal(this, Sign.Negative);
         }
 
         public Variable(string value) : base()
