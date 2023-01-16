@@ -16,6 +16,7 @@ namespace SATCalculator.Classes
 
         public int VariablesCount { get; set; } = 0;
         public Dictionary<Variable, EndVariableAppearances> EndVariablesDict = new Dictionary<Variable, EndVariableAppearances>();
+        public Dictionary<string, Literal> LiteralsDict = new Dictionary<string, Literal>();
         public Dictionary<VariableSign, List<VariableSign>> ConflictsDict = new Dictionary<VariableSign, List<VariableSign>>();
         public DataTable ConflictsTable { get; set; }
         public DataTable EndVariableAppearancesTable { get; set; }
@@ -52,12 +53,24 @@ namespace SATCalculator.Classes
             // get a list with the variables sorted by the contrasts?
             var variablesSequence = editFormula.VariablesDict.Select(p => p.Value).OrderByDescending(p => p.Contrasts).ToList();
 
+            // create a dictionary to keep the literals
+            foreach(var variable in variablesSequence)
+            {
+                Literal positiveLiteral = new Literal(variable, Sign.Positive);
+                analysisResults.LiteralsDict.Add(positiveLiteral.Value, positiveLiteral);
+
+                Literal negativeLiteral = new Literal(variable, Sign.Negative);
+                analysisResults.LiteralsDict.Add(negativeLiteral.Value, negativeLiteral);
+            }
+
             #region Create a list with the variables and their connected clauses
 
             foreach (var variable in variablesSequence)
             {
                 VariableSelectionStep variablePair = new VariableSelectionStep();
                 variablePair.Variable = variable;
+                variablePair.PositiveLiteral = analysisResults.LiteralsDict[$"{variable.Name}"];
+                variablePair.NegativeLiteral = analysisResults.LiteralsDict[$"-{variable.Name}"];
 
                 if (conflictTableColumnIndex == 0)
                     conflictTableColumnIndex = 1;
@@ -77,7 +90,10 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            Literal newLiteral = new Literal(literal.Variable, literal.Sign);
+                            string literalValue = literal.Variable.Name;
+                            if (literal.Sign == Sign.Negative)
+                                literalValue = "-" + literalValue;
+                            Literal newLiteral = analysisResults.LiteralsDict[literalValue];
 
                             if (literal.Variable != variable)
                             {
@@ -106,7 +122,10 @@ namespace SATCalculator.Classes
 
                         foreach (var literal in clause.Literals)
                         {
-                            Literal newLiteral = new Literal(literal.Variable, literal.Sign);
+                            string literalValue = literal.Variable.Name;
+                            if (literal.Sign == Sign.Negative)
+                                literalValue = "-" + literalValue;
+                            Literal newLiteral = newLiteral = analysisResults.LiteralsDict[literalValue];
 
                             if (literal.Variable != variable)
                             {
@@ -126,8 +145,7 @@ namespace SATCalculator.Classes
 
                 if (variablePair.ClausesWhenPositiveIsTrue.Count == 0)
                 {
-                    Literal newLiteral = new Literal($"+{variable}");
-                    newLiteral.Variable = variable;
+                    Literal newLiteral = analysisResults.LiteralsDict[variable.Name];
                     Clause reducedClause = new Clause();
                     reducedClause.AddLiteralSimple(newLiteral);
                     variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
@@ -135,8 +153,7 @@ namespace SATCalculator.Classes
 
                 if (variablePair.ClausesWhenNegativeIsTrue.Count == 0)
                 {
-                    Literal newLiteral = new Literal($"-{variable}");
-                    newLiteral.Variable = variable;
+                    Literal newLiteral = analysisResults.LiteralsDict[$"-{variable.Name}"];
                     Clause reducedClause = new Clause();
                     reducedClause.AddLiteralSimple(newLiteral);
                     variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
@@ -373,6 +390,8 @@ namespace SATCalculator.Classes
     public class VariableSelectionStep
     {
         public Variable Variable { get; set; } = new Variable();
+        public Literal PositiveLiteral { get; set; }
+        public Literal NegativeLiteral { get; set; }
         public List<Clause> PositiveClauses { get; set; } = new List<Clause>();
         public List<Clause> NegativeClauses { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenPositiveIsTrue { get; set; } = new List<Clause>();
