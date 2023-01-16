@@ -608,7 +608,7 @@
                                                                     </TextBlock>
                                                                 </Border>
                                                                 <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding PositiveClauses}"/>
+                                                                <ListView ItemsSource="{Binding ClausesWithPositiveAppearance}"/>
                                                                 <TextBlock Text="|"/>
                                                                 <Border Width="150">
                                                                     <TextBlock>
@@ -628,7 +628,7 @@
                                                                     </TextBlock>
                                                                 </Border>
                                                                 <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding NegativeClauses}"/>
+                                                                <ListView ItemsSource="{Binding ClausesWithNegativeAppearance}"/>
                                                                 <TextBlock Text="|"/>
                                                                 <Border Width="150">
                                                                     <TextBlock>

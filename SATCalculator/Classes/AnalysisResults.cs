@@ -67,17 +67,17 @@ namespace SATCalculator.Classes
 
             foreach (var variable in variablesSequence)
             {
-                VariableSelectionStep variablePair = new VariableSelectionStep();
-                variablePair.Variable = variable;
-                variablePair.PositiveLiteral = analysisResults.LiteralsDict[$"{variable.Name}"];
-                variablePair.NegativeLiteral = analysisResults.LiteralsDict[$"-{variable.Name}"];
+                VariableSelectionStep variableSelectionStep = new VariableSelectionStep();
+                variableSelectionStep.Variable = variable;
+                variableSelectionStep.PositiveLiteral = analysisResults.LiteralsDict[$"{variable.Name}"];
+                variableSelectionStep.NegativeLiteral = analysisResults.LiteralsDict[$"-{variable.Name}"];
 
                 if (conflictTableColumnIndex == 0)
                     conflictTableColumnIndex = 1;
                 else
                     conflictTableColumnIndex = conflictTableColumnIndex + 2;
 
-                variablePair.Variable.SequenceIndex = conflictTableColumnIndex;
+                variableSelectionStep.Variable.SequenceIndex = conflictTableColumnIndex;
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the reviewed clauses in the proper list
@@ -105,8 +105,8 @@ namespace SATCalculator.Classes
                             positiveClause.AddLiteralSimple(newLiteral);
                         }
 
-                        variablePair.PositiveClauses.Add(positiveClause);
-                        variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
+                        variableSelectionStep.ClausesWithPositiveAppearance.Add(positiveClause);
+                        variableSelectionStep.ClausesWhenNegativeIsTrue.Add(reducedClause);
                         clause.Used = true;
                     }
                 }
@@ -137,29 +137,29 @@ namespace SATCalculator.Classes
                             negativeClause.AddLiteralSimple(newLiteral);
                         }
 
-                        variablePair.NegativeClauses.Add(negativeClause);
-                        variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
+                        variableSelectionStep.ClausesWithNegativeAppearance.Add(negativeClause);
+                        variableSelectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause);
                         clause.Used = true;
                     }
                 }
 
-                if (variablePair.ClausesWhenPositiveIsTrue.Count == 0)
+                if (variableSelectionStep.ClausesWhenPositiveIsTrue.Count == 0)
                 {
                     Literal newLiteral = analysisResults.LiteralsDict[variable.Name];
                     Clause reducedClause = new Clause();
                     reducedClause.AddLiteralSimple(newLiteral);
-                    variablePair.ClausesWhenPositiveIsTrue.Add(reducedClause);
+                    variableSelectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause);
                 }
 
-                if (variablePair.ClausesWhenNegativeIsTrue.Count == 0)
+                if (variableSelectionStep.ClausesWhenNegativeIsTrue.Count == 0)
                 {
                     Literal newLiteral = analysisResults.LiteralsDict[$"-{variable.Name}"];
                     Clause reducedClause = new Clause();
                     reducedClause.AddLiteralSimple(newLiteral);
-                    variablePair.ClausesWhenNegativeIsTrue.Add(reducedClause);
+                    variableSelectionStep.ClausesWhenNegativeIsTrue.Add(reducedClause);
                 }
 
-                analysisResults.VariableSelectionStepsList.Add(variablePair);
+                analysisResults.VariableSelectionStepsList.Add(variableSelectionStep);
             }
 
             #endregion
@@ -168,11 +168,11 @@ namespace SATCalculator.Classes
 
             foreach (var step in analysisResults.VariableSelectionStepsList)
             {
-                foreach (var positiveClause in step.ClausesWhenPositiveIsTrue)
+                foreach (var clauseWhenPositiveIsTrue in step.ClausesWhenPositiveIsTrue)
                 {
-                    if (positiveClause.Literals.Count == 1)
+                    if (clauseWhenPositiveIsTrue.Literals.Count == 1)
                     {
-                        Literal literal = positiveClause.Literals[0];
+                        Literal literal = clauseWhenPositiveIsTrue.Literals[0];
 
                         EndVariableAppearances endVariableAppearances;
                         if (analysisResults.EndVariablesDict.ContainsKey(literal.Variable))
@@ -392,8 +392,8 @@ namespace SATCalculator.Classes
         public Variable Variable { get; set; } = new Variable();
         public Literal PositiveLiteral { get; set; }
         public Literal NegativeLiteral { get; set; }
-        public List<Clause> PositiveClauses { get; set; } = new List<Clause>();
-        public List<Clause> NegativeClauses { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWithPositiveAppearance { get; set; } = new List<Clause>();
+        public List<Clause> ClausesWithNegativeAppearance { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenPositiveIsTrue { get; set; } = new List<Clause>();
         public List<Clause> ClausesWhenNegativeIsTrue { get; set; } = new List<Clause>();
     }
@@ -404,6 +404,8 @@ namespace SATCalculator.Classes
         public List<VariableSign> PositiveAppearances = new List<VariableSign>();
         public List<VariableSign> NegativeAppearances = new List<VariableSign>();
 
+        public List<Literal> PositiveLiteralAppearances = new List<Literal>();
+        public List<Literal> NegativeLiteralAppearances = new List<Literal>();
     }
 
     public class VariableSign
