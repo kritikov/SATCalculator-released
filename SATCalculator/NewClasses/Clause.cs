@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace SATanalyzer.Classes
+namespace SATCalculator.NewClasses
 {
     public class Clause
     {
         #region Fields
 
-        public ObservableCollection<Literal> Literals { get; set; } = new ObservableCollection<Literal>();
+        public List<Literal> Literals { get; set; } = new List<Literal>();
 
         public string Name
         {
@@ -31,6 +31,16 @@ namespace SATanalyzer.Classes
             }
         }
 
+        public string NameSorted
+        {
+            get
+            {
+                var literals = Literals.OrderBy(p => p.Variable.CnfIndex).Select(p => p.Name).ToArray();
+                string keyText = string.Join(" ∨ ", literals);
+                return keyText;
+            }
+        }
+
         #endregion
 
 
@@ -43,6 +53,7 @@ namespace SATanalyzer.Classes
 
 
         #endregion
+
 
         #region Methods
 

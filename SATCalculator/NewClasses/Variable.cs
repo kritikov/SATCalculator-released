@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATanalyzer.Classes
+namespace SATCalculator.NewClasses
 {
     public class Variable
     {
@@ -15,8 +15,8 @@ namespace SATanalyzer.Classes
 
         public Guid Id = Guid.NewGuid();
 
-        public Literal LiteralPositive { get; set; }
-        public Literal LiteralNegative { get; set; }
+        public Literal PositiveLiteral { get; set; }
+        public Literal NegativeLiteral { get; set; }
 
         public string Name
         {
@@ -42,12 +42,14 @@ namespace SATanalyzer.Classes
 
         public Variable()
         {
-            LiteralPositive = new Literal(this, Sign.Positive);
-            LiteralNegative = new Literal(this, Sign.Negative);
+            
         }
 
         public Variable(string value) : base()
         {
+            PositiveLiteral = new Literal(this, Sign.Positive);
+            NegativeLiteral = new Literal(this, Sign.Negative);
+
             try
             {
                 if (value == "TRUE" || value == "+TRUE" || value == "-TRUE")

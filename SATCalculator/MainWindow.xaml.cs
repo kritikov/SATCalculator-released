@@ -416,8 +416,6 @@ namespace SATCalculator
             }
         }
 
-        
-
         /// <summary>
         /// Sort a ListView by a field
         /// </summary>

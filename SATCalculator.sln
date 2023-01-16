@@ -5,8 +5,6 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SATCalculator", "SATCalculator\SATCalculator.csproj", "{5F72A146-DC49-4354-AB86-A334B7D40968}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SATanalyzer", "SATanalyzer\SATanalyzer.csproj", "{B8FA2458-8A65-4AAD-AC06-ACCAB8755319}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{5F72A146-DC49-4354-AB86-A334B7D40968}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F72A146-DC49-4354-AB86-A334B7D40968}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F72A146-DC49-4354-AB86-A334B7D40968}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8FA2458-8A65-4AAD-AC06-ACCAB8755319}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8FA2458-8A65-4AAD-AC06-ACCAB8755319}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8FA2458-8A65-4AAD-AC06-ACCAB8755319}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8FA2458-8A65-4AAD-AC06-ACCAB8755319}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

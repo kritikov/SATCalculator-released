@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATanalyzer.Classes
+namespace SATCalculator.NewClasses
 {
     public class Literal
     {
@@ -42,6 +42,8 @@ namespace SATanalyzer.Classes
                     return ValuationEnum.True;
             }
         }
+
+        public List<Clause> ClausesWithAppearances = new List<Clause>();
 
         #endregion
 

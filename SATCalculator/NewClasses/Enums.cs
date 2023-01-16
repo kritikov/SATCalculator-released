@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATanalyzer.Classes
+namespace SATCalculator.NewClasses
 {
     public enum ValuationEnum { Null, True, False };
     public enum Sign { Positive, Negative };
