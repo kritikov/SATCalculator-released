@@ -2,6 +2,7 @@
 using SATCalculator.NewClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,19 @@ namespace SATCalculator.Views
     {
 
         #region VARIABLES AND NESTED CLASSES
+
+        public class VariableValue
+        {
+            public ValuationEnum Value { get; set; }
+            public string ValueAsString { get; set; }
+        }
+
+        public static List<VariableValue> VariableValues { get; set; } = new List<VariableValue>
+        {
+            new VariableValue(){Value = ValuationEnum.Null, ValueAsString="null" },
+            new VariableValue(){Value = ValuationEnum.True, ValueAsString="true" },
+            new VariableValue(){Value = ValuationEnum.False, ValueAsString="false" }
+        };
 
         private string message = "";
         public string Message
@@ -60,6 +74,19 @@ namespace SATCalculator.Views
             }
         }
 
+        private ObservableCollection<Clause> editorResolutionResults = new ObservableCollection<Clause>();
+        public ObservableCollection<Clause> EditorResolutionResults
+        {
+            get => editorResolutionResults;
+            set
+            {
+                editorResolutionResults = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorResolutionResults"));
+            }
+        }
+
+        public bool ResolutionKeepTrueClauses { get; set; } = true;
+
         #endregion
 
 
@@ -82,6 +109,63 @@ namespace SATCalculator.Views
                 return this.clausesSource.View;
             }
         }
+
+        private readonly CollectionViewSource variablesSource = new CollectionViewSource();
+        public ICollectionView VariablesView
+        {
+            get
+            {
+                return this.variablesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource formulaRelatedClausesSource = new CollectionViewSource();
+        public ICollectionView FormulaRelatedClausesView
+        {
+            get
+            {
+                return this.formulaRelatedClausesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource formulaClausesSource = new CollectionViewSource();
+        public ICollectionView FormulaClausesView
+        {
+            get
+            {
+                return this.formulaClausesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource editorClausesWithReferencesSource = new CollectionViewSource();
+        public ICollectionView EditorClausesWithReferencesView
+        {
+            get
+            {
+                return this.editorClausesWithReferencesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource editorClausesWithPositiveReferencesSource = new CollectionViewSource();
+        public ICollectionView EditorClausesWithPositiveReferencesView
+        {
+            get
+            {
+                return this.editorClausesWithPositiveReferencesSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource editorClausesWithNegativeReferencesSource = new CollectionViewSource();
+        public ICollectionView EditorClausesWithNegativeReferencesView
+        {
+            get
+            {
+                return this.editorClausesWithNegativeReferencesSource.View;
+            }
+        }
+
+        public CompositeCollection EditorClausesWithReferencesCollection { get; set; } = new CompositeCollection();
+
         #endregion
 
 
@@ -96,7 +180,6 @@ namespace SATCalculator.Views
             logsSource.Source = Logs.List;
 
             Logs.Write("Application started");
-
         }
         #endregion
 
@@ -104,7 +187,6 @@ namespace SATCalculator.Views
         #region EVENTS
 
         public event PropertyChangedEventHandler PropertyChanged;
-        
 
         private void LoadFormula(object sender, RoutedEventArgs e)
         {
@@ -123,12 +205,22 @@ namespace SATCalculator.Views
 
         private void ResetFormula(object sender, RoutedEventArgs e)
         {
+            Formula = formulaOriginal.CopyAsSATFormula();
 
+            SelectedVariable = null;
+
+            RefreshViews();
         }
 
         private void DeleteSelectedClause(object sender, RoutedEventArgs e)
         {
+            if (ClausesView.CurrentItem != null)
+            {
+                var clause = ClausesView.CurrentItem as Clause;
+                Formula.RemoveClause(clause);
 
+                RefreshViews();
+            }
         }
 
         public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
@@ -148,6 +240,67 @@ namespace SATCalculator.Views
                 }
             }
         }
+        
+        private void FormulaVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Formula != null)
+            {
+                var grid = sender as DataGrid;
+
+                if (grid.SelectedItem != null)
+                {
+                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                    SelectedVariable = selectedItem.Value;
+                    if (SelectedVariable != null && FormulaRelatedClausesView != null && FormulaClausesView != null)
+                    {
+                        FormulaRelatedClausesView.Filter = RelatedClausesFilter;
+                        FormulaClausesView.Refresh();
+                    }
+                }
+            }
+        }
+
+        private void EditorVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Formula != null)
+            {
+                var grid = sender as DataGrid;
+
+                if (grid.SelectedItem != null)
+                {
+                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                    Formula.SelectedVariable = selectedItem.Value;
+                    if (Formula.SelectedVariable != null)
+                        RefreshEditorViews();
+                }
+            }
+        }
+
+        private void EditorSelectedClauseChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
+            {
+                ResolutionSelectedClausesTest();
+            }
+        }
+
+        private void EditorResolutionSelectedClauses(object sender, RoutedEventArgs e)
+        {
+            ResolutionSelectedClauses();
+        }
+
+        private void EditorResolutionAllClausesTest(object sender, RoutedEventArgs e)
+        {
+            ResolutionAllClausesTest();
+        }
+
+        private void EditorResolutionAllClauses(object sender, RoutedEventArgs e)
+        {
+            ResolutionAllClauses();
+        }
+
         #endregion
 
 
@@ -213,6 +366,7 @@ namespace SATCalculator.Views
                     formulaOriginal = SATFormula.GetFromCnfFile(filename);
                     Formula = formulaOriginal.CopyAsSATFormula();
                     SelectedVariable = null;
+
                     RefreshViews();
                 }
                 else
@@ -231,10 +385,17 @@ namespace SATCalculator.Views
         /// </summary>
         private void RefreshViews()
         {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Formula"));
+
             clausesSource.Source = Formula.Clauses;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesView"));
 
+            variablesSource.Source = Formula.VariablesDict;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
+
             RefreshFormulaViews();
+            RefreshEditorViews();
+            //RefreshAlgorithmViews();
         }
 
         /// <summary>
@@ -242,8 +403,216 @@ namespace SATCalculator.Views
         /// </summary>
         private void RefreshFormulaViews()
         {
+            formulaClausesSource.Source = Formula.Clauses;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormulaClausesView"));
+
+            formulaRelatedClausesSource.Source = Formula.Clauses;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormulaRelatedClausesView"));
         }
+
+        /// <summary>
+        /// Refresh the editor tab views
+        /// </summary>
+        private void RefreshEditorViews()
+        {
+            try
+            {
+                if (Formula.SelectedVariable != null)
+                {
+                    editorClausesWithPositiveReferencesSource.Source = Formula.SelectedVariable.PositiveLiteral.ClausesWithAppearances;
+                    editorClausesWithNegativeReferencesSource.Source = Formula.SelectedVariable.NegativeLiteral.ClausesWithAppearances;
+
+                    EditorClausesWithReferencesCollection.Clear();
+                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.PositiveLiteral.ClausesWithAppearances });
+                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.NegativeLiteral.ClausesWithAppearances });
+                }
+                else
+                {
+                    EditorClausesWithReferencesCollection.Clear();
+                    editorClausesWithPositiveReferencesSource.Source = null;
+                    editorClausesWithNegativeReferencesSource.Source = null;
+                }
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithReferencesCollection"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithPositiveReferencesView"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithNegativeReferencesView"));
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// filter the related clauses view
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private bool RelatedClausesFilter(object item)
+        {
+            Clause clause = item as Clause;
+
+            if (clause.Literals.Any(p => p.Variable == SelectedVariable))
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Resolution the selected clauses in the positive and negative lists of the selected variable
+        /// </summary>
+        private void ResolutionSelectedClauses()
+        {
+            //try
+            //{
+            //    var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+            //    var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+            //    var selectedVariable = Formula.SelectedVariable;
+            //    EditorResolutionResults.Clear();
+
+            //    if (positiveClause != null && negativeClause != null)
+            //    {
+            //        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+            //        // remove old clauses from the formula
+            //        Formula.Clauses.Remove(positiveClause);
+            //        Formula.Clauses.Remove(negativeClause);
+
+            //        // add the new clause in the formula
+            //        if (newClause.Literals.Count > 0)
+            //            // if we dont keep the TRUE clauses in the formula then exit
+            //            if (newClause.Literals.Count == 1 && newClause.Literals[0].Value == "TRUE")
+            //            {
+            //                if (ResolutionKeepTrueClauses)
+            //                {
+            //                    Formula.Clauses.Add(newClause);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                Formula.Clauses.Add(newClause);
+            //            }
+
+
+            //        // create a new resolution formula
+            //        Formula = Formula.CopyAsSATFormula();
+
+            //        RefreshViews();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Message = ex.Message;
+            //}
+        }
+
+        /// <summary>
+        /// Resolution the selected clauses in the positive and negative lists of the selected variable
+        /// without updating the formula 
+        /// </summary>
+        private void ResolutionSelectedClausesTest()
+        {
+            //try
+            //{
+            //    EditorResolutionResults.Clear();
+
+            //    if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
+            //    {
+            //        // get the selected items from the lists to apply resolution
+            //        var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+            //        var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+            //        var selectedVariable = Formula.SelectedVariable;
+
+            //        if (positiveClause != null && negativeClause != null)
+            //        {
+            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+            //            // add the new clause to the results
+            //            if (newClause.Literals.Count > 0)
+            //                EditorResolutionResults.Add(newClause);
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Message = ex.Message;
+            //}
+        }
+
+        /// <summary>
+        /// ResolutioA all clauses in the positive and negative lists of the selected variables
+        /// without updating the formula
+        /// </summary>
+        private void ResolutionAllClausesTest()
+        {
+            //try
+            //{
+            //    var selectedVariable = Formula.SelectedVariable;
+            //    EditorResolutionResults.Clear();
+
+            //    int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
+            //    for (int i = 0; i < pairsCount; i++)
+            //    {
+            //        var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+            //        var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+            //        if (positiveClause != null && negativeClause != null)
+            //        {
+            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+            //            // add the new clause to the results
+            //            if (newClause.Literals.Count > 0)
+            //                EditorResolutionResults.Add(newClause);
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Message = ex.Message;
+            //}
+        }
+
+        /// <summary>
+        /// Resolution all clauses in the positive and negative lists of the selected variables
+        /// </summary>
+        private void ResolutionAllClauses()
+        {
+            //try
+            //{
+            //    var selectedVariable = Formula.SelectedVariable;
+            //    EditorResolutionResults.Clear();
+
+            //    int pairsCount = selectedVariable.Contrasts;
+            //    for (int i = 0; i < pairsCount; i++)
+            //    {
+            //        var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
+            //        var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+
+            //        if (positiveClause != null && negativeClause != null)
+            //        {
+            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+
+            //            // remove old clauses from the formula
+            //            Formula.Clauses.Remove(positiveClause);
+            //            Formula.Clauses.Remove(negativeClause);
+            //            if (newClause.Literals.Count > 0)
+            //                Formula.Clauses.Add(newClause);
+            //        }
+            //    }
+
+            //    // create a new resolution formula
+            //    Formula = Formula.CopyAsSATFormula();
+
+            //    RefreshViews();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Message = ex.Message;
+            //}
+        }
+
         #endregion
 
+        
     }
 }

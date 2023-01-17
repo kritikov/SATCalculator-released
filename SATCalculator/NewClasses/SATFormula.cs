@@ -1,5 +1,4 @@
-﻿using SATCalculator.Classes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,6 +19,7 @@ namespace SATCalculator.NewClasses
 
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
         public ObservableCollection<Variable> Variables { get; set; } = new ObservableCollection<Variable>();
+        public ObservableCollection<Literal> Literals { get; set; } = new ObservableCollection<Literal>();
 
         public Dictionary<string, Literal> LiteralsDict { get; set; } = new Dictionary<string, Literal>();
         public Dictionary<string, Variable> VariablesDict { get; set; } = new Dictionary<string, Variable>();
@@ -96,7 +96,7 @@ namespace SATCalculator.NewClasses
 
                 List<string> lines = linesArr.ToList();
 
-                formula = GetFromCnfLines(lines);
+                formula = CreateFromCnfLines(lines);
             }
             catch (Exception ex)
             {
@@ -106,7 +106,7 @@ namespace SATCalculator.NewClasses
             return formula;
         }
 
-        public static SATFormula GetFromCnfLines(List<string> lines)
+        public static SATFormula CreateFromCnfLines(List<string> lines)
         {
             SATFormula formula = new SATFormula();
 
@@ -152,6 +152,8 @@ namespace SATCalculator.NewClasses
                                     // add the literal in the dictionary if doesnt exists
                                     if (!formula.LiteralsDict.ContainsKey(literal.Name))
                                         formula.LiteralsDict.Add(literal.Name, literal);
+                                    if (!formula.Literals.Contains(literal))
+                                        formula.Literals.Add(literal);
 
                                     // add the literal to the clause
                                     clause.Literals.Add(literal);
@@ -211,9 +213,30 @@ namespace SATCalculator.NewClasses
         public SATFormula CopyAsSATFormula()
         {
             List<string> parts = this.GetCNFLines();
-            SATFormula formula = GetFromCnfLines(parts);
+            SATFormula formula = CreateFromCnfLines(parts);
 
             return formula;
+        }
+
+        /// <summary>
+        /// Remove a clause from the formula and its lists
+        /// </summary>
+        /// <param name="clause"></param>
+        public void RemoveClause(Clause clause)
+        {
+            // remove clause from the literals lists
+            foreach(var literal in clause.Literals)
+            {
+                literal.ClausesWithAppearances.Remove(clause);
+            }
+
+            // remove the clause from the dictionaries
+            if (ClausesDict.ContainsKey(clause.Name))
+                ClausesDict.Remove(clause.Name);
+
+            if (Clauses.Contains(clause))
+                Clauses.Remove(clause);
+
         }
 
         #endregion

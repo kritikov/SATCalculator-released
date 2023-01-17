@@ -43,7 +43,7 @@ namespace SATCalculator.NewClasses
             }
         }
 
-        public List<Clause> ClausesWithAppearances = new List<Clause>();
+        public List<Clause> ClausesWithAppearances { get; set; } = new List<Clause>();
 
         #endregion
 
@@ -57,6 +57,7 @@ namespace SATCalculator.NewClasses
         }
 
         #endregion
+
 
         #region Methods
 

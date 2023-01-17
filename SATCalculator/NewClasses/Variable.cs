@@ -35,6 +35,11 @@ namespace SATCalculator.NewClasses
         public int CnfIndex { get; set; } = 0;
         public ValuationEnum Valuation { get; set; } = ValuationEnum.Null;
 
+        public int ClausesWithPositiveReferencesCount => PositiveLiteral.ClausesWithAppearances.Count;
+        public int ClausesWithNegativeReferencesCount => NegativeLiteral.ClausesWithAppearances.Count;
+        public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
+        public int Contrasts => Math.Min(ClausesWithPositiveReferencesCount, ClausesWithNegativeReferencesCount);
+
         #endregion
 
 

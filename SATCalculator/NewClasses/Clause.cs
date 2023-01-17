@@ -41,6 +41,20 @@ namespace SATCalculator.NewClasses
             }
         }
 
+        public ValuationEnum Valuation
+        {
+            get
+            {
+                if (Literals.Any(p => p.Valuation == ValuationEnum.True))
+                    return ValuationEnum.True;
+
+                if (Literals.Count(p => p.Valuation == ValuationEnum.False) == Literals.Count)
+                    return ValuationEnum.False;
+
+                return ValuationEnum.Null;
+            }
+        }
+
         #endregion
 
 
