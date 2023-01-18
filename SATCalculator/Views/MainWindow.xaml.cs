@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -194,17 +195,17 @@ namespace SATCalculator.Views
 
         private void NewFormula(object sender, RoutedEventArgs e)
         {
-
+            CreateNewFormula();
         }
 
         private void SaveEditorFormulaAsCNF(object sender, RoutedEventArgs e)
         {
-
+            SaveFormulaAsCNF(Formula);
         }
 
         private void ResetFormula(object sender, RoutedEventArgs e)
         {
-            Formula = formulaOriginal.CopyAsSATFormula();
+            Formula = formulaOriginal.Copy();
 
             SelectedVariable = null;
 
@@ -217,6 +218,9 @@ namespace SATCalculator.Views
             {
                 var clause = ClausesView.CurrentItem as Clause;
                 Formula.RemoveClause(clause);
+
+                // create a new resolution formula
+                Formula = Formula.Copy();
 
                 RefreshViews();
             }
@@ -335,6 +339,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -363,7 +368,7 @@ namespace SATCalculator.Views
                     string filename = dialog.FileName;
 
                     formulaOriginal = SATFormula.GetFromCnfFile(filename);
-                    Formula = formulaOriginal.CopyAsSATFormula();
+                    Formula = formulaOriginal.Copy();
                     SelectedVariable = null;
 
                     RefreshViews();
@@ -375,6 +380,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -438,6 +444,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -481,13 +488,14 @@ namespace SATCalculator.Views
                     Formula.AddClause(newClause);
 
                     // create a new resolution formula
-                    Formula = Formula.CopyAsSATFormula();
+                    Formula = Formula.Copy();
 
                     RefreshViews();
                 }
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -520,6 +528,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -530,31 +539,31 @@ namespace SATCalculator.Views
         /// </summary>
         private void ResolutionAllClausesTest()
         {
-            //try
-            //{
-            //    var selectedVariable = Formula.SelectedVariable;
-            //    EditorResolutionResults.Clear();
+            try
+            {
+                var selectedVariable = Formula.SelectedVariable;
+                EditorResolutionResults.Clear();
 
-            //    int pairsCount = Math.Min(selectedVariable.ClausesWithPositiveReferencesCount, selectedVariable.ClausesWithNegativeReferencesCount);
-            //    for (int i = 0; i < pairsCount; i++)
-            //    {
-            //        var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-            //        var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+                int pairsCount = selectedVariable.Contrasts;
+                for (int i = 0; i < pairsCount; i++)
+                {
+                    var positiveClause = selectedVariable.PositiveLiteral.ClausesWithAppearances[i];
+                    var negativeClause = selectedVariable.NegativeLiteral.ClausesWithAppearances[i];
 
-            //        if (positiveClause != null && negativeClause != null)
-            //        {
-            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+                    if (positiveClause != null && negativeClause != null)
+                    {
+                        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
-            //            // add the new clause to the results
-            //            if (newClause.Literals.Count > 0)
-            //                EditorResolutionResults.Add(newClause);
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Message = ex.Message;
-            //}
+                        // add the new clause to the results
+                        EditorResolutionResults.Add(newClause);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         /// <summary>
@@ -562,42 +571,104 @@ namespace SATCalculator.Views
         /// </summary>
         private void ResolutionAllClauses()
         {
-            //try
-            //{
-            //    var selectedVariable = Formula.SelectedVariable;
-            //    EditorResolutionResults.Clear();
+            try
+            {
+                var selectedVariable = Formula.SelectedVariable;
+                EditorResolutionResults.Clear();
 
-            //    int pairsCount = selectedVariable.Contrasts;
-            //    for (int i = 0; i < pairsCount; i++)
-            //    {
-            //        var positiveClause = selectedVariable.ClausesWithPositiveAppearance[i];
-            //        var negativeClause = selectedVariable.ClausesWithNegativeAppearance[i];
+                int pairsCount = selectedVariable.Contrasts;
+                for (int i = 0; i < pairsCount; i++)
+                {
+                    var positiveClause = selectedVariable.PositiveLiteral.ClausesWithAppearances[i];
+                    var negativeClause = selectedVariable.NegativeLiteral.ClausesWithAppearances[i];
 
-            //        if (positiveClause != null && negativeClause != null)
-            //        {
-            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+                    if (positiveClause != null && negativeClause != null)
+                    {
+                        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
-            //            // remove old clauses from the formula
-            //            Formula.Clauses.Remove(positiveClause);
-            //            Formula.Clauses.Remove(negativeClause);
-            //            if (newClause.Literals.Count > 0)
-            //                Formula.Clauses.Add(newClause);
-            //        }
-            //    }
+                        // remove old clauses from the formula
+                        Formula.Clauses.Remove(positiveClause);
+                        Formula.Clauses.Remove(negativeClause);
 
-            //    // create a new resolution formula
-            //    Formula = Formula.CopyAsSATFormula();
+                        // add the new clause in the formula
+                        Formula.Clauses.Add(newClause);
+                    }
+                }
 
-            //    RefreshViews();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Message = ex.Message;
-            //}
+                // create a new resolution formula
+                Formula = Formula.Copy();
+
+                RefreshViews();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
+        /// <summary>
+        /// Create a new formula
+        /// </summary>
+        private void CreateNewFormula()
+        {
+            NewFormulaWindow newFormulaWindow = new NewFormulaWindow();
+            newFormulaWindow.ShowDialog();
+
+            if (newFormulaWindow.FormulaCnfLines.Count > 0)
+            {
+                formulaOriginal = SATFormula.CreateFromCnfLines(newFormulaWindow.FormulaCnfLines);
+                Formula = formulaOriginal.Copy();
+
+                SelectedVariable = null;
+                RefreshViews();
+            }
+        }
+
+        /// <summary>
+        /// Save a formula in a file at cnf format
+        /// </summary>
+        /// <param name="formula"></param>
+        private void SaveFormulaAsCNF(SATFormula formula)
+        {
+            List<string> lines = formula.GetCNFLines();
+            SaveLines(lines, "cnf");
+        }
+
+        /// <summary>
+        /// Save a list of lines in a file
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <param name="extension"></param>
+        private void SaveLines(List<string> lines, string extension)
+        {
+            try
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = $"{extension} file|*.{extension}";
+                saveFileDialog.Title = $"Save a {extension} file";
+                saveFileDialog.ShowDialog();
+
+                // If the file name is not an empty string open it for saving.
+                if (saveFileDialog.FileName != "")
+                {
+                    StreamWriter file = new StreamWriter($"{saveFileDialog.FileName}");
+
+                    foreach (string line in lines)
+                    {
+                        file.WriteLine(line);
+                    }
+
+                    file.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
+        }
         #endregion
 
-        
+
     }
 }

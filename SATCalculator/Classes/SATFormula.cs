@@ -232,7 +232,7 @@ namespace SATCalculator.Classes
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Logs.Write(ex.Message);
             }
 
             return formula;
@@ -262,7 +262,7 @@ namespace SATCalculator.Classes
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Logs.Write(ex.Message);
             }
 
             return formula;

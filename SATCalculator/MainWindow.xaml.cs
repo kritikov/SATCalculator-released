@@ -412,6 +412,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -446,6 +447,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -517,7 +519,9 @@ namespace SATCalculator
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithPositiveReferencesView"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorClausesWithNegativeReferencesView"));
             }
-            catch (Exception ex) {
+            catch (Exception ex) 
+            {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -584,6 +588,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -617,6 +622,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -650,6 +656,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -689,6 +696,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }

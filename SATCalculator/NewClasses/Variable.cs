@@ -72,7 +72,7 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
-                //Logs.Write(ex.Message);
+                Logs.Write(ex.Message);
             }
         }
 

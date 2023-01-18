@@ -100,6 +100,7 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 throw new Exception(ex.Message);
             }
 
@@ -177,7 +178,7 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
-
+                Logs.Write(ex.Message);
             }
 
             return formula;
@@ -210,7 +211,7 @@ namespace SATCalculator.NewClasses
         /// Create a clone of the formula in single SAT form
         /// </summary>
         /// <returns></returns>
-        public SATFormula CopyAsSATFormula()
+        public SATFormula Copy()
         {
             List<string> parts = this.GetCNFLines();
             SATFormula formula = CreateFromCnfLines(parts);
