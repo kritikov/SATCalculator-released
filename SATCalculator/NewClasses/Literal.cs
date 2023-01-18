@@ -17,10 +17,20 @@ namespace SATCalculator.NewClasses
         {
             get
             {
-                if (Sign == Sign.Positive)
-                    return Variable.Name;
+                if (Variable.CnfIndex == -1)
+                {
+                    if (Sign == Sign.Positive)
+                        return "TRUE";
+                    else
+                        return "FALSE";
+                }
                 else
-                    return "-" + Variable.Name;
+                {
+                    if (Sign == Sign.Positive)
+                        return Variable.Name;
+                    else
+                        return "-" + Variable.Name;
+                }
             }
         }
         public ValuationEnum Valuation
@@ -44,6 +54,16 @@ namespace SATCalculator.NewClasses
         }
 
         public List<Clause> ClausesWithAppearances { get; set; } = new List<Clause>();
+
+        public Literal Opposite { 
+            get
+            {
+                if (this.Sign == Sign.Positive)
+                    return this.Variable.NegativeLiteral;
+                else
+                    return this.Variable.PositiveLiteral;
+            } 
+        }
 
         #endregion
 

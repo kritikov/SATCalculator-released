@@ -512,31 +512,31 @@ namespace SATCalculator.Views
         /// </summary>
         private void ResolutionSelectedClausesTest()
         {
-            //try
-            //{
-            //    EditorResolutionResults.Clear();
+            try
+            {
+                EditorResolutionResults.Clear();
 
-            //    if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
-            //    {
-            //        // get the selected items from the lists to apply resolution
-            //        var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
-            //        var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
-            //        var selectedVariable = Formula.SelectedVariable;
+                if (EditorClausesWithPositiveReferencesView.CurrentItem != null && EditorClausesWithNegativeReferencesView.CurrentItem != null)
+                {
+                    // get the selected items from the lists to apply resolution
+                    var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+                    var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+                    var selectedVariable = Formula.SelectedVariable;
 
-            //        if (positiveClause != null && negativeClause != null)
-            //        {
-            //            Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+                    if (positiveClause != null && negativeClause != null)
+                    {
+                        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
-            //            // add the new clause to the results
-            //            if (newClause.Literals.Count > 0)
-            //                EditorResolutionResults.Add(newClause);
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Message = ex.Message;
-            //}
+                        // add the new clause to the results
+                        if (newClause.Literals.Count > 0)
+                            EditorResolutionResults.Add(newClause);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
         }
 
         /// <summary>

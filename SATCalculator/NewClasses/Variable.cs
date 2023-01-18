@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,14 +23,7 @@ namespace SATCalculator.NewClasses
         {
             get
             {
-                if (CnfIndex == -1)
-                    return "TRUE";
-                else if (CnfIndex == -2)
-                    return "FALSE";
-                else
-                {
-                    return DefaultVariableName + CnfIndex.ToString();
-                }
+                return DefaultVariableName + CnfIndex.ToString();
             }
         }
         public int CnfIndex { get; set; } = 0;
@@ -40,12 +34,14 @@ namespace SATCalculator.NewClasses
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int Contrasts => Math.Min(ClausesWithPositiveReferencesCount, ClausesWithNegativeReferencesCount);
 
-        #endregion
+        public static Variable FixedVariable = new Variable("TRUE");
+
+    #endregion
 
 
-        #region Constructors
+    #region Constructors
 
-        public Variable()
+    public Variable()
         {
             
         }

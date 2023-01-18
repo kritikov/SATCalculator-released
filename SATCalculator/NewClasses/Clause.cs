@@ -76,6 +76,70 @@ namespace SATCalculator.NewClasses
             return Name;
         }
 
+        /// return a clause from the resolution of two others 
+        public static Clause Resolution(Variable variable, Clause positiveClause, Clause negativeClause)
+        {
+            Clause newClause = new Clause();
+
+            try
+            {
+                // if the two clauses has one literal in contrast values then we have a contradiction
+                if (positiveClause.Literals.Count == 1 && negativeClause.Literals.Count == 1 &&
+                    positiveClause.Literals[0].Variable == variable &&
+                    negativeClause.Literals[0].Variable == variable)
+                {
+                    newClause = new Clause();
+                    newClause.Literals.Add(Variable.FixedVariable.NegativeLiteral);
+                    return newClause;
+                }
+
+                // check the literals in the clause with the positive reference of the variable
+                foreach (var literal in positiveClause.Literals)
+                {
+                    if (literal.Variable != variable)
+                    {
+                        // if the literal exists in the new clause but with opposite value
+                        // then the clause is always true and can be discarded
+                        if (newClause.Literals.Contains(literal.Opposite))
+                        {
+                            newClause = new Clause();
+                            newClause.Literals.Add(Variable.FixedVariable.PositiveLiteral);
+                            return newClause;
+                        }
+
+                        // if the literal doesnt allready exists in the new clause then add it
+                        if (!newClause.Literals.Contains(literal))
+                            newClause.Literals.Add(literal);
+                    }
+                }
+
+                // check the literals in the clause with the negative reference of the variable
+                foreach (var literal in negativeClause.Literals)
+                {
+                    if (literal.Variable != variable)
+                    {
+                        // if the literal exists in the new clause but with opposite value
+                        // then the clause is always true and can be discarded
+                        if (newClause.Literals.Contains(literal.Opposite))
+                        {
+                            newClause = new Clause();
+                            newClause.Literals.Add(Variable.FixedVariable.PositiveLiteral);
+                            return newClause;
+                        }
+
+                        // if the literal doesnt allready exists in the new clause then add it
+                        if (!newClause.Literals.Contains(literal))
+                            newClause.Literals.Add(literal);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+            }
+
+            return newClause;
+        }
         #endregion
 
     }
