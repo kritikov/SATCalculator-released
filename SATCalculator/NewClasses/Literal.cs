@@ -13,6 +13,14 @@ namespace SATCalculator.NewClasses
 
         public Variable Variable { get; set; } = new Variable();
         public Sign Sign { get; set; }
+        public string SignToString { get
+            {
+                if (this.Sign == Sign.Negative)
+                    return "-";
+                else
+                    return "+";
+            } 
+        }
         public string Name
         {
             get

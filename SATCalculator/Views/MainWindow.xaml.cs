@@ -85,7 +85,6 @@ namespace SATCalculator.Views
             }
         }
 
-        public bool ResolutionKeepTrueClauses { get; set; } = true;
 
         #endregion
 
@@ -463,47 +462,34 @@ namespace SATCalculator.Views
         /// </summary>
         private void ResolutionSelectedClauses()
         {
-            //try
-            //{
-            //    var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
-            //    var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
-            //    var selectedVariable = Formula.SelectedVariable;
-            //    EditorResolutionResults.Clear();
+            try
+            {
+                var positiveClause = EditorClausesWithPositiveReferencesView.CurrentItem as Clause;
+                var negativeClause = EditorClausesWithNegativeReferencesView.CurrentItem as Clause;
+                var selectedVariable = Formula.SelectedVariable;
+                EditorResolutionResults.Clear();
 
-            //    if (positiveClause != null && negativeClause != null)
-            //    {
-            //        Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
+                if (positiveClause != null && negativeClause != null)
+                {
+                    Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
-            //        // remove old clauses from the formula
-            //        Formula.Clauses.Remove(positiveClause);
-            //        Formula.Clauses.Remove(negativeClause);
+                    // remove old clauses from the formula
+                    Formula.RemoveClause(positiveClause);
+                    Formula.RemoveClause(negativeClause);
 
-            //        // add the new clause in the formula
-            //        if (newClause.Literals.Count > 0)
-            //            // if we dont keep the TRUE clauses in the formula then exit
-            //            if (newClause.Literals.Count == 1 && newClause.Literals[0].Value == "TRUE")
-            //            {
-            //                if (ResolutionKeepTrueClauses)
-            //                {
-            //                    Formula.Clauses.Add(newClause);
-            //                }
-            //            }
-            //            else
-            //            {
-            //                Formula.Clauses.Add(newClause);
-            //            }
+                    // add the new clause in the formula
+                    Formula.AddClause(newClause);
 
+                    // create a new resolution formula
+                    Formula = Formula.CopyAsSATFormula();
 
-            //        // create a new resolution formula
-            //        Formula = Formula.CopyAsSATFormula();
-
-            //        RefreshViews();
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Message = ex.Message;
-            //}
+                    RefreshViews();
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
         }
 
         /// <summary>
@@ -528,8 +514,7 @@ namespace SATCalculator.Views
                         Clause newClause = Clause.Resolution(selectedVariable, positiveClause, negativeClause);
 
                         // add the new clause to the results
-                        if (newClause.Literals.Count > 0)
-                            EditorResolutionResults.Add(newClause);
+                        EditorResolutionResults.Add(newClause);
                     }
                 }
             }

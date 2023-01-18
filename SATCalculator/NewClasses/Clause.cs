@@ -18,26 +18,27 @@ namespace SATCalculator.NewClasses
         {
             get
             {
-                string name = "";
-                foreach (var literal in Literals)
+                if (this == ClauseTrue)
                 {
-                    if (name != "")
-                        name += " ∨ ";
-
-                    name += literal.Name;
+                    return "TRUE";
                 }
+                else if (this == ClauseTrue)
+                {
+                    return "FALSE";
+                }
+                else
+                {
+                    string name = "";
+                    foreach (var literal in Literals)
+                    {
+                        if (name != "")
+                            name += " ∨ ";
 
-                return name;
-            }
-        }
+                        name += literal.Name;
+                    }
 
-        public string NameSorted
-        {
-            get
-            {
-                var literals = Literals.OrderBy(p => p.Variable.CnfIndex).Select(p => p.Name).ToArray();
-                string keyText = string.Join(" ∨ ", literals);
-                return keyText;
+                    return name;
+                }
             }
         }
 
@@ -54,6 +55,9 @@ namespace SATCalculator.NewClasses
                 return ValuationEnum.Null;
             }
         }
+
+        public static Clause ClauseTrue = new Clause();
+        public static Clause ClauseFalse = new Clause();
 
         #endregion
 
@@ -101,11 +105,7 @@ namespace SATCalculator.NewClasses
                         // if the literal exists in the new clause but with opposite value
                         // then the clause is always true and can be discarded
                         if (newClause.Literals.Contains(literal.Opposite))
-                        {
-                            newClause = new Clause();
-                            newClause.Literals.Add(Variable.FixedVariable.PositiveLiteral);
-                            return newClause;
-                        }
+                            return ClauseTrue;
 
                         // if the literal doesnt allready exists in the new clause then add it
                         if (!newClause.Literals.Contains(literal))
@@ -121,11 +121,7 @@ namespace SATCalculator.NewClasses
                         // if the literal exists in the new clause but with opposite value
                         // then the clause is always true and can be discarded
                         if (newClause.Literals.Contains(literal.Opposite))
-                        {
-                            newClause = new Clause();
-                            newClause.Literals.Add(Variable.FixedVariable.PositiveLiteral);
-                            return newClause;
-                        }
+                            return ClauseTrue;
 
                         // if the literal doesnt allready exists in the new clause then add it
                         if (!newClause.Literals.Contains(literal))

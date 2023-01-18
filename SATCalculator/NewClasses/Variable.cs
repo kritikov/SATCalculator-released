@@ -23,7 +23,10 @@ namespace SATCalculator.NewClasses
         {
             get
             {
-                return DefaultVariableName + CnfIndex.ToString();
+                if (CnfIndex == -1)
+                    return "T/F";
+                else
+                    return DefaultVariableName + CnfIndex.ToString();
             }
         }
         public int CnfIndex { get; set; } = 0;
@@ -34,14 +37,14 @@ namespace SATCalculator.NewClasses
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int Contrasts => Math.Min(ClausesWithPositiveReferencesCount, ClausesWithNegativeReferencesCount);
 
-        public static Variable FixedVariable = new Variable("TRUE");
+        public static Variable FixedVariable = new Variable("FIXED");
 
-    #endregion
+        #endregion
 
 
-    #region Constructors
+        #region Constructors
 
-    public Variable()
+        public Variable()
         {
             
         }
@@ -53,17 +56,13 @@ namespace SATCalculator.NewClasses
 
             try
             {
-                if (value == "TRUE" || value == "+TRUE" || value == "-TRUE")
+                if (value == "FIXED")
                 {
                     CnfIndex = -1;
                 }
-                else if (value == "FALSE" || value == "+FALSE" || value == "-FALSE")
-                {
-                    CnfIndex = -2;
-                }
                 else
                 {
-                    string numbers = new String(value.Where(Char.IsDigit).ToArray());
+                    string numbers = new string(value.Where(Char.IsDigit).ToArray());
 
                     if (string.IsNullOrEmpty(numbers))
                         numbers = "0";

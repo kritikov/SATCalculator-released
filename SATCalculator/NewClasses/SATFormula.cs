@@ -239,6 +239,24 @@ namespace SATCalculator.NewClasses
 
         }
 
+        /// <summary>
+        /// Add a clause to the formula if doesnt allready exists
+        /// </summary>
+        /// <param name="clause"></param>
+        public void AddClause(Clause clause)
+        {
+            // if the clause allready exists in the formula then exit
+            if (ClausesDict.ContainsKey(clause.Name))
+                return;
+
+            ClausesDict.Add(clause.Name, clause);
+            Clauses.Add(clause);
+
+            // add clause to the literals lists
+            foreach (var literal in clause.Literals)
+                literal.ClausesWithAppearances.Add(clause);
+        }
+
         #endregion
     }
 }

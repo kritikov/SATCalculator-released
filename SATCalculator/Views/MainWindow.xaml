@@ -421,8 +421,6 @@
                                         <Button Content="Test all" Click="EditorResolutionAllClausesTest"/>
                                         <Button Content="Res.all" Click="EditorResolutionAllClauses"/>
                                     </StackPanel>
-                                    <CheckBox IsChecked="{Binding ResolutionKeepTrueClauses, Mode=TwoWay}" Content="Keep TRUE clauses"
-                                      ToolTip="Keep the clauses that are TRUE after a resolution"/>
                                 </WrapPanel>
                             </Grid>
                         </Grid>
