@@ -20,15 +20,10 @@ namespace SATCalculator.NewClasses
 
         public List<string> Problems { get; set; } = new List<string>();
 
-
-
-
-
-        public int VariablesCount { get; set; } = 0;
-        public Dictionary<string, Literal> LiteralsDict = new Dictionary<string, Literal>();
-        public Dictionary<VariableSign, List<VariableSign>> ConflictsDict = new Dictionary<VariableSign, List<VariableSign>>();
-        public DataTable ConflictsTable { get; set; }
         public DataTable EndVariableAppearancesTable { get; set; }
+
+        public DataTable ConflictsTable { get; set; }
+
 
         #endregion
 
@@ -151,7 +146,7 @@ namespace SATCalculator.NewClasses
                         if (literal.Sign == Sign.Positive)
                             endVariableAppearances.PositiveAppearances.Add(selectionStep.Variable.PositiveLiteral);
                         else
-                            endVariableAppearances.NegativeAppearances.Add(selectionStep.Variable.NegativeLiteral);
+                            endVariableAppearances.NegativeAppearances.Add(selectionStep.Variable.PositiveLiteral);
                     }
                 }
 
@@ -216,7 +211,6 @@ namespace SATCalculator.NewClasses
                 variableIndexes.Add(variable, indexes);
 
                 columnIndex += 2;
-
             }
 
             // fill the table
@@ -249,109 +243,105 @@ namespace SATCalculator.NewClasses
             #endregion
 
 
+            #region Create the conflicts datatable to display the results
 
-            //#region Create the conflicts datatable to display the results
+            analysisResults.ConflictsTable = new DataTable();
+            analysisResults.ConflictsTable.Columns.Add("", typeof(string));
 
-            //analysisResults.ConflictsTable = new DataTable();
-            //analysisResults.ConflictsTable.Columns.Add("", typeof(string));
+            // create the columns
+            foreach (var variable in variablesSequence)
+            {
+                analysisResults.ConflictsTable.Columns.Add(variable.Name, typeof(string), "");
+                analysisResults.ConflictsTable.Columns.Add("-" + variable.Name, typeof(string), "");
+            }
 
-            //// create the columns
-            //foreach (var variable in variablesSequence)
-            //{
-            //    analysisResults.ConflictsTable.Columns.Add(variable.Name, typeof(string), "");
-            //    analysisResults.ConflictsTable.Columns.Add("-" + variable.Name, typeof(string), "");
-            //}
+            // create the rows
+            foreach (var variable in variablesSequence)
+            {
+                DataRow rowPos = analysisResults.ConflictsTable.NewRow();
+                rowPos[0] = variable.PositiveLiteral.Name;
+                analysisResults.ConflictsTable.Rows.Add(rowPos);
 
-            //// create the rows
-            //foreach (var variable in variablesSequence)
-            //{
-            //    DataRow rowPos = analysisResults.ConflictsTable.NewRow();
-            //    rowPos[0] = variable.Name;
-            //    analysisResults.ConflictsTable.Rows.Add(rowPos);
+                DataRow rowNeg = analysisResults.ConflictsTable.NewRow();
+                rowNeg[0] = variable.NegativeLiteral.Name;
+                analysisResults.ConflictsTable.Rows.Add(rowNeg);
+            }
 
-            //    DataRow rowNeg = analysisResults.ConflictsTable.NewRow();
-            //    rowNeg[0] = "-" + variable.Name;
-            //    analysisResults.ConflictsTable.Rows.Add(rowNeg);
-            //}
+            // fill the table
+            foreach (var endVariableAppearancesDict in analysisResults.EndVariablesAppearancesDict)
+            {
+                foreach (var positiveAppearance in endVariableAppearancesDict.Value.PositiveAppearances)
+                {
+                    columnIndex = variableIndexes[positiveAppearance.Variable].ColumnIndex;
+                    if (positiveAppearance.Sign == Sign.Negative)
+                        columnIndex++;
 
-            //// fill the table
-            //foreach (var endVariable in analysisResults.EndVariablesDict)
-            //{
-            //    foreach (var positiveAppearance in endVariable.Value.PositiveAppearances)
-            //    {
-            //        int columnIndex = positiveAppearance.Variable.SequenceIndex;
-            //        if (positiveAppearance.Sign == Sign.Negative)
-            //            columnIndex++;
+                    foreach (var negativeAppearance in endVariableAppearancesDict.Value.NegativeAppearances)
+                    {
+                        // forward
+                        int rowIndex = variableIndexes[negativeAppearance.Variable].ColumnIndex-1;
+                        //int rowIndex = negativeAppearance.Variable.SequenceIndex - 1;
+                        if (negativeAppearance.Sign == Sign.Negative)
+                            rowIndex++;
 
-            //        foreach (var negativeAppearance in endVariable.Value.NegativeAppearances)
-            //        {
-            //            // forward
-            //            int rowIndex = negativeAppearance.Variable.SequenceIndex - 1;
-            //            if (negativeAppearance.Sign == Sign.Negative)
-            //                rowIndex++;
+                        DataRow row = analysisResults.ConflictsTable.Rows[rowIndex];
+                        row[columnIndex] = "x";
+                        if (positiveAppearance.Sign == Sign.Negative)
+                            row[columnIndex - 1] = "v";
+                        else
+                            row[columnIndex + 1] = "v";
 
-            //            DataRow row = analysisResults.ConflictsTable.Rows[rowIndex];
-            //            row[columnIndex] = "x";
-            //            if (positiveAppearance.Sign == Sign.Negative)
-            //                row[columnIndex - 1] = "v";
-            //            else
-            //                row[columnIndex + 1] = "v";
+                        // backward
+                        int rowIndex2 = columnIndex - 1;
+                        int columnIndex2 = rowIndex + 1;
+                        row = analysisResults.ConflictsTable.Rows[rowIndex2];
+                        row[columnIndex2] = "x";
+                        if (negativeAppearance.Sign == Sign.Negative)
+                            row[columnIndex2 - 1] = "v";
+                        else
+                            row[columnIndex2 + 1] = "v";
+                    }
+                }
+            }
 
-            //            // backward
-            //            int rowIndex2 = columnIndex - 1;
-            //            int columnIndex2 = rowIndex + 1;
-            //            row = analysisResults.ConflictsTable.Rows[rowIndex2];
-            //            row[columnIndex2] = "x";
-            //            if (negativeAppearance.Sign == Sign.Negative)
-            //                row[columnIndex2 - 1] = "v";
-            //            else
-            //                row[columnIndex2 + 1] = "v";
-            //        }
-            //    }
-            //}
-
-            //#endregion
-
-
-
-
+            #endregion
 
             //#region Create the conflicts list
 
-            ////ConflictsDict
-            ////foreach (var item in analysisResults.EndVariablesDict)
-            ////{
-            ////    foreach (var positiveAppearance in item.Value.PositiveAppearances)
-            ////    {
-            ////        List<VariableSign> variableSignList1;
-            ////        if (analysisResults.ConflictsDict.ContainsKey(positiveAppearance))
-            ////        {
-            ////            variableSignList1 = analysisResults.ConflictsDict[positiveAppearance];
-            ////        }
-            ////        else
-            ////        {
-            ////            variableSignList1 = new List<VariableSign>();
-            ////            analysisResults.ConflictsDict.Add(positiveAppearance, variableSignList1);
-            ////        }
+            //ConflictsDict
+            //foreach (var item in analysisResults.EndVariablesDict)
+            //{
+            //    foreach (var positiveAppearance in item.Value.PositiveAppearances)
+            //    {
+            //        List<VariableSign> variableSignList1;
+            //        if (analysisResults.ConflictsDict.ContainsKey(positiveAppearance))
+            //        {
+            //            variableSignList1 = analysisResults.ConflictsDict[positiveAppearance];
+            //        }
+            //        else
+            //        {
+            //            variableSignList1 = new List<VariableSign>();
+            //            analysisResults.ConflictsDict.Add(positiveAppearance, variableSignList1);
+            //        }
 
-            ////        foreach (var negativeAppearance in item.Value.NegativeAppearances)
-            ////        {
-            ////            List<VariableSign> variableSignList2;
-            ////            if (analysisResults.ConflictsDict.ContainsKey(negativeAppearance))
-            ////            {
-            ////                variableSignList2 = analysisResults.ConflictsDict[negativeAppearance];
-            ////            }
-            ////            else
-            ////            {
-            ////                variableSignList2 = new List<VariableSign>();
-            ////                analysisResults.ConflictsDict.Add(negativeAppearance, variableSignList2);
-            ////            }
+            //        foreach (var negativeAppearance in item.Value.NegativeAppearances)
+            //        {
+            //            List<VariableSign> variableSignList2;
+            //            if (analysisResults.ConflictsDict.ContainsKey(negativeAppearance))
+            //            {
+            //                variableSignList2 = analysisResults.ConflictsDict[negativeAppearance];
+            //            }
+            //            else
+            //            {
+            //                variableSignList2 = new List<VariableSign>();
+            //                analysisResults.ConflictsDict.Add(negativeAppearance, variableSignList2);
+            //            }
 
-            ////            variableSignList1.Add(negativeAppearance);
-            ////            variableSignList2.Add(positiveAppearance);
-            ////        }
-            ////    }
-            ////}
+            //            variableSignList1.Add(negativeAppearance);
+            //            variableSignList2.Add(positiveAppearance);
+            //        }
+            //    }
+            //}
 
             //#endregion
 
@@ -373,7 +363,6 @@ namespace SATCalculator.NewClasses
     public class EndVariableAppearances
     {
         public Variable Variable { get; set; }
-
         public List<Literal> PositiveAppearances = new List<Literal>();
         public List<Literal> NegativeAppearances = new List<Literal>();
     }
@@ -386,19 +375,4 @@ namespace SATCalculator.NewClasses
         public int RowIndex = 0;
     }
 
-
-
-
-
-    public class VariableSign
-    {
-        public Variable Variable { get; set; }
-        public Sign Sign { get; set; }
-
-        public VariableSign(Variable variable, Sign sign)
-        {
-            Variable = variable;
-            Sign = sign;
-        }
-    }
 }

@@ -203,6 +203,15 @@ namespace SATCalculator.Views
             }
         }
 
+        private readonly CollectionViewSource algorithmConflictsSource = new CollectionViewSource();
+        public ICollectionView AlgorithmConflictsView
+        {
+            get
+            {
+                return this.algorithmConflictsSource.View;
+            }
+        }
+
         #endregion
 
 
@@ -505,8 +514,8 @@ namespace SATCalculator.Views
             algorithmAppearancesSource.Source = AlgorithmAnalysisResults.EndVariableAppearancesTable;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
 
-            //algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsTable;
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
+            algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsTable;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
 
         }
 
