@@ -526,7 +526,7 @@ namespace SATCalculator
             }
         }
 
-         /// <summary>
+        /// <summary>
         /// Refresh the algorithm tab views
         /// </summary>
         private void RefreshAlgorithmViews()

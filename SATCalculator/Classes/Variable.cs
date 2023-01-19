@@ -16,7 +16,7 @@ namespace SATCalculator.Classes
 
         public static string DefaultVariableName = "x";
 
-        public Guid Id = Guid.NewGuid();
+        //public Guid Id = Guid.NewGuid();
         public string Name
         {
             get

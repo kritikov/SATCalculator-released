@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SATCalculator.NewClasses
 {
-    public class Literal
+    public class Literal : INotifyPropertyChanged
     {
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
 
@@ -61,7 +65,7 @@ namespace SATCalculator.NewClasses
             }
         }
 
-        public List<Clause> ClausesWithAppearances { get; set; } = new List<Clause>();
+        public ObservableCollection<Clause> ClausesWithAppearances { get; set; } = new ObservableCollection<Clause>();
 
         public Literal Opposite { 
             get

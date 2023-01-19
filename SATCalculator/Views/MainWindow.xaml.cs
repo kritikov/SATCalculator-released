@@ -86,6 +86,16 @@ namespace SATCalculator.Views
             }
         }
 
+        private AnalysisResults algorithmAnalysisResults = new AnalysisResults();
+        public AnalysisResults AlgorithmAnalysisResults
+        {
+            get => algorithmAnalysisResults;
+            set
+            {
+                algorithmAnalysisResults = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResults"));
+            }
+        }
 
         #endregion
 
@@ -165,6 +175,33 @@ namespace SATCalculator.Views
         }
 
         public CompositeCollection EditorClausesWithReferencesCollection { get; set; } = new CompositeCollection();
+
+        private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
+        public ICollectionView AlgorithmFlowView
+        {
+            get
+            {
+                return this.algorithmFlowSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource algorithmProblemsSource = new CollectionViewSource();
+        public ICollectionView AlgorithmProblemsView
+        {
+            get
+            {
+                return this.algorithmProblemsSource.View;
+            }
+        }
+
+        private readonly CollectionViewSource algorithmAppearancesSource = new CollectionViewSource();
+        public ICollectionView AlgorithmAppearancesView
+        {
+            get
+            {
+                return this.algorithmAppearancesSource.View;
+            }
+        }
 
         #endregion
 
@@ -304,6 +341,11 @@ namespace SATCalculator.Views
             ResolutionAllClauses();
         }
 
+        private void AnalyzeFormula(object sender, RoutedEventArgs e)
+        {
+            AnalyzeFormula(Formula);
+        }
+
         #endregion
 
 
@@ -400,7 +442,7 @@ namespace SATCalculator.Views
 
             RefreshFormulaViews();
             RefreshEditorViews();
-            //RefreshAlgorithmViews();
+            RefreshAlgorithmViews();
         }
 
         /// <summary>
@@ -447,6 +489,25 @@ namespace SATCalculator.Views
                 Logs.Write(ex.Message);
                 Message = ex.Message;
             }
+        }
+
+        /// <summary>
+        /// Refresh the algorithm tab views
+        /// </summary>
+        private void RefreshAlgorithmViews()
+        {
+            algorithmFlowSource.Source = AlgorithmAnalysisResults.SelectionSteps;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmFlowView"));
+
+            algorithmProblemsSource.Source = AlgorithmAnalysisResults.Problems;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmProblemsView"));
+
+            algorithmAppearancesSource.Source = AlgorithmAnalysisResults.EndVariableAppearancesTable;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
+
+            //algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsTable;
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
+
         }
 
         /// <summary>
@@ -669,6 +730,17 @@ namespace SATCalculator.Views
         }
         #endregion
 
+        /// <summary>
+        /// Analyze a formula with the algorithm
+        /// </summary>
+        /// <param name="formula"></param>
+        public void AnalyzeFormula(SATFormula formula)
+        {
+            AlgorithmAnalysisResults = AnalysisResults.Analyze(formula);
 
+            RefreshAlgorithmViews();
+        }
+
+        
     }
 }

@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="NewClasses\AnalysisResults.cs" />
     <Compile Include="NewClasses\Converters.cs" />
     <Compile Include="NewClasses\Logs.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
