@@ -56,7 +56,8 @@ namespace SATCalculator.NewClasses
             // check the number of the variables per clause
 
             // get a list with the variables sorted by the contrasts
-            var variablesSequence = formula.Variables.Select(p => p).OrderByDescending(p => p.Contrasts).ToList();
+            //var variablesSequence = formula.Variables.Select(p => p).OrderByDescending(p => p.Contrasts).ToList();
+            var variablesSequence = formula.Variables.Select(p => p).OrderBy(p => p.CnfIndex).ToList();
 
             #region Create the selection steps
 
@@ -102,19 +103,27 @@ namespace SATCalculator.NewClasses
                     selectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause);
                 }
 
-                if (selectionStep.ClausesWhenPositiveIsTrue.Count == 0)
-                {
-                    Clause reducedClause = new Clause();
-                    reducedClause.Literals.Add(variable.PositiveLiteral);
-                    selectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause);
-                }
+                Clause reducedClause1 = new Clause();
+                reducedClause1.Literals.Add(variable.PositiveLiteral);
+                selectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause1);
 
-                if (selectionStep.ClausesWhenNegativeIsTrue.Count == 0)
-                {
-                    Clause reducedClause = new Clause();
-                    reducedClause.Literals.Add(variable.NegativeLiteral);
-                    selectionStep.ClausesWhenNegativeIsTrue.Add(reducedClause);
-                }
+                Clause reducedClause2 = new Clause();
+                reducedClause2.Literals.Add(variable.NegativeLiteral);
+                selectionStep.ClausesWhenNegativeIsTrue.Add(reducedClause2);
+
+                //if (selectionStep.ClausesWhenPositiveIsTrue.Count == 0)
+                //{
+                //    Clause reducedClause = new Clause();
+                //    reducedClause.Literals.Add(variable.PositiveLiteral);
+                //    selectionStep.ClausesWhenPositiveIsTrue.Add(reducedClause);
+                //}
+
+                //if (selectionStep.ClausesWhenNegativeIsTrue.Count == 0)
+                //{
+                //    Clause reducedClause = new Clause();
+                //    reducedClause.Literals.Add(variable.NegativeLiteral);
+                //    selectionStep.ClausesWhenNegativeIsTrue.Add(reducedClause);
+                //}
 
                 analysisResults.SelectionSteps.Add(selectionStep);
             }
