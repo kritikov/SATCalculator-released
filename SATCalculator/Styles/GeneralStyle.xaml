@@ -122,14 +122,14 @@
     <!-- ListView -->
     <Style TargetType="ListView">
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="Background" Value="WhiteSmoke" />
+        <Setter Property="Background" Value="White" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Resources>
             <Style TargetType="ListViewItem">
                 <Setter Property="BorderBrush" Value="WhiteSmoke" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Padding" Value="4" />
+                <Setter Property="Padding" Value="10, 2, 5, 2" />
                 <Setter Property="Foreground" Value="DarkSlateBlue"/>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
@@ -140,11 +140,11 @@
             <Style TargetType="TextBox">
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Padding" Value="2" />
+                <Setter Property="Padding" Value="0" />
             </Style>
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground" Value="Black" />
-                <Setter Property="Margin" Value="12" />
+                <Setter Property="Margin" Value="0" />
             </Style>
         </Style.Resources>
     </Style>

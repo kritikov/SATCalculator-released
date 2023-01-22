@@ -52,8 +52,6 @@ namespace SATCalculator.NewClasses
                     value += $"({clause})";
                 }
 
-                value += ")";
-
                 return value;
             }
         }

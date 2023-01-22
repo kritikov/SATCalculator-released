@@ -61,7 +61,6 @@ namespace SATCalculator.NewClasses
 
             #region Create the selection steps
 
-            int i = 0;
             foreach (var variable in variablesSequence)
             {
                 SelectionStep selectionStep = new SelectionStep();

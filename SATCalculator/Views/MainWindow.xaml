@@ -29,8 +29,22 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <DataGrid Grid.Row="0" 
-                          Style="{StaticResource DataGridStyle}"
+                <ListView Grid.Row="0" ItemsSource="{Binding ClausesView}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Clauses">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="{x:Type GridViewColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!--<DataGrid Grid.Row="0" 
+                          Style="{StaticResource DataGridStyle}" EnableRowVirtualization="True"
                           ItemsSource="{Binding ClausesView}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Clauses" Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="NameSorted">
@@ -42,7 +56,8 @@
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
                     </DataGrid.Columns>
-                </DataGrid>
+                </DataGrid>-->
+                
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Load" Click="LoadFormula"/>
                     <Button Content="New" Click="NewFormula"/>
@@ -55,216 +70,225 @@
             <Grid Grid.Column="1">
                 <TabControl >
                     <TabItem Header="Formula">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <DockPanel>
+                            <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding Formula}" Style="{StaticResource InformationsTextBlock}" HorizontalAlignment="Stretch"/>
+                            </ScrollViewer>
+                            
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="variables: "/>
-                                <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
-                                </TextBlock>
-                                <DataGrid Grid.Row="1"
+                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                        <Run Text="variables: "/>
+                                        <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/> 
+                                    </TextBlock>
+                                    <DataGrid Grid.Row="1"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}"
                                           SelectionChanged="FormulaVariablesGrid_SelectionChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTemplateColumn Header="value" IsReadOnly="False" Width="100">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ComboBox Grid.Column="4"
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTemplateColumn Header="value" IsReadOnly="False" Width="100">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox Grid.Column="4"
                                                       ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
                                                         Path=DataContext.VariableValues}"
                                                       DisplayMemberPath="ValueAsString"
                                                       SelectedValuePath="Value"
                                                       SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                                    </ComboBox>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
 
-                            <Grid Grid.Column="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                     <Run Text="related clauses"/>
                                     <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
-                                </TextBlock>
+                                    </TextBlock>
 
-                                <DataGrid Grid.Row="1" 
+                                    <DataGrid Grid.Row="1" 
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaRelatedClausesView}">
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="related clauses" Width="150">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ItemsControl ItemsSource="{Binding Literals}">
-                                                        <ItemsControl.Template>
-                                                            <ControlTemplate TargetType="ItemsControl">
-                                                                <ItemsPresenter/>
-                                                            </ControlTemplate>
-                                                        </ItemsControl.Template>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="related clauses" Width="150">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ItemsControl ItemsSource="{Binding Literals}">
+                                                            <ItemsControl.Template>
+                                                                <ControlTemplate TargetType="ItemsControl">
+                                                                    <ItemsPresenter/>
+                                                                </ControlTemplate>
+                                                            </ItemsControl.Template>
 
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <StackPanel Orientation="Horizontal" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
 
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <TextBlock Text=" ∨ ">
-                                                                        <TextBlock.Style>
-                                                                            <Style TargetType="TextBlock">
-                                                                                <Style.Triggers>
-                                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-                                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                                    </DataTrigger>
-                                                                                </Style.Triggers>
-                                                                            </Style>
-                                                                        </TextBlock.Style>
-                                                                    </TextBlock>
-                                                                    <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                                </StackPanel>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text=" ∨ ">
+                                                                            <TextBlock.Style>
+                                                                                <Style TargetType="TextBlock">
+                                                                                    <Style.Triggers>
+                                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                                                        </DataTrigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </TextBlock.Style>
+                                                                        </TextBlock>
+                                                                        <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
 
-                                                    <DataTemplate.Resources>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="Black"/>
-                                                            <Setter Property="Padding" Value="2"/>
-                                                            <Setter Property="Margin" Value="-40, 0, 0, 0"/>
-                                                        </Style>
-                                                    </DataTemplate.Resources>
+                                                        <DataTemplate.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                                <Setter Property="Padding" Value="2"/>
+                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
+                                                            </Style>
+                                                        </DataTemplate.Resources>
 
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
 
-                            <Grid Grid.Column="3">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
                                 <Run Text="formula clauses: "/>
                                 <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
-                                </TextBlock>
+                                    </TextBlock>
 
-                                <DataGrid Grid.Row="1" 
+                                    <DataGrid Grid.Row="1" 
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaClausesView}">
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Formula Clauses" Width="150">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ItemsControl ItemsSource="{Binding Literals}">
-                                                        <ItemsControl.Template>
-                                                            <ControlTemplate TargetType="ItemsControl">
-                                                                <ItemsPresenter/>
-                                                            </ControlTemplate>
-                                                        </ItemsControl.Template>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="Formula Clauses" Width="150">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ItemsControl ItemsSource="{Binding Literals}">
+                                                            <ItemsControl.Template>
+                                                                <ControlTemplate TargetType="ItemsControl">
+                                                                    <ItemsPresenter/>
+                                                                </ControlTemplate>
+                                                            </ItemsControl.Template>
 
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <StackPanel Orientation="Horizontal" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
 
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <TextBlock Text=" ∨ ">
-                                                                        <TextBlock.Style>
-                                                                            <Style TargetType="TextBlock">
-                                                                                <Style.Triggers>
-                                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-                                                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                                                    </DataTrigger>
-                                                                                </Style.Triggers>
-                                                                            </Style>
-                                                                        </TextBlock.Style>
-                                                                    </TextBlock>
-                                                                    <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                                </StackPanel>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text=" ∨ ">
+                                                                            <TextBlock.Style>
+                                                                                <Style TargetType="TextBlock">
+                                                                                    <Style.Triggers>
+                                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                                                        </DataTrigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </TextBlock.Style>
+                                                                        </TextBlock>
+                                                                        <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
 
-                                                    <DataTemplate.Resources>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="Black"/>
-                                                            <Setter Property="Padding" Value="2"/>
-                                                            <Setter Property="Margin" Value="-40, 0, 0, 0"/>
-                                                        </Style>
-                                                    </DataTemplate.Resources>
+                                                        <DataTemplate.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                                <Setter Property="Padding" Value="2"/>
+                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
+                                                            </Style>
+                                                        </DataTemplate.Resources>
 
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
 
-                                        <DataGridTextColumn Header="Valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                    <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                            <DataGridTextColumn Header="Valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                        <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+
                             </Grid>
-                        </Grid>
+                        </DockPanel>
+                        
                     </TabItem>
 
                     <TabItem Header="Editor">
