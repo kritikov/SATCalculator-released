@@ -181,6 +181,21 @@
     </Style>
 
     <!-- DataGrid -->
+    <Style TargetType="DataGridCell" x:Key="DataGridCellStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0, 2, 0, 2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style TargetType="DataGrid" x:Key="DataGridStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="AutoGenerateColumns" Value="False"/>
         <Setter Property="CanUserAddRows" Value="False"/>
@@ -188,26 +203,18 @@
         <Setter Property="SelectionUnit" Value="FullRow"/>
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="HeadersVisibility" Value="Column"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="CellStyle" Value="{StaticResource DataGridCellStyle}"/>
         <Style.Resources>
             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
         </Style.Resources>
     </Style>
-
-    <Style TargetType="DataGridCell" x:Key="DataGridCellFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-        <!--<Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="Red"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>-->
-    </Style>
+    
+    
     <Style TargetType="DataGrid" x:Key="DataGridFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="AutoGenerateColumns" Value="True"/>
         <Setter Property="CanUserAddRows" Value="False"/>
@@ -224,6 +231,16 @@
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
         </Style.Resources>
+    </Style>
+    <Style TargetType="DataGridCell" x:Key="DataGridCellFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+        <!--<Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Red"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+        </Style.Triggers>-->
     </Style>
 
 </ResourceDictionary>

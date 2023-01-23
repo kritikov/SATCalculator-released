@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -64,25 +65,8 @@
     <Compile Include="Views\NewFormulaWindow.xaml.cs">
       <DependentUpon>NewFormulaWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Classes\AnalysisResults.cs" />
-    <Compile Include="Classes\Clause.cs" />
-    <Compile Include="Classes\Converters.cs" />
-    <Compile Include="Classes\Enums.cs" />
-    <Compile Include="Classes\Literal.cs" />
-    <Compile Include="Classes\Logs.cs" />
-    <Compile Include="Classes\SATFormula.cs" />
-    <Compile Include="Classes\Variable.cs" />
-    <Compile Include="Classes\VariablesCollection.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Styles\GeneralStyle.xaml">

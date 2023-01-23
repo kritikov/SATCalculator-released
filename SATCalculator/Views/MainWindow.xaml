@@ -29,34 +29,11 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <ListView Grid.Row="0" ItemsSource="{Binding ClausesView}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Clauses">
-                                <GridViewColumn.HeaderContainerStyle>
-                                    <Style TargetType="{x:Type GridViewColumnHeader}">
-                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                    </Style>
-                                </GridViewColumn.HeaderContainerStyle>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-
-                <!--<DataGrid Grid.Row="0" 
-                          Style="{StaticResource DataGridStyle}" EnableRowVirtualization="True"
-                          ItemsSource="{Binding ClausesView}">
+                <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding ClausesView}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Clauses" Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="NameSorted">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style>
-                                    <Setter Property="TextBlock.TextAlignment" Value="Left" />
-                                    <Setter Property="TextBlock.Padding" Value="10, 1, 5, 1" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Clauses" Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Name"/>
                     </DataGrid.Columns>
-                </DataGrid>-->
+                </DataGrid>
                 
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Load" Click="LoadFormula"/>
@@ -131,12 +108,19 @@
                                             <DataGridTemplateColumn Header="value" IsReadOnly="False" Width="100">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <ComboBox Grid.Column="4"
-                                                      ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}},
-                                                        Path=DataContext.VariableValues}"
-                                                      DisplayMemberPath="ValueAsString"
-                                                      SelectedValuePath="Value"
-                                                      SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                        <ComboBox Grid.Column="4" 
+                                                                  ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.VariableValues}"
+                                                                  DisplayMemberPath="ValueAsString"
+                                                                  SelectedValuePath="Value"
+                                                                  HorizontalContentAlignment="Center"
+                                                                  Foreground="{Binding Value.Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"
+                                                                  SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                            <ComboBox.ItemContainerStyle>
+                                                                <Style TargetType="ComboBoxItem">
+                                                                    <Setter Property="Foreground" Value="{Binding Value, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                </Style>
+                                                            </ComboBox.ItemContainerStyle>
+                                                            
                                                         </ComboBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -152,8 +136,7 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                    <Run Text="related clauses"/>
-                                    <!--<Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>-->
+                                        <Run Text="related clauses"/>
                                     </TextBlock>
 
                                     <DataGrid Grid.Row="1" 
@@ -172,14 +155,14 @@
 
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
+                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0, 1, 0, 1"/>
                                                                 </ItemsPanelTemplate>
                                                             </ItemsControl.ItemsPanel>
 
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    <StackPanel Orientation="Horizontal">
-                                                                        <TextBlock Text=" ∨ ">
+                                                                    <StackPanel Orientation="Horizontal" >
+                                                                        <TextBlock Text="∨ ">
                                                                             <TextBlock.Style>
                                                                                 <Style TargetType="TextBlock">
                                                                                     <Style.Triggers>
@@ -195,15 +178,6 @@
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
                                                         </ItemsControl>
-
-                                                        <DataTemplate.Resources>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="Black"/>
-                                                                <Setter Property="Padding" Value="2"/>
-                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
-                                                            </Style>
-                                                        </DataTemplate.Resources>
-
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
@@ -226,7 +200,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="Formula Clauses" Width="150">
+                                            <DataGridTemplateColumn Header="formula clauses" Width="150">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Literals}">
@@ -238,14 +212,14 @@
 
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
+                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0, 1, 0, 1"/>
                                                                 </ItemsPanelTemplate>
                                                             </ItemsControl.ItemsPanel>
 
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <StackPanel Orientation="Horizontal">
-                                                                        <TextBlock Text=" ∨ ">
+                                                                        <TextBlock Text="∨ ">
                                                                             <TextBlock.Style>
                                                                                 <Style TargetType="TextBlock">
                                                                                     <Style.Triggers>
@@ -262,19 +236,11 @@
                                                             </ItemsControl.ItemTemplate>
                                                         </ItemsControl>
 
-                                                        <DataTemplate.Resources>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="Black"/>
-                                                                <Setter Property="Padding" Value="2"/>
-                                                                <Setter Property="Margin" Value="-40, 0, 0, 0"/>
-                                                            </Style>
-                                                        </DataTemplate.Resources>
-
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTextColumn Header="Valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
+                                            <DataGridTextColumn Header="valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -294,8 +260,6 @@
                     <TabItem Header="Editor">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
@@ -375,40 +339,32 @@
                             </Grid>
 
                             <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
 
-                                <DataGrid Grid.Row="0"
+                                <DataGrid Grid.Column="0" Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorClausesWithPositiveReferencesView}" 
                                           SelectionChanged="EditorSelectedClauseChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="clauses with pos. refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
+                                        <DataGridTextColumn Header="with positive refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                            </Grid>
-
-                            <Grid Grid.Column="3">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0" 
+                                <DataGrid Grid.Column="1" Grid.Row="0" 
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorClausesWithNegativeReferencesView}" 
                                           SelectionChanged="EditorSelectedClauseChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="clauses with neg. refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Header="with negative refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -417,19 +373,12 @@
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                            </Grid>
 
-                            <Grid Grid.Column="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0" 
+                                <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorResolutionResults}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="resolution result" Width="auto"  Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Header="resolution result" Width="295"  Binding="{Binding Name}" IsReadOnly="True">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -439,14 +388,14 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <WrapPanel Grid.Row="1" Orientation="Vertical">
-                                    <StackPanel  Orientation="Horizontal">
-                                        <Button Content="Res." Click="EditorResolutionSelectedClauses"/>
-                                        <Button Content="Test all" Click="EditorResolutionAllClausesTest"/>
-                                        <Button Content="Res.all" Click="EditorResolutionAllClauses"/>
-                                    </StackPanel>
-                                </WrapPanel>
                             </Grid>
+
+                            <StackPanel Grid.Column="3" Orientation="Vertical" HorizontalAlignment="Center">
+                                <Button Content="Resolution" Click="EditorResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
+                                <Button Content="Test all" Click="EditorResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                <Button Content="Resolution all" Click="EditorResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                            </StackPanel>
+
                         </Grid>
                     </TabItem>
 

@@ -1,5 +1,4 @@
-﻿using SATCalculator.Classes;
-using SATCalculator.NewClasses;
+﻿using SATCalculator.NewClasses;
 using System;
 using System.Collections.Generic;
 using System.Data;
