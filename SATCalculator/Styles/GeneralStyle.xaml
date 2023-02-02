@@ -213,8 +213,18 @@
             </Style>
         </Style.Resources>
     </Style>
-    
-    
+
+
+    <Style TargetType="DataGridCell" x:Key="DataGridCellFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+        <!--<Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Red"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+        </Style.Triggers>-->
+    </Style>
     <Style TargetType="DataGrid" x:Key="DataGridFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="AutoGenerateColumns" Value="True"/>
         <Setter Property="CanUserAddRows" Value="False"/>
@@ -231,16 +241,6 @@
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
         </Style.Resources>
-    </Style>
-    <Style TargetType="DataGridCell" x:Key="DataGridCellFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-        <!--<Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="Red"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>-->
     </Style>
 
 </ResourceDictionary>
