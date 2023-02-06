@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator"
         mc:Ignorable="d"
-        Title="New Formula" Height="192" Width="500" WindowStartupLocation="CenterScreen">
-    
-    <Grid>
+        Title="New Formula" Height="319" Width="573" WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
@@ -15,9 +15,33 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Give the new formula using the form (1, 2, -3)^(-2, 3, 4)"/>
-        <TextBox Grid.Row="1" Text="{Binding FormulaString, Mode=TwoWay}" HorizontalAlignment="Stretch" 
+        <TextBlock Grid.Row="0" Text="Give the new formula using the form (1 ∨ 2 ∨ -3) ∧ (-2 ∨ 3 ∨ 4)"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Text="{Binding FormulaString, Mode=TwoWay}" HorizontalAlignment="Stretch" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+
+            <Grid Grid.Column="1" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="AND symbol"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AndSymbol, Mode=TwoWay}" Width="30" TextAlignment="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="OR symbol"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OrSymbol, Mode=TwoWay}" Width="30" TextAlignment="Center"/>
+            </Grid>
+        </Grid>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
             <Button Content="Create" Click="CreateFormula"/>
