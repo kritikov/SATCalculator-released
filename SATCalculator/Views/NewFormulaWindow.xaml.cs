@@ -77,14 +77,28 @@ namespace SATCalculator
             {
                 if (OrSymbolIsValid(value))
                 {
-                    andSymbol = value;
+                    orSymbol = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OrSymbol"));
+                }
+            }
+        }
+
+        private string minusSymbol = "-";
+        public string MinusSymbol {
+            get => minusSymbol; 
+            set
+            {
+                if (MinusSymbolIsValid(value))
+                {
+                    minusSymbol = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MinusSymbol"));
                 }
             }
         }
 
         public readonly string AndSymbolOriginal = "∧";
         public readonly string OrSymbolOriginal = "∨";
+        public readonly string MinusSymbolOriginal = "-";
 
         public List<string> FormulaCnfLines { get; set; } = new List<string>();
 
@@ -108,6 +122,7 @@ namespace SATCalculator
 
         private void TestFormula(object sender, RoutedEventArgs e)
         {
+            Message = "";
             try
             {
                 TestFormula(FormulaString);
@@ -120,6 +135,7 @@ namespace SATCalculator
 
         private void CreateFormula(object sender, RoutedEventArgs e)
         {
+            Message = "";
             try
             {
                 FormulaCnfLines = FormulaToCnf(FormulaString);
@@ -133,6 +149,7 @@ namespace SATCalculator
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
+            Message = "";
             FormulaString = "";
             Close();
         }
@@ -191,6 +208,30 @@ namespace SATCalculator
         }
 
         /// <summary>
+        /// Check the given Minus symbol for syntax errors
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool MinusSymbolIsValid(string value)
+        {
+            try
+            {
+                if (value == String.Empty)
+                    throw new Exception("The Or symbol cannot be empty");
+
+                if (value.Length != 1)
+                    throw new Exception("The Minus symbol has not proped length");
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Check the given formula for syntax errors
         /// </summary>
         /// <param name="formula"></param>
@@ -234,7 +275,7 @@ namespace SATCalculator
             try
             {
                 // create the clauses
-                var clausesArray = formula.Split(AndSymbol[0]);
+                var clausesArray = formula.Split(new string[] { AndSymbol }, StringSplitOptions.None);
 
                 // edit each clause
                 foreach (var clause in clausesArray)
@@ -244,8 +285,11 @@ namespace SATCalculator
                     clauseFormatted = clauseFormatted.Replace("(", "");
                     clauseFormatted = clauseFormatted.Replace(")", "");
 
+                    if (clauseFormatted == string.Empty)
+                        continue;
+
                     // create the literals of the clause
-                    var literals = clauseFormatted.Split(OrSymbol[0]).ToList();
+                    var literals = clauseFormatted.Split(new string[] { OrSymbol }, StringSplitOptions.None).ToList();
                     List<Literal> LiteralNames = new List<Literal>();
 
                     // rename the literals to a valid number
@@ -264,13 +308,13 @@ namespace SATCalculator
                                 variableName = literal.Substring(1, literal.Length - 1);
 
                         }
-                        else if (literal.StartsWith("-"))
+                        else if (literal.StartsWith(MinusSymbol))
                         {
                             if (literal.Length == 1)
                                 throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
                             else
                             {
-                                sign = "-";
+                                sign = MinusSymbolOriginal;
                                 variableName = literal.Substring(1, literal.Length - 1);
                             }
                         }
