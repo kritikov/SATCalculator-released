@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SATCalculator.NewClasses;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -35,13 +36,24 @@ namespace SATCalculator
             }
         }
 
-        private string formulaString = "(1 ∨ 4) ∧ (2 ∨ -4) ∧ (-2 ∨ 5) ∧ (1 ∨ -5) ∧ (-1 ∨ 6) ∧ (3 ∨ -6) ∧ (-1 ∨ 7) ∧ (-7 ∨ -3)";
+        //private string formulaString = "(1 ∨ 4) ∧ (2 ∨ -4) ∧ (-2 ∨ 5) ∧ (1 ∨ -5) ∧ (-1 ∨ 6) ∧ (3 ∨ -6) ∧ (-1 ∨ 7) ∧ (-7 ∨ -3)";
+        private string formulaString = "(a ∨ b) ∧ (c ∨ -a) ∧ (d ∨ b)";
         public string FormulaString {
             get => formulaString;
             set
             {
                 formulaString = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Message"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormulaString"));
+            } 
+        }
+
+        private string resultFormulaString = "";
+        public string ResultFormulaString {
+            get => resultFormulaString;
+            set
+            {
+                resultFormulaString = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ResultFormulaString"));
             } 
         }
 
@@ -94,15 +106,29 @@ namespace SATCalculator
 
         #region EVENTS
 
+        private void TestFormula(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TestFormula(FormulaString);
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
+        }
+
         private void CreateFormula(object sender, RoutedEventArgs e)
         {
-            if (!FormulaIsValid(FormulaString))
-                return;
-
-            string formulaFormatted = FormatFormulaString(FormulaString);
-
-            if (FormatFormulaStringAsCnf())
+            try
+            {
+                FormulaCnfLines = FormulaToCnf(FormulaString);
                 Close();
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+            }
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
@@ -116,22 +142,96 @@ namespace SATCalculator
 
         #region METHODS
 
-        private string FormatFormulaString(string formula)
+        /// <summary>
+        /// Check the given AND symbol for syntax errors
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool AndSymbolIsValid(string value)
         {
-            string formulaFormatted = "";
-
             try
             {
-                var clausesList = SplitFormulaString(formula);
-                formulaFormatted = ComposeClauseList(clausesList);
+                if (value == OrSymbol)
+                    throw new Exception("The And symbol cannot be the same as the Or symbol");
 
+                if (value == String.Empty)
+                    throw new Exception("The And symbol cannot be empty");
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check the given OR symbol for syntax errors
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool OrSymbolIsValid(string value)
+        {
+            try
+            {
+                if (value == AndSymbol)
+                    throw new Exception("The Or symbol cannot be the same as the And symbol");
+
+                if (value == String.Empty)
+                    throw new Exception("The Or symbol cannot be empty");
+            }
+            catch (Exception ex)
+            {
+                Message = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check the given formula for syntax errors
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <returns></returns>
+        private bool FormulaIsValid(string formula)
+        {
+            try
+            {
+                if (formula == string.Empty)
+                {
+                    throw new Exception("The Or symbol cannot be empty");
+                }
+
+                int leftParenthesisCount = formula.Count(f => (f == '('));
+                int rightParenthesisCount = formula.Count(f => (f == ')'));
+                if (leftParenthesisCount != rightParenthesisCount)
+                {
+                    throw new Exception("Some parenthesis are missing");
+                }
             }
             catch(Exception ex)
             {
                 Message = ex.Message;
+                return false;
             }
 
-            return formulaFormatted;
+            return true;
+        }
+
+        /// <summary>
+        /// Convert a given formula to the expected result
+        /// </summary>
+        private void TestFormula(string formula)
+        {
+            if (FormulaIsValid(formula))
+            {
+                var clausesList = SplitFormula(formula);
+                var formulaFormatted = ComposeToString(clausesList);
+
+                ResultFormulaString = formulaFormatted;
+            }
         }
 
         /// <summary>
@@ -139,9 +239,11 @@ namespace SATCalculator
         /// </summary>
         /// <param name="formula"></param>
         /// <returns></returns>
-        private List<List<string>> SplitFormulaString(string formula)
+        private List<List<Literal>> SplitFormula(string formula)
         {
-            List<List<string>> clausesList = new List<List<string>>();
+            List<List<Literal>> clausesList = new List<List<Literal>>();
+            Dictionary<string, int> variables = new Dictionary<string, int>();
+            int cnfIndex = 0;
 
             try
             {
@@ -158,21 +260,84 @@ namespace SATCalculator
 
                     // create the literals of the clause
                     var literals = clauseFormatted.Split(OrSymbol[0]).ToList();
+                    List<Literal> LiteralNames = new List<Literal>();
+
+                    // rename the literals to a valid number
+                    foreach(var literal in literals)
+                    {
+                        string variableName;
+                        Literal literalName;
+                        string sign = "";
+
+                        // check for sign
+                        if (literal.StartsWith("+"))
+                        {
+                            if (literal.Length == 1)
+                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
+                            else
+                                variableName = literal.Substring(1, literal.Length - 1);
+
+                        }
+                        else if (literal.StartsWith("-"))
+                        {
+                            if (literal.Length == 1)
+                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
+                            else
+                            {
+                                sign = "-";
+                                variableName = literal.Substring(1, literal.Length - 1);
+                            }
+                        }
+                        else
+                        {
+                            if (literal.Length == 0)
+                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
+                            else
+                                variableName = literal;
+                        }
+
+                        if (variables.ContainsKey(variableName))
+                        {
+                            literalName = new Literal()
+                            {
+                                CnfIndex = variables[variableName],
+                                Sign = sign
+                            };
+                        }
+                        else
+                        {
+                            variables[variableName] = ++cnfIndex;
+                            
+                            literalName = new Literal()
+                            {
+                                CnfIndex = cnfIndex,
+                                Sign = sign
+                            };
+                        }
+
+                        LiteralNames.Add(literalName);
+                    }
+
 
                     // add the clause with its literals in the list
-                    if (literals.Count > 0)
-                        clausesList.Add(literals);
+                    if (LiteralNames.Count > 0)
+                        clausesList.Add(LiteralNames);
                 }
             }
             catch (Exception ex)
             {
-                Message = ex.Message;
+                throw new Exception(ex.Message);
             }
 
             return clausesList;
         }
 
-        private string ComposeClauseList(List<List<string>> clausesList)
+        /// <summary>
+        /// Compose the components of the formula to a string as the expected result 
+        /// </summary>
+        /// <param name="clausesList"></param>
+        /// <returns></returns>
+        private string ComposeToString(List<List<Literal>> clausesList)
         {
             string formula = "";
 
@@ -184,7 +349,10 @@ namespace SATCalculator
                 formula += "(";
                 foreach (var literal in clause)
                 {
+                    if (!formula.EndsWith("("))
+                        formula += $" {OrSymbolOriginal} ";
 
+                    formula += $"{literal.Sign}{Variable.DefaultVariableName}{literal.CnfIndex}";
                 }
                 formula += ")";
             }
@@ -192,117 +360,58 @@ namespace SATCalculator
             return formula;
         }
 
-        private bool FormatFormulaStringAsCnf()
+        /// <summary>
+        /// Create formula lines in cnf format
+        /// </summary>
+        /// <returns></returns>
+        private List<string> ComposeToCnfLines(List<List<Literal>> clausesList)
         {
-            Message = "";
-            //(1 ∨ 4) ∧ (2 ∨ -4) ∧ (-2 ∨ 5) ∧ (1 ∨ -5) ∧ (-1 ∨ 6) ∧ (3 ∨ -6) ∧ (-1 ∨ 7) ∧ (-7 ∨ -3)
+            List<string> lines = new List<string>();
 
-            try
+            foreach (var clause in clausesList)
             {
-                FormulaCnfLines = new List<string>();
+                string line = "";
 
-                var clausesArray = FormulaString.Split(AndSymbol[0]);
-
-                foreach (var clause in clausesArray)
+                foreach (var literal in clause)
                 {
-                    string newClause = clause.Trim();
+                    if (line != "")
+                        line += " ";
 
-                    // check if the clause starts end ends with parenthesis
-                    if (!newClause.StartsWith("(") || !newClause.EndsWith(")"))
-                    {
-                        Message = "The formula has clauses without parenthesis and is not valid";
-                        FormulaCnfLines.Clear();
-                        return false;
-                    }
-
-                    newClause = newClause.Substring(1, newClause.Length-2);
-                    var literalsArray = newClause.Split(OrSymbol[0]);
-
-                    // check if the clause is empty
-                    if (literalsArray.Length == 0)
-                    {
-                        Message = "The formula contains empty clause and is not valid";
-                        FormulaCnfLines.Clear();
-                        return false;
-                    }
-
-                    // create a cnf line with literals
-                    string line = "";
-                    foreach (var literal in literalsArray)
-                    {
-                        if (line != "")
-                            line += " ";
-
-                        string newLiteral = literal.Trim();
-                        line += newLiteral;
-                    }
-                    line += " 0";
-
-                    FormulaCnfLines.Add(line);
+                    string newLiteral = $"{literal.Sign}{literal.CnfIndex}";
+                    line += newLiteral;
                 }
-            }
-            catch(Exception ex)
-            {
-                Message = ex.Message;
+                line += " 0";
+                lines.Add(line);
             }
 
-            return true;
+            return lines;
         }
 
-        private bool AndSymbolIsValid(string value)
+        /// <summary>
+        /// Converts the given formula to a list with cnf lines
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <returns></returns>
+        private List<string> FormulaToCnf(string formula)
         {
-            if (value == OrSymbol)
+            List<string> lines = new List<string>();
+
+            if (FormulaIsValid(formula))
             {
-                Message = "The And symbol cannot be the same as the Or symbol";
-                return false;
+                var clausesList = SplitFormula(formula);
+                lines = ComposeToCnfLines(clausesList);
             }
 
-            if (value == String.Empty)
-            {
-                Message = "The And symbol cannot be empty";
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool OrSymbolIsValid(string value)
-        {
-            if (value == AndSymbol)
-            {
-                Message = "The Or symbol cannot be the same as the And symbol";
-                return false;
-            }
-
-            if (value == string.Empty)
-            {
-                Message = "The Or symbol cannot be empty";
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool FormulaIsValid(string formula)
-        {
-            if (formula == string.Empty)
-            {
-                Message = "The Or symbol cannot be empty";
-                return false;
-            }
-
-            int leftParenthesisCount = formula.Count(f => (f == '('));
-            int rightParenthesisCount = formula.Count(f => (f == ')'));
-            if (leftParenthesisCount != rightParenthesisCount)
-            {
-                Message = "Some parenthesis are missing";
-                return false;
-            }
-
-            return true;
-
+            return lines;
         }
 
         #endregion
+    }
+
+    internal class Literal
+    {
+        internal int CnfIndex = 0;
+        internal string Sign = "";
+
     }
 }
