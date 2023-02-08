@@ -221,20 +221,6 @@ namespace SATCalculator
         }
 
         /// <summary>
-        /// Convert a given formula to the expected result
-        /// </summary>
-        private void TestFormula(string formula)
-        {
-            if (FormulaIsValid(formula))
-            {
-                var clausesList = SplitFormula(formula);
-                var formulaFormatted = ComposeToString(clausesList);
-
-                ResultFormulaString = formulaFormatted;
-            }
-        }
-
-        /// <summary>
         /// Split a formula string to a list with components
         /// </summary>
         /// <param name="formula"></param>
@@ -263,13 +249,13 @@ namespace SATCalculator
                     List<Literal> LiteralNames = new List<Literal>();
 
                     // rename the literals to a valid number
-                    foreach(var literal in literals)
+                    foreach (var literal in literals)
                     {
                         string variableName;
                         Literal literalName;
                         string sign = "";
 
-                        // check for sign
+                        // get the sign and the variable name
                         if (literal.StartsWith("+"))
                         {
                             if (literal.Length == 1)
@@ -296,6 +282,7 @@ namespace SATCalculator
                                 variableName = literal;
                         }
 
+                        // create a variable name based on cnf indexes
                         if (variables.ContainsKey(variableName))
                         {
                             literalName = new Literal()
@@ -307,7 +294,7 @@ namespace SATCalculator
                         else
                         {
                             variables[variableName] = ++cnfIndex;
-                            
+
                             literalName = new Literal()
                             {
                                 CnfIndex = cnfIndex,
@@ -315,6 +302,7 @@ namespace SATCalculator
                             };
                         }
 
+                        // add the literal to the list
                         LiteralNames.Add(literalName);
                     }
 
@@ -385,6 +373,20 @@ namespace SATCalculator
             }
 
             return lines;
+        }
+
+        /// <summary>
+        /// Convert a given formula to the expected result
+        /// </summary>
+        private void TestFormula(string formula)
+        {
+            if (FormulaIsValid(formula))
+            {
+                var clausesList = SplitFormula(formula);
+                var formulaFormatted = ComposeToString(clausesList);
+
+                ResultFormulaString = formulaFormatted;
+            }
         }
 
         /// <summary>
