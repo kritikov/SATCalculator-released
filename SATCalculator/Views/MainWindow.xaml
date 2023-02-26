@@ -64,10 +64,6 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                                    
-                                </StackPanel>
-
                                 <Grid Grid.Column="0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
@@ -164,7 +160,7 @@
 
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0, 1, 0, 1"/>
+                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 1, 0, 1"/>
                                                                 </ItemsPanelTemplate>
                                                             </ItemsControl.ItemsPanel>
 
