@@ -210,6 +210,12 @@
         <Style.Resources>
             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
+
+                <Setter Property="FontWeight"  Value="SemiBold" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="Foreground" Value="Brown" />
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Padding" Value="10, 10, 10, 10"/>
             </Style>
         </Style.Resources>
     </Style>

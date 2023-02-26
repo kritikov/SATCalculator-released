@@ -20,6 +20,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -44,7 +45,9 @@
                 </WrapPanel>
             </Grid>
 
-            <Grid Grid.Column="1">
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+            
+            <Grid Grid.Column="2">
                 <TabControl >
                     <TabItem Header="Formula">
                         <DockPanel>
@@ -58,8 +61,12 @@
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                    
+                                </StackPanel>
 
                                 <Grid Grid.Column="0">
                                     <Grid.RowDefinitions>
@@ -77,7 +84,7 @@
                                           ItemsSource="{Binding VariablesView}"
                                           SelectionChanged="FormulaVariablesGrid_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn Header="name" Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -129,7 +136,9 @@
                                     </DataGrid>
                                 </Grid>
 
-                                <Grid Grid.Column="1">
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                                
+                                <Grid Grid.Column="2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
@@ -143,7 +152,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaRelatedClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="related clauses" Width="150">
+                                            <DataGridTemplateColumn Header="related clauses" Width="*" MinWidth="140">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Literals}">
@@ -185,22 +194,24 @@
                                     </DataGrid>
                                 </Grid>
 
-                                <Grid Grid.Column="2">
+                                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                                
+                                <Grid Grid.Column="4">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                <Run Text="formula clauses: "/>
-                                <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
+                                        <Run Text="formula clauses: "/>
+                                        <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>   
                                     </TextBlock>
 
                                     <DataGrid Grid.Row="1" 
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="formula clauses" Width="150">
+                                            <DataGridTemplateColumn Header="formula clauses" Width="*" MinWidth="140">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Literals}">
@@ -252,6 +263,7 @@
                                     </DataGrid>
                                 </Grid>
 
+                                
                             </Grid>
                         </DockPanel>
                         
@@ -263,7 +275,14 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
 
                             <Grid Grid.Column="0">
@@ -277,7 +296,7 @@
                                           ItemsSource="{Binding VariablesView}"
                                           SelectionChanged="EditorVariablesGrid_SelectionChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn Header="name" Width="60" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -317,7 +336,9 @@
                                 </DataGrid>
                             </Grid>
 
-                            <Grid Grid.Column="1">
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                            <Grid Grid.Column="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="auto"/>
@@ -327,7 +348,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorClausesWithReferencesCollection}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="clauses appearances" Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Header="clauses appearances" Width="*" MinWidth="180" Binding="{Binding Name}" IsReadOnly="True">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -338,18 +359,15 @@
                                 </DataGrid>
                             </Grid>
 
-                            <Grid Grid.Column="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="150"/>
-                                </Grid.ColumnDefinitions>
-                                
+                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                            <Grid Grid.Column="4">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
-                                <DataGrid Grid.Column="0" Grid.Row="0"
+                                <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorClausesWithPositiveReferencesView}" 
                                           SelectionChanged="EditorSelectedClauseChanged">
@@ -358,8 +376,17 @@
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
+                            </Grid>
 
-                                <DataGrid Grid.Column="1" Grid.Row="0" 
+                            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
+
+                            <Grid Grid.Column="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorClausesWithNegativeReferencesView}" 
                                           SelectionChanged="EditorSelectedClauseChanged">
@@ -373,12 +400,21 @@
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
+                            </Grid>
 
-                                <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
+                            <GridSplitter Grid.Column="7" Width="5" HorizontalAlignment="Stretch"/>
+
+                            <Grid Grid.Column="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding EditorResolutionResults}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="resolution result" Width="295"  Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Header="resolution result" Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -388,13 +424,14 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
+                                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+                                    <Button Content="Resolution" Click="EditorResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
+                                    <Button Content="Test all" Click="EditorResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                    <Button Content="Resolution all" Click="EditorResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                </StackPanel>
                             </Grid>
-
-                            <StackPanel Grid.Column="3" Orientation="Vertical" HorizontalAlignment="Center">
-                                <Button Content="Resolution" Click="EditorResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
-                                <Button Content="Test all" Click="EditorResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                                <Button Content="Resolution all" Click="EditorResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                            </StackPanel>
+                            
+                            <GridSplitter Grid.Column="9" Width="5" HorizontalAlignment="Stretch"/>
 
                         </Grid>
                     </TabItem>
@@ -402,6 +439,7 @@
                     <TabItem Header="Algorithm">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
@@ -416,7 +454,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="name" Width="50" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn Header="name" Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -460,7 +498,9 @@
                                 </WrapPanel>
                             </Grid>
 
-                            <TabControl Grid.Column="1">
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                            <TabControl Grid.Column="2">
                                 <TabItem Header="flow">
                                     <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" >
                                         <DataGrid.Resources>
