@@ -49,15 +49,16 @@ namespace SATCalculator.NewClasses
         {
             get
             {
-
                 if (Variable == null || Variable?.Valuation == ValuationEnum.Null)
                     return ValuationEnum.Null;
 
+                // if literal is positive
                 if (Sign == Sign.Positive)
                 {
                     return Variable.Valuation;
                 }
 
+                // if literal is negative
                 if (Variable.Valuation == ValuationEnum.True)
                     return ValuationEnum.False;
                 else

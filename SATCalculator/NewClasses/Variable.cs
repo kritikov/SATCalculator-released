@@ -87,16 +87,6 @@ namespace SATCalculator.NewClasses
         }
 
         #endregion
-
-        //public override bool Equals(object @object)
-        //{
-        //    return @object is Variable variable &&
-        //           Name == variable.Name;
-        //}
-
-        //public override int GetHashCode()
-        //{
-        //    return HashCode.Combine(Name);
-        //}
+ 
     }
 }
