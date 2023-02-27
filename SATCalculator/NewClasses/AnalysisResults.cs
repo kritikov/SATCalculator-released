@@ -67,7 +67,7 @@ namespace SATCalculator.NewClasses
 
                 // get the clauses with the positive appearances, remove the positive appearances of the variable
                 // and add the reviewed clauses in the proper list
-                foreach (var clause in variable.PositiveLiteral.ClausesWithAppearances)
+                foreach (var clause in variable.PositiveLiteral.ClausesContainingIt)
                 {
                     Clause reducedClause = new Clause();
 
@@ -75,7 +75,7 @@ namespace SATCalculator.NewClasses
                     {
                         if (literal.Variable != variable)
                         {
-                            literal.ClausesWithAppearances.Remove(clause);
+                            literal.ClausesContainingIt.Remove(clause);
                             reducedClause.Literals.Add(literal);
                         }
                     }
@@ -85,7 +85,7 @@ namespace SATCalculator.NewClasses
 
                 // get the clauses with the negative appearances, remove the negative appearances of the variable
                 // and add the reviewed clauses in the proper list
-                foreach (var clause in variable.NegativeLiteral.ClausesWithAppearances)
+                foreach (var clause in variable.NegativeLiteral.ClausesContainingIt)
                 {
                     Clause reducedClause = new Clause();
 
@@ -93,7 +93,7 @@ namespace SATCalculator.NewClasses
                     {
                         if (literal.Variable != variable)
                         {
-                            literal.ClausesWithAppearances.Remove(clause);
+                            literal.ClausesContainingIt.Remove(clause);
                             reducedClause.Literals.Add(literal);
                         }
                     }

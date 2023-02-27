@@ -553,7 +553,7 @@
                                                                     </TextBlock>
                                                                 </Border>
                                                                 <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding Variable.PositiveLiteral.ClausesWithAppearances}"/>
+                                                                <ListView ItemsSource="{Binding Variable.PositiveLiteral.ClausesContainingIt}"/>
                                                                 <TextBlock Text="|"/>
                                                                 <Border Width="150">
                                                                     <TextBlock>
@@ -573,7 +573,7 @@
                                                                     </TextBlock>
                                                                 </Border>
                                                                 <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding Variable.NegativeLiteral.ClausesWithAppearances}"/>
+                                                                <ListView ItemsSource="{Binding Variable.NegativeLiteral.ClausesContainingIt}"/>
                                                                 <TextBlock Text="|"/>
                                                                 <Border Width="150">
                                                                     <TextBlock>

@@ -420,7 +420,9 @@ namespace SATCalculator.Views
 
                     formulaOriginal = SATFormula.GetFromCnfFile(filename);
                     Formula = formulaOriginal.Copy();
+                    
                     SelectedVariable = null;
+                    AlgorithmAnalysisResults = new AnalysisResults();
 
                     RefreshViews();
                 }
@@ -475,12 +477,12 @@ namespace SATCalculator.Views
             {
                 if (Formula.SelectedVariable != null)
                 {
-                    editorClausesWithPositiveReferencesSource.Source = Formula.SelectedVariable.PositiveLiteral.ClausesWithAppearances;
-                    editorClausesWithNegativeReferencesSource.Source = Formula.SelectedVariable.NegativeLiteral.ClausesWithAppearances;
+                    editorClausesWithPositiveReferencesSource.Source = Formula.SelectedVariable.PositiveLiteral.ClausesContainingIt;
+                    editorClausesWithNegativeReferencesSource.Source = Formula.SelectedVariable.NegativeLiteral.ClausesContainingIt;
 
                     EditorClausesWithReferencesCollection.Clear();
-                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.PositiveLiteral.ClausesWithAppearances });
-                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.NegativeLiteral.ClausesWithAppearances });
+                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.PositiveLiteral.ClausesContainingIt });
+                    EditorClausesWithReferencesCollection.Add(new CollectionContainer() { Collection = Formula.SelectedVariable.NegativeLiteral.ClausesContainingIt });
                 }
                 else
                 {
@@ -617,8 +619,8 @@ namespace SATCalculator.Views
                 int pairsCount = selectedVariable.Contrasts;
                 for (int i = 0; i < pairsCount; i++)
                 {
-                    var positiveClause = selectedVariable.PositiveLiteral.ClausesWithAppearances[i];
-                    var negativeClause = selectedVariable.NegativeLiteral.ClausesWithAppearances[i];
+                    var positiveClause = selectedVariable.PositiveLiteral.ClausesContainingIt[i];
+                    var negativeClause = selectedVariable.NegativeLiteral.ClausesContainingIt[i];
 
                     if (positiveClause != null && negativeClause != null)
                     {
@@ -649,8 +651,8 @@ namespace SATCalculator.Views
                 int pairsCount = selectedVariable.Contrasts;
                 for (int i = 0; i < pairsCount; i++)
                 {
-                    var positiveClause = selectedVariable.PositiveLiteral.ClausesWithAppearances[i];
-                    var negativeClause = selectedVariable.NegativeLiteral.ClausesWithAppearances[i];
+                    var positiveClause = selectedVariable.PositiveLiteral.ClausesContainingIt[i];
+                    var negativeClause = selectedVariable.NegativeLiteral.ClausesContainingIt[i];
 
                     if (positiveClause != null && negativeClause != null)
                     {

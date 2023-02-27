@@ -65,7 +65,7 @@ namespace SATCalculator.NewClasses
             }
         }
 
-        public ObservableCollection<Clause> ClausesWithAppearances { get; set; } = new ObservableCollection<Clause>();
+        public ObservableCollection<Clause> ClausesContainingIt { get; set; } = new ObservableCollection<Clause>();
 
         public Literal Opposite { 
             get

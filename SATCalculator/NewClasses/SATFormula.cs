@@ -156,7 +156,7 @@ namespace SATCalculator.NewClasses
 
                                     // add the literal to the clause
                                     clause.Literals.Add(literal);
-                                    literal.ClausesWithAppearances.Add(clause);
+                                    literal.ClausesContainingIt.Add(clause);
                                 }
                             }
                         }
@@ -183,6 +183,10 @@ namespace SATCalculator.NewClasses
 
         }
 
+        /// <summary>
+        /// Conver the formula to a list of cnf lines
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetCNFLines()
         {
             List<string> cnfLines = new List<string>();
@@ -206,7 +210,7 @@ namespace SATCalculator.NewClasses
         }
 
         /// <summary>
-        /// Create a clone of the formula in single SAT form
+        /// Create a clone of the formula
         /// </summary>
         /// <returns></returns>
         public SATFormula Copy()
@@ -226,7 +230,7 @@ namespace SATCalculator.NewClasses
             // remove clause from the literals lists
             foreach(var literal in clause.Literals)
             {
-                literal.ClausesWithAppearances.Remove(clause);
+                literal.ClausesContainingIt.Remove(clause);
             }
 
             // remove the clause from the dictionaries
@@ -253,7 +257,7 @@ namespace SATCalculator.NewClasses
 
             // add clause to the literals lists
             foreach (var literal in clause.Literals)
-                literal.ClausesWithAppearances.Add(clause);
+                literal.ClausesContainingIt.Add(clause);
         }
 
         #endregion
