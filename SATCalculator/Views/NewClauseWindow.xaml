@@ -3,31 +3,74 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Commands="clr-namespace:SATCalculator.NewClasses"
         xmlns:local="clr-namespace:SATCalculator.Views"
         mc:Ignorable="d"
-        Title="New clause" Height="266" Width="386" WindowStartupLocation="CenterScreen">
+        Title="New clause" Height="424" Width="406" WindowStartupLocation="CenterScreen">
 
-
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="Commands:Commands.Remove"
+            CanExecute="RemoveLiteral_CanExecute"
+            Executed="RemoveLiteral_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Add"
+            CanExecute="AddLiteral_CanExecute"
+            Executed="AddLiteral_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Create"
+            CanExecute="CreateClause_CanExecute"
+            Executed="CreateClause_Executed" />
+    </Window.CommandBindings>
+    
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <TextBlock Text="{Binding Message}"/>
         </StatusBar>
 
         <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Create" Click="CreateFormula" ToolTip="Create and add the clause in the formula"/>
+            <Button Content="Add literal" Command="Commands:Commands.Add" ToolTip="Add a literal in the clause"/>
+            <Button Content="Remove literal" Command="Commands:Commands.Remove" ToolTip="Remove the selected literal from the clause"/>
+            <Button Content="Create clause" Command="Commands:Commands.Create" ToolTip="Create and add the clause in the formula"/>
             <Button Content="Cancel" Click="Cancel" ToolTip="Exit without adding a clause in the formula"/>
         </WrapPanel>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+        <DataGrid Grid.Column="0"
+                      Style="{StaticResource DataGridStyle}"
+                      ItemsSource="{Binding LiteralsListView}" 
+                      IsSynchronizedWithCurrentItem="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="sign" IsReadOnly="False" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.SignValues}"
+                                          DisplayMemberPath="ValueAsString"
+                                          SelectedValuePath="Value"
+                                          HorizontalContentAlignment="Center"
+                                          SelectedValue="{Binding Sign, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-            <ListBox Grid.Row="0">
-                
-            </ListBox>
-        </Grid>
+                <DataGridTextColumn Header="prefix" Width="100" Binding="{Binding Prefix}" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="index" Width="*" Binding="{Binding CnfIndex}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
 
     </DockPanel>
 </Window>
