@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static SATCalculator.Views.NewClauseWindow;
 
 namespace SATCalculator.Views
 {
@@ -236,123 +237,252 @@ namespace SATCalculator.Views
 
         private void LoadFormula(object sender, RoutedEventArgs e)
         {
-            LoadFormula();
+            try
+            {
+                LoadFormula();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void NewFormula(object sender, RoutedEventArgs e)
         {
-            CreateNewFormula();
+            try
+            {
+                CreateNewFormula();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void SaveEditorFormulaAsCNF(object sender, RoutedEventArgs e)
         {
-            SaveFormulaAsCNF(Formula);
-        }
-
-        private void ResetFormula(object sender, RoutedEventArgs e)
-        {
-            Formula = formulaOriginal.Copy();
-
-            SelectedVariable = null;
-
-            RefreshViews();
-        }
-
-        private void DeleteSelectedClause(object sender, RoutedEventArgs e)
-        {
-            if (ClausesView.CurrentItem != null)
+            try
             {
-                var clause = ClausesView.CurrentItem as Clause;
-                DeleteSelectedClause(clause);
+                SaveFormulaAsCNF(Formula);
             }
-        }
-
-        private void AddClause(object sender, RoutedEventArgs e)
-        {
-            AddNewClause();
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
         {
-            var headerClicked = e.OriginalSource as GridViewColumnHeader;
-            var control = (e.Source as ListView);
-            //ListSortDirection direction;
-
-            if (headerClicked != null)
+            try
             {
-                if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
-                {
-                    var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
-                    var sortBy = columnBinding?.Path.Path ?? headerClicked.Column.Header as string;
+                var headerClicked = e.OriginalSource as GridViewColumnHeader;
+                var control = (e.Source as ListView);
+                //ListSortDirection direction;
 
-                    Sort(sortBy, control);
+                if (headerClicked != null)
+                {
+                    if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
+                    {
+                        var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
+                        var sortBy = columnBinding?.Path.Path ?? headerClicked.Column.Header as string;
+
+                        Sort(sortBy, control);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
             }
         }
         
         private void FormulaVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Formula != null)
+            try
             {
-                var grid = sender as DataGrid;
-
-                if (grid.SelectedItem != null)
+                if (Formula != null)
                 {
-                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+                    var grid = sender as DataGrid;
 
-                    SelectedVariable = selectedItem.Value;
-                    if (SelectedVariable != null && FormulaRelatedClausesView != null && FormulaClausesView != null)
+                    if (grid.SelectedItem != null)
                     {
-                        FormulaRelatedClausesView.Filter = RelatedClausesFilter;
-                        FormulaClausesView.Refresh();
+                        var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                        SelectedVariable = selectedItem.Value;
+                        if (SelectedVariable != null && FormulaRelatedClausesView != null && FormulaClausesView != null)
+                        {
+                            FormulaRelatedClausesView.Filter = RelatedClausesFilter;
+                            FormulaClausesView.Refresh();
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
             }
         }
 
         private void EditorVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Formula != null)
+            try
             {
-                var grid = sender as DataGrid;
-
-                if (grid.SelectedItem != null)
+                if (Formula != null)
                 {
-                    var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+                    var grid = sender as DataGrid;
 
-                    Formula.SelectedVariable = selectedItem.Value;
-                    if (Formula.SelectedVariable != null)
-                        RefreshEditorViews();
+                    if (grid.SelectedItem != null)
+                    {
+                        var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+
+                        Formula.SelectedVariable = selectedItem.Value;
+                        if (Formula.SelectedVariable != null)
+                            RefreshEditorViews();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
             }
         }
 
         private void EditorSelectedClauseChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
+            try
             {
-                ResolutionSelectedClausesTest();
+                if (EditorClausesWithPositiveReferencesView != null && EditorClausesWithNegativeReferencesView != null)
+                {
+                    ResolutionSelectedClausesTest();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
             }
         }
 
         private void EditorResolutionSelectedClauses(object sender, RoutedEventArgs e)
         {
-            ResolutionSelectedClauses();
+            try
+            {
+                ResolutionSelectedClauses();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void EditorResolutionAllClausesTest(object sender, RoutedEventArgs e)
         {
-            ResolutionAllClausesTest();
+            try
+            {
+                ResolutionAllClausesTest();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void EditorResolutionAllClauses(object sender, RoutedEventArgs e)
         {
-            ResolutionAllClauses();
+            try
+            {
+                ResolutionAllClauses();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void AnalyzeFormula(object sender, RoutedEventArgs e)
         {
-            AnalyzeFormula(Formula);
+            try
+            {
+                AnalyzeFormula(Formula);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        #endregion
+
+
+        #region COMMANDS
+
+        private void RemoveClause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ClausesView?.CurrentItem != null ? true : false;
+        }
+        private void RemoveClause_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                if (ClausesView.CurrentItem != null)
+                {
+                    var clause = ClausesView.CurrentItem as Clause;
+                    RemoveSelectedClause(clause);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        private void AddClause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void AddClause_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                AddNewClause();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        private void ResetFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void ResetFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Formula = formulaOriginal.Copy();
+                SelectedVariable = null;
+                RefreshViews();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         #endregion
@@ -390,8 +520,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -433,8 +562,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -497,8 +625,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -567,8 +694,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -600,8 +726,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -633,8 +758,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -674,8 +798,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -684,16 +807,23 @@ namespace SATCalculator.Views
         /// </summary>
         private void CreateNewFormula()
         {
-            NewFormulaWindow newFormulaWindow = new NewFormulaWindow();
-            newFormulaWindow.ShowDialog();
-
-            if (newFormulaWindow.FormulaCnfLines.Count > 0)
+            try
             {
-                formulaOriginal = SATFormula.CreateFromCnfLines(newFormulaWindow.FormulaCnfLines);
-                Formula = formulaOriginal.Copy();
+                NewFormulaWindow newFormulaWindow = new NewFormulaWindow();
+                newFormulaWindow.ShowDialog();
 
-                SelectedVariable = null;
-                RefreshViews();
+                if (newFormulaWindow.FormulaCnfLines.Count > 0)
+                {
+                    formulaOriginal = SATFormula.CreateFromCnfLines(newFormulaWindow.FormulaCnfLines);
+                    Formula = formulaOriginal.Copy();
+
+                    SelectedVariable = null;
+                    RefreshViews();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
@@ -703,8 +833,15 @@ namespace SATCalculator.Views
         /// <param name="formula"></param>
         private void SaveFormulaAsCNF(SATFormula formula)
         {
-            List<string> lines = formula.GetCNFLines();
-            SaveLines(lines, "cnf");
+            try
+            {
+                List<string> lines = formula.GetCNFLines();
+                SaveLines(lines, "cnf");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -736,7 +873,7 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Message = ex.Message;
+                throw ex;
             }
         }
 
@@ -746,23 +883,37 @@ namespace SATCalculator.Views
         /// <param name="formula"></param>
         public void AnalyzeFormula(SATFormula formula)
         {
-            AlgorithmAnalysisResults = AnalysisResults.Analyze(formula);
+            try
+            {
+                AlgorithmAnalysisResults = AnalysisResults.Analyze(formula);
 
-            RefreshAlgorithmViews();
+                RefreshAlgorithmViews();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
         /// Delete the selected clause from the formula
         /// </summary>
         /// <param name="clause"></param>
-        private void DeleteSelectedClause(Clause clause)
+        private void RemoveSelectedClause(Clause clause)
         {
-            Formula.RemoveClause(clause);
+            try
+            {
+                Formula.RemoveClause(clause);
 
-            // create a new resolution formula
-            Formula = Formula.Copy();
+                // create a new resolution formula
+                Formula = Formula.Copy();
 
-            RefreshViews();
+                RefreshViews();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -770,20 +921,25 @@ namespace SATCalculator.Views
         /// </summary>
         private void AddNewClause()
         {
-            NewClauseWindow newClauseWindow = new NewClauseWindow();
-            newClauseWindow.ShowDialog();
+            try
+            {
+                NewClauseWindow newClauseWindow = new NewClauseWindow();
+                newClauseWindow.ShowDialog();
 
-            //formulaOriginal = SATFormula.CreateFromCnfLines(newClauseWindow.FormulaCnfLines);
-            //Formula = formulaOriginal.Copy();
+                var lineParts = newClauseWindow.Literals;
+                formulaOriginal.CreateAndAddClause(lineParts);
+                Formula = formulaOriginal.Copy();
+                SelectedVariable = null;
 
-            //SelectedVariable = null;
-            //RefreshViews();
+                RefreshViews();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion
-
-
-
 
     }
 }

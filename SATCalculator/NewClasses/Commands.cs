@@ -27,5 +27,11 @@ namespace SATCalculator.NewClasses
             typeof(Commands)
         );
 
+        public static readonly RoutedUICommand Reset = new RoutedUICommand(
+            "reset",
+            "reset",
+            typeof(Commands)
+        );
+
     }
 }

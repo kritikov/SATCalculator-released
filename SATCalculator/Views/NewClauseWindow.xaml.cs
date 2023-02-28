@@ -37,11 +37,19 @@ namespace SATCalculator.Views
 
             }
 
-            public LiteralCreation(Sign sign, string prefix, int cnfIndex)
+            public LiteralCreation(Sign sign, string prefix, int cnfIndex) : base()
             {
                 Sign = sign;
                 Prefix = prefix;
                 CnfIndex = cnfIndex;
+            }
+
+            public override string ToString()
+            {
+                string value = Sign == Sign.Positive ? "+" : "-";
+                value += CnfIndex.ToString();
+
+                return value;
             }
         }
 
@@ -68,7 +76,7 @@ namespace SATCalculator.Views
             }
         }
 
-        public ObservableCollection<LiteralCreation> LiteralsList { get; set; }
+        public ObservableCollection<LiteralCreation> LiteralsList { get; set; } = new ObservableCollection<LiteralCreation>();
 
         private readonly CollectionViewSource literalsListSource = new CollectionViewSource();
         public ICollectionView LiteralsListView
@@ -79,7 +87,7 @@ namespace SATCalculator.Views
             }
         }
 
-        public Clause NewClause;
+        public List<string> Literals { get; set; } = new List<string>();
         
         #endregion
 
@@ -92,9 +100,9 @@ namespace SATCalculator.Views
             DataContext = this;
 
             LiteralsList = new ObservableCollection<LiteralCreation>();
-            LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 1));
-            LiteralsList.Add(new LiteralCreation(Sign.Positive, Variable.DefaultVariableName, 2));
-            LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 3));
+            //LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 1));
+            //LiteralsList.Add(new LiteralCreation(Sign.Positive, Variable.DefaultVariableName, 2));
+            //LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 3));
 
             literalsListSource.Source = LiteralsList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LiteralsListView"));
@@ -124,9 +132,18 @@ namespace SATCalculator.Views
         }
         private void RemoveLiteral_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var literal = LiteralsListView.CurrentItem as LiteralCreation;
+            try
+            {
+                Message = "";
+                var literal = LiteralsListView.CurrentItem as LiteralCreation;
+                RemoveLiteral(literal);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
 
-            RemoveLiteral(literal);
         }
 
         private void AddLiteral_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -135,7 +152,16 @@ namespace SATCalculator.Views
         }
         private void AddLiteral_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            AddLiteral();
+            try
+            {
+                Message = "";
+                AddLiteral();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         private void CreateClause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -144,7 +170,16 @@ namespace SATCalculator.Views
         }
         private void CreateClause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CreateClause();
+            try
+            {
+                Message = "";
+                CreateClause();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
         }
 
         #endregion
@@ -154,17 +189,39 @@ namespace SATCalculator.Views
 
         private void AddLiteral()
         {
-            LiteralsList.Add(new LiteralCreation());
+            try
+            {
+                LiteralsList.Add(new LiteralCreation());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void RemoveLiteral(LiteralCreation literal)
         {
-            LiteralsList.Remove(literal);
+            try
+            {
+                LiteralsList.Remove(literal);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void CreateClause()
         {
-            NewClause = new Clause();
+            try
+            {
+                Literals = LiteralsList.Select(p => p.ToString()).Distinct().ToList();
+                Close();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion

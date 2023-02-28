@@ -5,13 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator.Views"
         xmlns:Converters="clr-namespace:SATCalculator.NewClasses"
+        xmlns:Commands="clr-namespace:SATCalculator.NewClasses"
         mc:Ignorable="d"
         Title="MainWindow" Height="694" Width="1145" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Converters:ValuationToColor x:Key="ValuationToColor"/>
     </Window.Resources>
-    
+
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="Commands:Commands.Remove"
+            CanExecute="RemoveClause_CanExecute"
+            Executed="RemoveClause_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Add"
+            CanExecute="AddClause_CanExecute"
+            Executed="AddClause_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Reset"
+            CanExecute="ResetFormula_CanExecute"
+            Executed="ResetFormula_Executed" />
+    </Window.CommandBindings>
+
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <TextBlock Text="{Binding Message}"/>
@@ -40,9 +56,9 @@
                     <Button Content="Load" Click="LoadFormula"/>
                     <Button Content="New" Click="NewFormula"/>
                     <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
-                    <Button Content="Reset" MaxWidth="60" Click="ResetFormula"/>
-                    <Button Content="Delete clause" Click="DeleteSelectedClause" ToolTip="Delete the selected clause from the formula"/>
-                    <Button Content="Add clause" Click="AddClause" ToolTip="Add a clause to the formula"/>
+                    <Button Content="Reset" MaxWidth="60" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
+                    <Button Content="Delete clause" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
+                    <Button Content="Add clause" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
                 </WrapPanel>
             </Grid>
 
