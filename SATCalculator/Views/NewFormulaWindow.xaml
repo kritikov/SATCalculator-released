@@ -7,60 +7,67 @@
         mc:Ignorable="d"
         Title="New Formula" Height="409" Width="686" WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <TextBlock Text="{Binding Message}"/>
+        </StatusBar>
 
-        <TextBlock Grid.Row="0" Text="Give the new formula using the form (1 ∨ 2 ∨ -3) ∧ (-2 ∨ 3 ∨ 4)"/>
+        <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Test" Click="TestFormula"/>
+            <Button Content="Create" Click="CreateFormula"/>
+            <Button Content="Cancel" Click="Cancel"/>
+        </WrapPanel>
+        
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Text="Give the new formula using the form (1 ∨ 2 ∨ -3) ∧ (-2 ∨ 3 ∨ 4)"/>
 
-            <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding FormulaString, Mode=TwoWay}" HorizontalAlignment="Stretch" 
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
-
-            <Grid Grid.Row="0" Grid.Column="1" >
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0" Content="AND symbol"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AndSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
-                <Label Grid.Row="1" Grid.Column="0" Content="OR symbol"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OrSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
-                <Label Grid.Row="2" Grid.Column="0" Content="Minus symbol"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MinusSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding FormulaString, Mode=TwoWay}" HorizontalAlignment="Stretch" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+
+                <Grid Grid.Row="0" Grid.Column="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="AND symbol"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AndSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="OR symbol"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OrSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Minus symbol"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MinusSymbol, Mode=TwoWay}" Width="60" TextAlignment="Center"/>
+                </Grid>
+
             </Grid>
 
+            <TextBlock Grid.Row="2" Text="The formula will be created from the given string will be:"/>
+
+            <ScrollViewer Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+                <TextBlock Text="{Binding ResultFormulaString}" Style="{StaticResource InformationsTextBlock}" HorizontalAlignment="Stretch"/>
+            </ScrollViewer>
+
         </Grid>
-
-        <TextBlock Grid.Row="2" Text="The formula will be created from the given string will be:"/>
-        
-        <ScrollViewer Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <TextBlock Text="{Binding ResultFormulaString}" Style="{StaticResource InformationsTextBlock}" HorizontalAlignment="Stretch"/>
-        </ScrollViewer>
-
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-            <Button Content="Test" Click="TestFormula"/>
-            <Button Content="Create" Click="CreateFormula"/>
-            <Button Content="Cancel" Click="Cancel"/>
-        </StackPanel>
-        <TextBlock Grid.Row="5" Text="{Binding Message}"/>
-
-    </Grid>
+    </DockPanel>
+    
+    
 </Window>

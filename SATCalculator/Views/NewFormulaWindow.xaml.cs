@@ -21,7 +21,7 @@ namespace SATCalculator
     /// </summary>
     public partial class NewFormulaWindow : Window, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        
 
         #region VARIABLES AND NESTED CLASSES
 
@@ -119,6 +119,8 @@ namespace SATCalculator
 
 
         #region EVENTS
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private void TestFormula(object sender, RoutedEventArgs e)
         {

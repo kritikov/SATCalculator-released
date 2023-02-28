@@ -263,13 +263,13 @@ namespace SATCalculator.Views
             if (ClausesView.CurrentItem != null)
             {
                 var clause = ClausesView.CurrentItem as Clause;
-                Formula.RemoveClause(clause);
-
-                // create a new resolution formula
-                Formula = Formula.Copy();
-
-                RefreshViews();
+                DeleteSelectedClause(clause);
             }
+        }
+
+        private void AddClause(object sender, RoutedEventArgs e)
+        {
+            AddNewClause();
         }
 
         public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
@@ -739,7 +739,6 @@ namespace SATCalculator.Views
                 Message = ex.Message;
             }
         }
-        #endregion
 
         /// <summary>
         /// Analyze a formula with the algorithm
@@ -752,6 +751,39 @@ namespace SATCalculator.Views
             RefreshAlgorithmViews();
         }
 
-        
+        /// <summary>
+        /// Delete the selected clause from the formula
+        /// </summary>
+        /// <param name="clause"></param>
+        private void DeleteSelectedClause(Clause clause)
+        {
+            Formula.RemoveClause(clause);
+
+            // create a new resolution formula
+            Formula = Formula.Copy();
+
+            RefreshViews();
+        }
+
+        /// <summary>
+        /// Create a new formula
+        /// </summary>
+        private void AddNewClause()
+        {
+            NewClauseWindow newClauseWindow = new NewClauseWindow();
+            newClauseWindow.ShowDialog();
+
+            //formulaOriginal = SATFormula.CreateFromCnfLines(newClauseWindow.FormulaCnfLines);
+            //Formula = formulaOriginal.Copy();
+
+            //SelectedVariable = null;
+            //RefreshViews();
+        }
+
+        #endregion
+
+
+
+
     }
 }

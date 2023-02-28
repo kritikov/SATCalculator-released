@@ -42,6 +42,7 @@
                     <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
                     <Button Content="Reset" MaxWidth="60" Click="ResetFormula"/>
                     <Button Content="Delete clause" Click="DeleteSelectedClause" ToolTip="Delete the selected clause from the formula"/>
+                    <Button Content="Add clause" Click="AddClause" ToolTip="Add a clause to the formula"/>
                 </WrapPanel>
             </Grid>
 

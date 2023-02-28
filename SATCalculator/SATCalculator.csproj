@@ -62,6 +62,9 @@
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\NewClauseWindow.xaml.cs">
+      <DependentUpon>NewClauseWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NewFormulaWindow.xaml.cs">
       <DependentUpon>NewFormulaWindow.xaml</DependentUpon>
     </Compile>
@@ -74,6 +77,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewClauseWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
