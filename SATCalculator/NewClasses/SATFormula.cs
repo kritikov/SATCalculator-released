@@ -115,63 +115,7 @@ namespace SATCalculator.NewClasses
                 {
                     var lineParts = line.Trim().Split(' ').ToList();
 
-                    // create the clause
-                    Clause clause = new Clause();
-
-                    if (lineParts.Count > 0)
-                    {
-                        if (lineParts[0].Length > 0)
-                        {
-                            if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
-                                continue;
-
-                            foreach (var part in lineParts)
-                            {
-                                if (part != "0")
-                                {
-                                    // create the variable
-                                    Variable variable = new Variable(part);
-
-                                    // use the stored variable if exists or add the new to the dictionary
-                                    if (formula.VariablesDict.ContainsKey(variable.Name))
-                                        variable = formula.VariablesDict[variable.Name];
-                                    else
-                                    {
-                                        formula.VariablesDict.Add(variable.Name, variable);
-                                        formula.Variables.Add(variable);
-                                    }
-
-                                    // create the literal
-                                    Literal literal;
-                                    if (part[0] == '-')
-                                        literal = variable.NegativeLiteral;
-                                    else
-                                        literal = variable.PositiveLiteral;
-
-                                    // add the literal in the dictionary if doesnt exists
-                                    if (!formula.LiteralsDict.ContainsKey(literal.Name))
-                                        formula.LiteralsDict.Add(literal.Name, literal);
-                                    if (!formula.Literals.Contains(literal))
-                                        formula.Literals.Add(literal);
-
-                                    // add the literal to the clause
-                                    clause.Literals.Add(literal);
-                                    literal.ClausesContainingIt.Add(clause);
-                                }
-                            }
-                        }
-                    }
-
-                    // sort the literals in the clause
-                    clause.Literals = clause.Literals.OrderBy(p => p.Variable.CnfIndex).ToList();
-
-                    // add the clause to the dictionary and the list with formula clauses
-                    // it wont add duplicate clauses
-                    if (!formula.ClausesDict.ContainsKey(clause.Name))
-                    {
-                        formula.Clauses.Add(clause);
-                        formula.ClausesDict.Add(clause.Name, clause);
-                    }
+                    formula.CreateAndAddClause(lineParts);
                 }
             }
             catch (Exception ex)
@@ -243,7 +187,8 @@ namespace SATCalculator.NewClasses
         }
 
         /// <summary>
-        /// Add a clause to the formula if doesnt allready exists
+        /// Add a clause to the formula if doesnt allready exists. The clause must allready use
+        /// variables and literals declared in the formula
         /// </summary>
         /// <param name="clause"></param>
         public void AddClause(Clause clause)
@@ -258,6 +203,71 @@ namespace SATCalculator.NewClasses
             // add clause to the literals lists
             foreach (var literal in clause.Literals)
                 literal.ClausesContainingIt.Add(clause);
+        }
+
+        /// <summary>
+        /// Create and add a clause to the formula from a list of literals
+        /// </summary>
+        /// <param name="lineParts"></param>
+        public void CreateAndAddClause(List<string> lineParts)
+        {
+            // create the clause
+            Clause clause = new Clause();
+
+            if (lineParts.Count > 0)
+            {
+                if (lineParts[0].Length > 0)
+                {
+                    if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
+                        return;
+
+                    foreach (var part in lineParts)
+                    {
+                        if (part != "0")
+                        {
+                            // create the variable
+                            Variable variable = new Variable(part);
+
+                            // use the stored variable if exists or add the new to the dictionary
+                            if (VariablesDict.ContainsKey(variable.Name))
+                                variable = VariablesDict[variable.Name];
+                            else
+                            {
+                                VariablesDict.Add(variable.Name, variable);
+                                Variables.Add(variable);
+                            }
+
+                            // create the literal
+                            Literal literal;
+                            if (part[0] == '-')
+                                literal = variable.NegativeLiteral;
+                            else
+                                literal = variable.PositiveLiteral;
+
+                            // add the literal in the dictionary if doesnt exists
+                            if (!LiteralsDict.ContainsKey(literal.Name))
+                                LiteralsDict.Add(literal.Name, literal);
+                            if (!Literals.Contains(literal))
+                                Literals.Add(literal);
+
+                            // add the literal to the clause
+                            clause.Literals.Add(literal);
+                            literal.ClausesContainingIt.Add(clause);
+                        }
+                    }
+                }
+            }
+
+            // sort the literals in the clause
+            clause.Literals = clause.Literals.OrderBy(p => p.Variable.CnfIndex).ToList();
+
+            // add the clause to the dictionary and the list with formula clauses
+            // it wont add duplicate clauses
+            if (!ClausesDict.ContainsKey(clause.Name))
+            {
+                Clauses.Add(clause);
+                ClausesDict.Add(clause.Name, clause);
+            }
         }
 
         #endregion

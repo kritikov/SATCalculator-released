@@ -25,14 +25,23 @@ namespace SATCalculator.Views
     {
         #region VARIABLES AND NESTED CLASSES
 
-        private string message = "";
-        public string Message
+        public class LiteralCreation
         {
-            get { return message; }
-            set
+            public Sign Sign { get; set; } = Sign.Positive;
+            public string Prefix { get; set; } = Variable.DefaultVariableName;
+
+            public int CnfIndex { get; set; } = 1;
+
+            public LiteralCreation()
             {
-                message = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Message"));
+
+            }
+
+            public LiteralCreation(Sign sign, string prefix, int cnfIndex)
+            {
+                Sign = sign;
+                Prefix = prefix;
+                CnfIndex = cnfIndex;
             }
         }
 
@@ -48,6 +57,17 @@ namespace SATCalculator.Views
             new SignValue(){Value = Sign.Negative, ValueAsString="-" }
         };
 
+        private string message = "";
+        public string Message
+        {
+            get { return message; }
+            set
+            {
+                message = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Message"));
+            }
+        }
+
         public ObservableCollection<LiteralCreation> LiteralsList { get; set; }
 
         private readonly CollectionViewSource literalsListSource = new CollectionViewSource();
@@ -59,6 +79,8 @@ namespace SATCalculator.Views
             }
         }
 
+        public Clause NewClause;
+        
         #endregion
 
 
@@ -135,36 +157,18 @@ namespace SATCalculator.Views
             LiteralsList.Add(new LiteralCreation());
         }
 
-        private void CreateClause()
-        {
-
-        }
-
-        #endregion
-
         private void RemoveLiteral(LiteralCreation literal)
         {
             LiteralsList.Remove(literal);
         }
-    }
 
-    public class LiteralCreation{
-        public Sign Sign { get; set; } = Sign.Positive;
-        public string Prefix { get; set; } = Variable.DefaultVariableName;
-
-        public int CnfIndex { get; set; } = 1;
-
-        public LiteralCreation()
+        private void CreateClause()
         {
-
+            NewClause = new Clause();
         }
 
-        public LiteralCreation(Sign sign, string prefix, int cnfIndex)
-        {
-            Sign = sign;
-            Prefix = prefix;
-            CnfIndex = cnfIndex;
-        }
+        #endregion
+
     }
 
 
