@@ -30,6 +30,18 @@
         <Setter Property="FontSize" Value="14"/>
     </Style>
 
+    <!-- Menu -->
+    <Style TargetType="{x:Type Menu}">
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style.Resources>
+            <Style TargetType="MenuItem">
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style>
+        </Style.Resources>
+    </Style>
+
 
     <!--  Tab control -->
     <LinearGradientBrush x:Key="TabItemBackground" EndPoint="0.5,1" StartPoint="0.5,0">

@@ -21,9 +21,16 @@ namespace SATCalculator
     /// </summary>
     public partial class NewFormulaWindow : Window, INotifyPropertyChanged
     {
-        
+
 
         #region VARIABLES AND NESTED CLASSES
+
+        internal class Literal
+        {
+            internal int CnfIndex = 0;
+            internal string Sign = "";
+
+        }
 
         private string message = "";
         public string Message
@@ -114,7 +121,6 @@ namespace SATCalculator
             DataContext = this;
         }
 
-
         #endregion
 
 
@@ -131,6 +137,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -145,6 +152,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
+                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -178,8 +186,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                Message = ex.Message;
-                return false;
+                throw ex;
             }
 
             return true;
@@ -202,8 +209,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                Message = ex.Message;
-                return false;
+                throw ex;
             }
 
             return true;
@@ -226,8 +232,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                Message = ex.Message;
-                return false;
+                throw ex;
             }
 
             return true;
@@ -256,8 +261,7 @@ namespace SATCalculator
             }
             catch(Exception ex)
             {
-                Message = ex.Message;
-                return false;
+                throw ex;
             }
 
             return true;
@@ -360,7 +364,7 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw ex;
             }
 
             return clausesList;
@@ -375,20 +379,28 @@ namespace SATCalculator
         {
             string formula = "";
 
-            foreach (var clause in clausesList)
+            try
             {
-                if (formula != "")
-                    formula += $" {AndSymbolOriginal} ";
 
-                formula += "(";
-                foreach (var literal in clause)
+                foreach (var clause in clausesList)
                 {
-                    if (!formula.EndsWith("("))
-                        formula += $" {OrSymbolOriginal} ";
+                    if (formula != "")
+                        formula += $" {AndSymbolOriginal} ";
 
-                    formula += $"{literal.Sign}{Variable.DefaultVariableName}{literal.CnfIndex}";
+                    formula += "(";
+                    foreach (var literal in clause)
+                    {
+                        if (!formula.EndsWith("("))
+                            formula += $" {OrSymbolOriginal} ";
+
+                        formula += $"{literal.Sign}{Variable.DefaultVariableName}{literal.CnfIndex}";
+                    }
+                    formula += ")";
                 }
-                formula += ")";
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return formula;
@@ -402,20 +414,27 @@ namespace SATCalculator
         {
             List<string> lines = new List<string>();
 
-            foreach (var clause in clausesList)
+            try
             {
-                string line = "";
-
-                foreach (var literal in clause)
+                foreach (var clause in clausesList)
                 {
-                    if (line != "")
-                        line += " ";
+                    string line = "";
 
-                    string newLiteral = $"{literal.Sign}{literal.CnfIndex}";
-                    line += newLiteral;
+                    foreach (var literal in clause)
+                    {
+                        if (line != "")
+                            line += " ";
+
+                        string newLiteral = $"{literal.Sign}{literal.CnfIndex}";
+                        line += newLiteral;
+                    }
+                    line += " 0";
+                    lines.Add(line);
                 }
-                line += " 0";
-                lines.Add(line);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return lines;
@@ -426,12 +445,19 @@ namespace SATCalculator
         /// </summary>
         private void TestFormula(string formula)
         {
-            if (FormulaIsValid(formula))
+            try
             {
-                var clausesList = SplitFormula(formula);
-                var formulaFormatted = ComposeToString(clausesList);
+                if (FormulaIsValid(formula))
+                {
+                    var clausesList = SplitFormula(formula);
+                    var formulaFormatted = ComposeToString(clausesList);
 
-                ResultFormulaString = formulaFormatted;
+                    ResultFormulaString = formulaFormatted;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
@@ -444,10 +470,17 @@ namespace SATCalculator
         {
             List<string> lines = new List<string>();
 
-            if (FormulaIsValid(formula))
+            try
             {
-                var clausesList = SplitFormula(formula);
-                lines = ComposeToCnfLines(clausesList);
+                if (FormulaIsValid(formula))
+                {
+                    var clausesList = SplitFormula(formula);
+                    lines = ComposeToCnfLines(clausesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return lines;
@@ -456,10 +489,5 @@ namespace SATCalculator
         #endregion
     }
 
-    internal class Literal
-    {
-        internal int CnfIndex = 0;
-        internal string Sign = "";
-
-    }
+    
 }

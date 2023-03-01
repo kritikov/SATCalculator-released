@@ -29,6 +29,24 @@
     </Window.CommandBindings>
 
     <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Click="NewFormula"/>
+                <MenuItem Header="_Load" Click="LoadFormula"/>
+                <MenuItem Header="_Save" Click="SaveResolutionFormulaAsCNF"/>
+                <Separator />
+                <MenuItem Header="_Exit" Click="ExitProgram"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+                <TextBox Text="{Binding Formula.Name, Mode=OneWay}" HorizontalAlignment="Stretch" 
+                         Width="{Binding ActualWidth}"
+                         IsReadOnly="True"/>
+            </ScrollViewer>
+        </Grid>
+
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <TextBlock Text="{Binding Message}"/>
         </StatusBar>
@@ -41,25 +59,15 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-
                 <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding ClausesView}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Clauses" Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Name"/>
+                        <DataGridTextColumn Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Name">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Clauses" ToolTip="The clauses of the formula"/>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                
-                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="Load" Click="LoadFormula"/>
-                    <Button Content="New" Click="NewFormula"/>
-                    <Button Content="Save" Click="SaveEditorFormulaAsCNF"/>
-                    <Button Content="Reset" MaxWidth="60" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
-                    <Button Content="Delete clause" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
-                    <Button Content="Add clause" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
-                </WrapPanel>
             </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
@@ -68,10 +76,6 @@
                 <TabControl >
                     <TabItem Header="Formula">
                         <DockPanel>
-                            <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-                                <TextBlock Text="{Binding Formula}" Style="{StaticResource InformationsTextBlock}" HorizontalAlignment="Stretch"/>
-                            </ScrollViewer>
-                            
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -97,35 +101,50 @@
                                           ItemsSource="{Binding VariablesView}"
                                           SelectionChanged="FormulaVariablesGrid_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="name" Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                                </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTemplateColumn Header="value" IsReadOnly="False" Width="100">
+                                            <DataGridTemplateColumn IsReadOnly="False" Width="100">
+                                                <DataGridTemplateColumn.Header>
+                                                    <TextBlock Text="value" ToolTip="The valuation of the variable. Select a valuation to see the valuation of its related clauses"/>
+                                                </DataGridTemplateColumn.Header>
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox Grid.Column="4" 
@@ -165,7 +184,10 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaRelatedClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="related clauses" Width="*" MinWidth="140">
+                                            <DataGridTemplateColumn Width="*" MinWidth="140">
+                                                <DataGridTemplateColumn.Header>
+                                                    <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
+                                                </DataGridTemplateColumn.Header>
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Literals}">
@@ -213,6 +235,7 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
@@ -224,7 +247,10 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="formula clauses" Width="*" MinWidth="140">
+                                            <DataGridTemplateColumn Width="*" MinWidth="140">
+                                                <DataGridTemplateColumn.Header>
+                                                    <TextBlock Text="formula clauses" ToolTip="All clauses of the formula and their valuation based on the valuations of the variables"/>
+                                                </DataGridTemplateColumn.Header>
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Literals}">
@@ -274,15 +300,19 @@
                                             </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                </Grid>
 
-                                
+                                    <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
+                                        <Button Content="Add" Width="60" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
+                                        <Button Content="Delete" Width="60" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
+                                        <Button Content="Reset" Width="60" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
+                                    </WrapPanel>
+                                </Grid>
                             </Grid>
                         </DockPanel>
                         
                     </TabItem>
 
-                    <TabItem Header="Editor">
+                    <TabItem Header="Resolution">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
@@ -307,23 +337,32 @@
                                 <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}"
-                                          SelectionChanged="EditorVariablesGrid_SelectionChanged">
+                                          SelectionChanged="ResolutionVariablesGrid_SelectionChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="name" Width="60" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn Width="60" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -331,14 +370,20 @@
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
 
-                                        <DataGridTextColumn Header="pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -359,9 +404,12 @@
 
                                 <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding EditorClausesWithReferencesCollection}">
+                                          ItemsSource="{Binding ResolutionClausesWithReferencesCollection}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="clauses appearances" Width="*" MinWidth="180" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="*" MinWidth="180" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -382,10 +430,13 @@
 
                                 <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding EditorClausesWithPositiveReferencesView}" 
-                                          SelectionChanged="EditorSelectedClauseChanged">
+                                          ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}" 
+                                          SelectionChanged="ResolutionSelectedClauseChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="with positive refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="with positive refs." ToolTip="The clauses of the formula that includes the selected variable as positive literal"/>
+                                            </DataGridTextColumn.Header>
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -401,10 +452,13 @@
 
                                 <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding EditorClausesWithNegativeReferencesView}" 
-                                          SelectionChanged="EditorSelectedClauseChanged">
+                                          ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}" 
+                                          SelectionChanged="ResolutionSelectedClauseChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="with negative refs." Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="with negative refs." ToolTip="The clauses of the formula that includes the selected variable as negative literal"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -425,9 +479,12 @@
 
                                 <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding EditorResolutionResults}">
+                                          ItemsSource="{Binding ResolutionResolutionResults}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="resolution result" Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="resolution result" ToolTip="The result of the resolution of the selected clauses in the 'with positive refs.' and 'with negative refs.' lists"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -438,9 +495,9 @@
                                 </DataGrid>
 
                                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                                    <Button Content="Resolution" Click="EditorResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
-                                    <Button Content="Test all" Click="EditorResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                                    <Button Content="Resolution all" Click="EditorResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                    <Button Content="Resolution" Click="ResolutionResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
+                                    <Button Content="Test all" Click="ResolutionResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                    <Button Content="Resolution all" Click="ResolutionResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
                                 </StackPanel>
                             </Grid>
                             
@@ -467,21 +524,30 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="name" Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                        <DataGridTextColumn Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="refs" Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="cont" Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -489,14 +555,20 @@
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
 
-                                        <DataGridTextColumn Header="pos" Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="neg" Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
+                                            </DataGridTextColumn.Header>
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style>
                                                     <Setter Property="TextBlock.TextAlignment" Value="Center" />

@@ -131,11 +131,12 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
+                throw ex;
             }
 
             return newClause;
         }
+        
         #endregion
 
     }

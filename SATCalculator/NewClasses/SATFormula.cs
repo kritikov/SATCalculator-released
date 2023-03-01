@@ -98,8 +98,7 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
-                throw new Exception(ex.Message);
+                throw ex;
             }
 
             return formula;
@@ -120,7 +119,7 @@ namespace SATCalculator.NewClasses
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
+                throw ex;
             }
 
             return formula;
@@ -135,18 +134,25 @@ namespace SATCalculator.NewClasses
         {
             List<string> cnfLines = new List<string>();
 
-            foreach (var clause in this.Clauses)
+            try
             {
-                string line = "";
-                foreach (var literal in clause.Literals)
+                foreach (var clause in this.Clauses)
                 {
-                    if (line != "")
-                        line += " ";
+                    string line = "";
+                    foreach (var literal in clause.Literals)
+                    {
+                        if (line != "")
+                            line += " ";
 
-                    line += literal.Name;
+                        line += literal.Name;
+                    }
+                    line += $" 0";
+                    cnfLines.Add(line);
                 }
-                line += $" 0";
-                cnfLines.Add(line);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             return cnfLines;
@@ -171,19 +177,25 @@ namespace SATCalculator.NewClasses
         /// <param name="clause"></param>
         public void RemoveClause(Clause clause)
         {
-            // remove clause from the literals lists
-            foreach(var literal in clause.Literals)
+            try
             {
-                literal.ClausesContainingIt.Remove(clause);
+                // remove clause from the literals lists
+                foreach (var literal in clause.Literals)
+                {
+                    literal.ClausesContainingIt.Remove(clause);
+                }
+
+                // remove the clause from the dictionaries
+                if (ClausesDict.ContainsKey(clause.Name))
+                    ClausesDict.Remove(clause.Name);
+
+                if (Clauses.Contains(clause))
+                    Clauses.Remove(clause);
             }
-
-            // remove the clause from the dictionaries
-            if (ClausesDict.ContainsKey(clause.Name))
-                ClausesDict.Remove(clause.Name);
-
-            if (Clauses.Contains(clause))
-                Clauses.Remove(clause);
-
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -193,16 +205,23 @@ namespace SATCalculator.NewClasses
         /// <param name="clause"></param>
         public void AddClause(Clause clause)
         {
-            // if the clause allready exists in the formula then exit
-            if (ClausesDict.ContainsKey(clause.Name))
-                return;
+            try
+            {
+                // if the clause allready exists in the formula then exit
+                if (ClausesDict.ContainsKey(clause.Name))
+                    return;
 
-            ClausesDict.Add(clause.Name, clause);
-            Clauses.Add(clause);
+                ClausesDict.Add(clause.Name, clause);
+                Clauses.Add(clause);
 
-            // add clause to the literals lists
-            foreach (var literal in clause.Literals)
-                literal.ClausesContainingIt.Add(clause);
+                // add clause to the literals lists
+                foreach (var literal in clause.Literals)
+                    literal.ClausesContainingIt.Add(clause);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -211,62 +230,69 @@ namespace SATCalculator.NewClasses
         /// <param name="lineParts"></param>
         public void CreateAndAddClause(List<string> lineParts)
         {
-            // create the clause
-            Clause clause = new Clause();
-
-            if (lineParts.Count > 0)
+            try
             {
-                if (lineParts[0].Length > 0)
+                // create the clause
+                Clause clause = new Clause();
+
+                if (lineParts.Count > 0)
                 {
-                    if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
-                        return;
-
-                    foreach (var part in lineParts)
+                    if (lineParts[0].Length > 0)
                     {
-                        if (part != "0")
+                        if (lineParts[0] == "c" || lineParts[0] == "p" || lineParts[0] == "0" || lineParts[0] == "%")
+                            return;
+
+                        foreach (var part in lineParts)
                         {
-                            // create the variable
-                            Variable variable = new Variable(part);
-
-                            // use the stored variable if exists or add the new to the dictionary
-                            if (VariablesDict.ContainsKey(variable.Name))
-                                variable = VariablesDict[variable.Name];
-                            else
+                            if (part != "0")
                             {
-                                VariablesDict.Add(variable.Name, variable);
-                                Variables.Add(variable);
+                                // create the variable
+                                Variable variable = new Variable(part);
+
+                                // use the stored variable if exists or add the new to the dictionary
+                                if (VariablesDict.ContainsKey(variable.Name))
+                                    variable = VariablesDict[variable.Name];
+                                else
+                                {
+                                    VariablesDict.Add(variable.Name, variable);
+                                    Variables.Add(variable);
+                                }
+
+                                // create the literal
+                                Literal literal;
+                                if (part[0] == '-')
+                                    literal = variable.NegativeLiteral;
+                                else
+                                    literal = variable.PositiveLiteral;
+
+                                // add the literal in the dictionary if doesnt exists
+                                if (!LiteralsDict.ContainsKey(literal.Name))
+                                    LiteralsDict.Add(literal.Name, literal);
+                                if (!Literals.Contains(literal))
+                                    Literals.Add(literal);
+
+                                // add the literal to the clause
+                                clause.Literals.Add(literal);
+                                literal.ClausesContainingIt.Add(clause);
                             }
-
-                            // create the literal
-                            Literal literal;
-                            if (part[0] == '-')
-                                literal = variable.NegativeLiteral;
-                            else
-                                literal = variable.PositiveLiteral;
-
-                            // add the literal in the dictionary if doesnt exists
-                            if (!LiteralsDict.ContainsKey(literal.Name))
-                                LiteralsDict.Add(literal.Name, literal);
-                            if (!Literals.Contains(literal))
-                                Literals.Add(literal);
-
-                            // add the literal to the clause
-                            clause.Literals.Add(literal);
-                            literal.ClausesContainingIt.Add(clause);
                         }
                     }
                 }
+
+                // sort the literals in the clause
+                clause.Literals = clause.Literals.OrderBy(p => p.Variable.CnfIndex).ToList();
+
+                // add the clause to the dictionary and the list with formula clauses
+                // it wont add duplicate clauses
+                if (!ClausesDict.ContainsKey(clause.Name))
+                {
+                    Clauses.Add(clause);
+                    ClausesDict.Add(clause.Name, clause);
+                }
             }
-
-            // sort the literals in the clause
-            clause.Literals = clause.Literals.OrderBy(p => p.Variable.CnfIndex).ToList();
-
-            // add the clause to the dictionary and the list with formula clauses
-            // it wont add duplicate clauses
-            if (!ClausesDict.ContainsKey(clause.Name))
+            catch (Exception ex)
             {
-                Clauses.Add(clause);
-                ClausesDict.Add(clause.Name, clause);
+                throw ex;
             }
         }
 
