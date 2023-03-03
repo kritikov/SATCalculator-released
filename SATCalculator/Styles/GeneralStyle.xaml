@@ -187,7 +187,7 @@
     <Style TargetType="TextBlock" x:Key="InformationsTextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="Padding" Value="5"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="Bisque"/>
+        <Setter Property="Foreground" Value="#FF475AA5"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="TextAlignment" Value="Center"/>
     </Style>
