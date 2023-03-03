@@ -56,10 +56,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="NewClasses\AnalysisResults.cs" />
-    <Compile Include="NewClasses\Commands.cs" />
-    <Compile Include="NewClasses\Converters.cs" />
-    <Compile Include="NewClasses\Logs.cs" />
+    <Compile Include="Classes\AnalysisResults.cs" />
+    <Compile Include="Classes\Commands.cs" />
+    <Compile Include="Classes\Converters.cs" />
+    <Compile Include="Classes\Logs.cs" />
+    <Compile Include="Classes\Solution.cs" />
+    <Compile Include="Classes\VariableValuation.cs" />
     <Compile Include="Views\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -106,11 +108,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NewClasses\Clause.cs" />
-    <Compile Include="NewClasses\Enums.cs" />
-    <Compile Include="NewClasses\Literal.cs" />
-    <Compile Include="NewClasses\SATFormula.cs" />
-    <Compile Include="NewClasses\Variable.cs" />
+    <Compile Include="Classes\Clause.cs" />
+    <Compile Include="Classes\Enums.cs" />
+    <Compile Include="Classes\Literal.cs" />
+    <Compile Include="Classes\SATFormula.cs" />
+    <Compile Include="Classes\Variable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

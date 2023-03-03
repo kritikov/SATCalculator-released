@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace SATCalculator.NewClasses
+namespace SATCalculator.Classes
 {
     public class SATFormula : INotifyPropertyChanged
     {
@@ -20,6 +20,7 @@ namespace SATCalculator.NewClasses
         public ObservableCollection<Clause> Clauses { get; set; } = new ObservableCollection<Clause>();
         public ObservableCollection<Variable> Variables { get; set; } = new ObservableCollection<Variable>();
         public ObservableCollection<Literal> Literals { get; set; } = new ObservableCollection<Literal>();
+        public ObservableCollection<Solution> Solutions { get; set; } = new ObservableCollection<Solution>();
 
         public Dictionary<string, Literal> LiteralsDict { get; set; } = new Dictionary<string, Literal>();
         public Dictionary<string, Variable> VariablesDict { get; set; } = new Dictionary<string, Variable>();
@@ -294,6 +295,20 @@ namespace SATCalculator.NewClasses
             {
                 throw ex;
             }
+        }
+
+        public void SolveDetermistic()
+        {
+            bool findAllSolutions = false;
+
+            Solutions.Clear();
+
+
+            Solution solution = new Solution();
+            solution.ValuationsList.Add(new VariableValuation() { Valuation = ValuationEnum.True, Variable = this.Variables[0] });
+
+            Solutions.Add(solution);
+
         }
 
         #endregion

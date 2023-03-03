@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Commands="clr-namespace:SATCalculator.NewClasses"
+        xmlns:Commands="clr-namespace:SATCalculator.Classes"
         xmlns:local="clr-namespace:SATCalculator.Views"
         mc:Ignorable="d"
         Title="New clause" Height="424" Width="406" WindowStartupLocation="CenterScreen">

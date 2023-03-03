@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SATCalculator.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SATCalculator.NewClasses
+namespace SATCalculator.Classes
 {
     public class Variable
     {

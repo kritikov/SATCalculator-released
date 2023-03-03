@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator.Views"
-        xmlns:Converters="clr-namespace:SATCalculator.NewClasses"
-        xmlns:Commands="clr-namespace:SATCalculator.NewClasses"
+        xmlns:Converters="clr-namespace:SATCalculator.Classes"
+        xmlns:Commands="clr-namespace:SATCalculator.Classes"
         mc:Ignorable="d"
         Title="MainWindow" Height="694" Width="1145" WindowStartupLocation="CenterScreen">
 
@@ -30,6 +30,10 @@
             Command="Commands:Commands.Copy"
             CanExecute="CopyFormula_CanExecute"
             Executed="CopyFormula_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Solve"
+            CanExecute="SolveFormula_CanExecute"
+            Executed="SolveFormula_Executed" />
     </Window.CommandBindings>
 
     <DockPanel>
@@ -191,7 +195,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding FormulaRelatedClausesView}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Width="*" MinWidth="140">
+                                            <DataGridTemplateColumn Width="*" MinWidth="160">
                                                 <DataGridTemplateColumn.Header>
                                                     <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
                                                 </DataGridTemplateColumn.Header>
@@ -513,6 +517,47 @@
                         </Grid>
                     </TabItem>
 
+                    <TabItem Header="Solver">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Row="0" Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid 
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding SolverSolutionsView}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Width="300" MinWidth="200" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
+                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
+                                    <Button Content="Solve formula" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                        </Grid>
+                    </TabItem>
+                    
                     <TabItem Header="Algorithm">
                         <Grid>
                             <Grid.ColumnDefinitions>

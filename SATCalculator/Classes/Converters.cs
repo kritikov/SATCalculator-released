@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace SATCalculator.NewClasses
+namespace SATCalculator.Classes
 {
     public class ValuationToColor : IValueConverter
     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using SATCalculator.NewClasses;
+using SATCalculator.Classes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -175,6 +175,15 @@ namespace SATCalculator.Views
             }
         }
 
+        private readonly CollectionViewSource solverSolutionsSource = new CollectionViewSource();
+        public ICollectionView SolverSolutionsView
+        {
+            get
+            {
+                return this.solverSolutionsSource.View;
+            }
+        }
+
         public CompositeCollection ResolutionClausesWithReferencesCollection { get; set; } = new CompositeCollection();
 
         private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
@@ -228,6 +237,7 @@ namespace SATCalculator.Views
 
             Logs.Write("Application started");
         }
+       
         #endregion
 
 
@@ -513,6 +523,24 @@ namespace SATCalculator.Views
             }
         }
 
+        private void SolveFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void SolveFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                SolveFormula(Formula);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
         #endregion
 
 
@@ -615,6 +643,7 @@ namespace SATCalculator.Views
 
             RefreshFormulaViews();
             RefreshResolutionViews();
+            RefreshSolverViews();
             RefreshAlgorithmViews();
         }
 
@@ -628,6 +657,12 @@ namespace SATCalculator.Views
 
             formulaRelatedClausesSource.Source = Formula.Clauses;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormulaRelatedClausesView"));
+        }
+
+        private void RefreshSolverViews()
+        {
+            solverSolutionsSource.Source = Formula.Solutions;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverSolutionsView"));
         }
 
         /// <summary>
@@ -973,10 +1008,20 @@ namespace SATCalculator.Views
             }
         }
 
+        /// <summary>
+        /// Find the valuations that solve the formula
+        /// </summary>
+        /// <param name="formula"></param>
+        private void SolveFormula(SATFormula formula)
+        {
+            formula.SolveDetermistic();
+
+
+        }
 
         #endregion
 
-        
-        
+
+
     }
 }

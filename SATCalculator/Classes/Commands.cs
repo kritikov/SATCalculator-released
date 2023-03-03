@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SATCalculator.NewClasses
+namespace SATCalculator.Classes
 {
     public class Commands
     {
@@ -36,6 +36,12 @@ namespace SATCalculator.NewClasses
         public static readonly RoutedUICommand Copy = new RoutedUICommand(
             "copy",
             "copy",
+            typeof(Commands)
+        );
+
+        public static readonly RoutedUICommand Solve = new RoutedUICommand(
+            "solve",
+            "solve",
             typeof(Commands)
         );
 
