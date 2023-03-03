@@ -26,25 +26,32 @@
             Command="Commands:Commands.Reset"
             CanExecute="ResetFormula_CanExecute"
             Executed="ResetFormula_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Copy"
+            CanExecute="CopyFormula_CanExecute"
+            Executed="CopyFormula_Executed" />
     </Window.CommandBindings>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
+            <MenuItem Header="_Formula">
                 <MenuItem Header="_New" Click="NewFormula"/>
                 <MenuItem Header="_Load" Click="LoadFormula"/>
                 <MenuItem Header="_Save" Click="SaveResolutionFormulaAsCNF"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="ExitProgram"/>
             </MenuItem>
+            <MenuItem Header="_About" Click="DisplayAbout"/>
         </Menu>
 
-        <Grid DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
-            <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-                <TextBox Text="{Binding Formula.Name, Mode=OneWay}" HorizontalAlignment="Stretch" 
-                         Width="{Binding ActualWidth}"
-                         IsReadOnly="True"/>
-            </ScrollViewer>
+        <Grid DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Margin="5, 4, 4, 8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding Formula.Name, Mode=OneWay}" HorizontalAlignment="Stretch" Margin="2"
+                      IsReadOnly="True"/>
+            <Button Grid.Column="1" Content="copy" Margin="2" Command="Commands:Commands.Copy" ToolTip="Copy the formula"/>
         </Grid>
 
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">

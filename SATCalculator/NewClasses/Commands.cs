@@ -33,5 +33,11 @@ namespace SATCalculator.NewClasses
             typeof(Commands)
         );
 
+        public static readonly RoutedUICommand Copy = new RoutedUICommand(
+            "copy",
+            "copy",
+            typeof(Commands)
+        );
+
     }
 }

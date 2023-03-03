@@ -240,6 +240,11 @@ namespace SATCalculator.Views
             System.Windows.Application.Current.Shutdown();
         }
 
+        private void DisplayAbout(object sender, RoutedEventArgs e)
+        {
+            DisplayAbout();
+        }
+
         private void LoadFormula(object sender, RoutedEventArgs e)
         {
             try
@@ -490,6 +495,24 @@ namespace SATCalculator.Views
             }
         }
 
+        private void CopyFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void CopyFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText(Formula.Name);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
         #endregion
 
 
@@ -527,6 +550,12 @@ namespace SATCalculator.Views
             {
                 throw ex;
             }
+        }
+
+        private void DisplayAbout()
+        {
+            AboutWindow window = new AboutWindow();
+            window.ShowDialog();
         }
 
         private void LoadFormula()
@@ -944,8 +973,10 @@ namespace SATCalculator.Views
             }
         }
 
+
         #endregion
 
+        
         
     }
 }

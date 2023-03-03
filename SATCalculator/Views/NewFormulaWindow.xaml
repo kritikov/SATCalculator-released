@@ -20,17 +20,12 @@
         
         <Grid Margin="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Give the new formula using the form (1 ∨ 2 ∨ -3) ∧ (-2 ∨ 3 ∨ 4)"/>
-
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
@@ -60,9 +55,9 @@
 
             </Grid>
 
-            <TextBlock Grid.Row="2" Text="The formula will be created from the given string will be:"/>
+            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="Give the new formula using the form (a ∨ b) ∧ (c ∨ -a). You can change the symbols using the field on the right. The formula will be transformed to a form compatible with cnf form. Press 'Test' the check the result."/>
 
-            <ScrollViewer Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
                 <TextBlock Text="{Binding ResultFormulaString}" Style="{StaticResource InformationsTextBlock}" HorizontalAlignment="Stretch"/>
             </ScrollViewer>
 
