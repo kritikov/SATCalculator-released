@@ -8,7 +8,7 @@ namespace SATCalculator.Classes
 {
     public class VariableValuation
     {
-        public Variable Variable { get; set; } = new Variable();
+        public string VariableName { get; set; }
         public ValuationEnum Valuation { get; set; } = ValuationEnum.Null;
 
     }

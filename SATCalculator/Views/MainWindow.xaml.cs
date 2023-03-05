@@ -100,7 +100,7 @@ namespace SATCalculator.Views
         }
 
         private bool SearchingValuationsRunning = false;
-        private bool SearchingValuationsAllowContinue = true;
+        private CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
 
         #endregion
@@ -530,13 +530,15 @@ namespace SATCalculator.Views
 
         private void SolveFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Formula != null ? true : false;
+            e.CanExecute = (Formula != null && SearchingValuationsRunning == false) ? true : false;
 
         }
         private void SolveFormula_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
+                SearchingValuationsRunning = true;
+
                 SolveFormula(Formula);
             }
             catch (Exception ex)
@@ -548,14 +550,14 @@ namespace SATCalculator.Views
 
         private void StopSearchingValuations_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Formula != null ? true : false;
+            e.CanExecute = (Formula != null && SearchingValuationsRunning == true) ? true : false;
 
         }
         private void StopSearchingValuations_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
-                //SolveFormula(Formula);
+                cancellationToken.Cancel();
             }
             catch (Exception ex)
             {
@@ -1037,10 +1039,20 @@ namespace SATCalculator.Views
         /// <param name="formula"></param>
         private async Task SolveFormula(SATFormula formula)
         {
-            CancellationTokenSource source = new CancellationTokenSource();
-            source.CancelAfter(TimeSpan.FromSeconds(1));
 
-            Task task = Task.Run(() => formula.SolveDetermistic(source.Token), source.Token);
+            Formula.Solutions.Clear();
+
+            ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
+
+            await Task.Run(() => {
+                solutions = SATFormula.SolveDetermistic(Formula, cancellationToken.Token); 
+            });
+
+            SearchingValuationsRunning = false;
+
+            Formula.Solutions = solutions;
+            RefreshSolverViews();
+
         }
 
         #endregion

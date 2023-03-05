@@ -315,31 +315,33 @@ namespace SATCalculator.Classes
             }
         }
 
-        public void SolveDetermistic(CancellationToken cancellationToken)
+        public static ObservableCollection<Solution> SolveDetermistic(SATFormula formula, CancellationToken cancellationToken)
         {
             try
             {
-                if (this.Variables.Count == 0)
+                SATFormula formulaClone = formula.Copy();
+
+                if (formulaClone.Variables.Count == 0)
                     throw new Exception("The formula has no variables");
 
-                Solutions.Clear();
+                ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
 
                 // initialize the valuations
-                foreach ( Variable variable in this.Variables )
+                foreach ( Variable variable in formulaClone.Variables )
                     variable.Valuation = ValuationEnum.False;
 
 
                 // examine all combinations
                 int totalCombinations = 1;
-                int counter = this.Variables.Count;
+                int counter = formulaClone.Variables.Count;
                 bool continueLoop = true;
                 while (continueLoop)
                 {
                     // check formula valuation
-                    if (this.Valuation == ValuationEnum.True)
+                    if (formulaClone.Valuation == ValuationEnum.True)
                     {
-                        Solution solution = CreateSolutionFromCurrent();
-                        Solutions.Add(solution);
+                        Solution solution = CreateSolution(formulaClone);
+                        solutions.Add(solution);
                     }
 
                     // stop the process if the user has cancel it
@@ -349,23 +351,25 @@ namespace SATCalculator.Classes
                     int index = 0;
                     while (index <= counter - 1)
                     {
-                        if (this.Variables[index].Valuation == ValuationEnum.False)
+                        if (formulaClone.Variables[index].Valuation == ValuationEnum.False)
                         {
-                            this.Variables[index].Valuation = ValuationEnum.True;
+                            formulaClone.Variables[index].Valuation = ValuationEnum.True;
                             totalCombinations++;
                             break;
                         }
                         else
                         {
-                            this.Variables[index].Valuation = ValuationEnum.False;
+                            formulaClone.Variables[index].Valuation = ValuationEnum.False;
                             index++;
                         }
                     }
 
                     // check if must end the loop
-                    if (index == counter && this.Variables[index - 1].Valuation == ValuationEnum.False)
+                    if (index == counter && formulaClone.Variables[index - 1].Valuation == ValuationEnum.False)
                         continueLoop = false;
                 }
+
+                return solutions;
             }
             catch(Exception ex)
             {
@@ -377,13 +381,13 @@ namespace SATCalculator.Classes
         /// Create a solutions from the current valuation of the variables
         /// </summary>
         /// <returns></returns>
-        private Solution CreateSolutionFromCurrent()
+        public static Solution CreateSolution(SATFormula formula)
         {
             Solution solution = new Solution();
 
-            foreach (Variable variable in this.Variables)
+            foreach (Variable variable in formula.Variables)
             {
-                VariableValuation valuation = new VariableValuation() { Valuation = variable.Valuation, Variable = variable };
+                VariableValuation valuation = new VariableValuation() { Valuation = variable.Valuation, VariableName = variable.Name };
                 solution.ValuationsList.Add(valuation);
             }
 

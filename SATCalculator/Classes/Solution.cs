@@ -24,7 +24,7 @@ namespace SATCalculator.Classes
 
                     string valuation = variableValuation.Valuation == ValuationEnum.True ? "T" : "F";
 
-                    value += $"{variableValuation.Variable.Name} = {valuation}";
+                    value += $"{variableValuation.VariableName} = {valuation}";
                 }
 
                 return value;

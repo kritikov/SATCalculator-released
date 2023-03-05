@@ -552,10 +552,10 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
-                                    <Button Content="Solve formula" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
+                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Solve" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
                                     <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
-                                </StackPanel>
+                                </WrapPanel>
                             </Grid>
 
                             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
