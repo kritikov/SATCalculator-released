@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,6 +98,10 @@ namespace SATCalculator.Views
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResults"));
             }
         }
+
+        private bool SearchingValuationsRunning = false;
+        private bool SearchingValuationsAllowContinue = true;
+
 
         #endregion
 
@@ -533,6 +538,24 @@ namespace SATCalculator.Views
             try
             {
                 SolveFormula(Formula);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        private void StopSearchingValuations_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void StopSearchingValuations_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                //SolveFormula(Formula);
             }
             catch (Exception ex)
             {
@@ -1012,11 +1035,12 @@ namespace SATCalculator.Views
         /// Find the valuations that solve the formula
         /// </summary>
         /// <param name="formula"></param>
-        private void SolveFormula(SATFormula formula)
+        private async Task SolveFormula(SATFormula formula)
         {
-            formula.SolveDetermistic();
+            CancellationTokenSource source = new CancellationTokenSource();
+            source.CancelAfter(TimeSpan.FromSeconds(1));
 
-
+            Task task = Task.Run(() => formula.SolveDetermistic(source.Token), source.Token);
         }
 
         #endregion

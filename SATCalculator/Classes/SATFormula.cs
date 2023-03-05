@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -37,6 +38,23 @@ namespace SATCalculator.Classes
             {
                 selectedVariable = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedVariable"));
+            }
+        }
+
+        public ValuationEnum Valuation
+        {
+            get
+            {
+                // if one clause is false then the whole formula is false
+                if (Clauses.Any(p => p.Valuation == ValuationEnum.False))
+                    return ValuationEnum.False;
+
+                // if one clause is null then the valuation of the formula is still unspecified
+                if (Clauses.Any(p => p.Valuation == ValuationEnum.Null))
+                    return ValuationEnum.Null;
+
+                // in any othe case the formula is true
+                return ValuationEnum.True;
             }
         }
 
@@ -297,18 +315,79 @@ namespace SATCalculator.Classes
             }
         }
 
-        public void SolveDetermistic()
+        public void SolveDetermistic(CancellationToken cancellationToken)
         {
-            bool findAllSolutions = false;
+            try
+            {
+                if (this.Variables.Count == 0)
+                    throw new Exception("The formula has no variables");
 
-            Solutions.Clear();
+                Solutions.Clear();
+
+                // initialize the valuations
+                foreach ( Variable variable in this.Variables )
+                    variable.Valuation = ValuationEnum.False;
 
 
+                // examine all combinations
+                int totalCombinations = 1;
+                int counter = this.Variables.Count;
+                bool continueLoop = true;
+                while (continueLoop)
+                {
+                    // check formula valuation
+                    if (this.Valuation == ValuationEnum.True)
+                    {
+                        Solution solution = CreateSolutionFromCurrent();
+                        Solutions.Add(solution);
+                    }
+
+                    // stop the process if the user has cancel it
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // go to the next valuation
+                    int index = 0;
+                    while (index <= counter - 1)
+                    {
+                        if (this.Variables[index].Valuation == ValuationEnum.False)
+                        {
+                            this.Variables[index].Valuation = ValuationEnum.True;
+                            totalCombinations++;
+                            break;
+                        }
+                        else
+                        {
+                            this.Variables[index].Valuation = ValuationEnum.False;
+                            index++;
+                        }
+                    }
+
+                    // check if must end the loop
+                    if (index == counter && this.Variables[index - 1].Valuation == ValuationEnum.False)
+                        continueLoop = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Create a solutions from the current valuation of the variables
+        /// </summary>
+        /// <returns></returns>
+        private Solution CreateSolutionFromCurrent()
+        {
             Solution solution = new Solution();
-            solution.ValuationsList.Add(new VariableValuation() { Valuation = ValuationEnum.True, Variable = this.Variables[0] });
 
-            Solutions.Add(solution);
+            foreach (Variable variable in this.Variables)
+            {
+                VariableValuation valuation = new VariableValuation() { Valuation = variable.Valuation, Variable = variable };
+                solution.ValuationsList.Add(valuation);
+            }
 
+            return solution;
         }
 
         #endregion

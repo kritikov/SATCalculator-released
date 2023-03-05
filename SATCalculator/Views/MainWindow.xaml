@@ -34,6 +34,10 @@
             Command="Commands:Commands.Solve"
             CanExecute="SolveFormula_CanExecute"
             Executed="SolveFormula_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.StopProcess"
+            CanExecute="StopSearchingValuations_CanExecute"
+            Executed="StopSearchingValuations_Executed" />
     </Window.CommandBindings>
 
     <DockPanel>
@@ -535,7 +539,7 @@
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding SolverSolutionsView}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Width="300" MinWidth="200" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                        <DataGridTextColumn Width="*" MinWidth="300" Binding="{Binding DisplayValue}" IsReadOnly="True">
                                             <DataGridTextColumn.Header>
                                                 <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
                                             </DataGridTextColumn.Header>
@@ -550,6 +554,7 @@
 
                                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
                                     <Button Content="Solve formula" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
+                                    <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
                                 </StackPanel>
                             </Grid>
 

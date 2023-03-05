@@ -45,5 +45,11 @@ namespace SATCalculator.Classes
             typeof(Commands)
         );
 
+        public static readonly RoutedUICommand StopProcess = new RoutedUICommand(
+            "stop process",
+            "stop process",
+            typeof(Commands)
+        );
+
     }
 }
