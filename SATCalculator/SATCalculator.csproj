@@ -61,8 +61,7 @@
     <Compile Include="Classes\Converters.cs" />
     <Compile Include="Classes\Logs.cs" />
     <Compile Include="Classes\Solution.cs" />
-    <Compile Include="Classes\SolverResults.cs" />
-    <Compile Include="Classes\VariableValuation.cs" />
+    <Compile Include="Classes\SolverDeterministic.cs" />
     <Compile Include="Views\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>

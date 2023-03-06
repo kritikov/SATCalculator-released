@@ -201,6 +201,7 @@ namespace SATCalculator.Views
                 return this.resolutionClausesWithNegativeReferencesSource.View;
             }
         }
+        public CompositeCollection ResolutionClausesWithReferencesCollection { get; set; } = new CompositeCollection();
 
         private readonly CollectionViewSource solverSolutionsSource = new CollectionViewSource();
         public ICollectionView SolverSolutionsView
@@ -220,7 +221,14 @@ namespace SATCalculator.Views
             }
         }
 
-        public CompositeCollection ResolutionClausesWithReferencesCollection { get; set; } = new CompositeCollection();
+        private readonly CollectionViewSource solverStatisticsSource = new CollectionViewSource();
+        public ICollectionView SolverStatisticsView
+        {
+            get
+            {
+                return this.solverStatisticsSource.View;
+            }
+        }
 
         private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
         public ICollectionView AlgorithmFlowView
@@ -651,6 +659,25 @@ namespace SATCalculator.Views
             }
         }
 
+        private void ApplyToFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = (Formula != null && SolverSolutionsView != null && SolverSolutionsView.CurrentItem != null) ? true : false;
+        }
+        private void ApplyToFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Message = "";
+
+            try
+            {
+                ApplyValuationToFormula(SolverResults.SelectedSolution, Formula);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
         #endregion
 
 
@@ -777,6 +804,10 @@ namespace SATCalculator.Views
 
             solverSelectedSolutionSource.Source = SolverResults?.SelectedSolution?.ValuationsList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverSelectedSolutionView"));
+
+            solverStatisticsSource.Source = SolverResults?.Statistics;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverStatisticsView"));
+
         }
 
         /// <summary>
@@ -1134,7 +1165,7 @@ namespace SATCalculator.Views
             ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
 
             await Task.Run(() => {
-                SolverResults = SATFormula.SolveDetermistic(Formula, cancellationToken.Token); 
+                SolverResults = SolverDeterministic.Solve(Formula, cancellationToken.Token); 
             });
 
             SearchingValuationsRunning = false;
@@ -1142,9 +1173,15 @@ namespace SATCalculator.Views
             RefreshSolverViews();
         }
 
+        private void ApplyValuationToFormula(Solution solution, SATFormula formula)
+        {
+            formula.ApplyValuation(solution);
+
+            RefreshFormulaViews();
+        }
 
         #endregion
 
-        
+
     }
 }

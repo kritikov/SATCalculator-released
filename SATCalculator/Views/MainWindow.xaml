@@ -38,6 +38,10 @@
             Command="Commands:Commands.StopProcess"
             CanExecute="StopSearchingValuations_CanExecute"
             Executed="StopSearchingValuations_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.ApplyToFormula"
+            CanExecute="ApplyToFormula_CanExecute"
+            Executed="ApplyToFormula_Executed" />
     </Window.CommandBindings>
 
     <DockPanel>
@@ -571,9 +575,7 @@
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
-                                <DataGrid 
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding SolverSelectedSolutionView}">
+                                <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverSelectedSolutionView}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
                                             <DataGridTextColumn.Header>
@@ -589,7 +591,7 @@
                                 </DataGrid>
 
                                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-
+                                    <Button Content="Apply to formula" Command="Commands:Commands.ApplyToFormula" ToolTip="Apply the selected valuation to the variables of the formula"/>
                                 </WrapPanel>
                             </Grid>
 
@@ -601,11 +603,20 @@
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                        <Run Text="solutions: "/>
-                                        <Run Text="{Binding SolverResults.SolutionsCount, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
-                                </TextBlock>
-
+                                <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverStatisticsView}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="statitics" ToolTip="Statistics"/>
+                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </Grid>
 
                             <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>

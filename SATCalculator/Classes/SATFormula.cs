@@ -316,83 +316,28 @@ namespace SATCalculator.Classes
             }
         }
 
-        public static SolverResults SolveDetermistic(SATFormula formula, CancellationToken cancellationToken)
-        {
-            try
-            {
-                SolverResults results = new SolverResults();
-                SATFormula formulaClone = formula.Copy();
-
-                if (formulaClone.Variables.Count == 0)
-                    throw new Exception("The formula has no variables");
-
-                // initialize the valuations
-                foreach ( Variable variable in formulaClone.Variables )
-                    variable.Valuation = ValuationEnum.False;
-
-
-                // examine all combinations
-                int totalCombinations = 1;
-                int counter = formulaClone.Variables.Count;
-                bool continueLoop = true;
-                while (continueLoop)
-                {
-                    // check formula valuation
-                    if (formulaClone.Valuation == ValuationEnum.True)
-                    {
-                        Solution solution = CreateSolution(formulaClone);
-                        results.Solutions.Add(solution);
-                    }
-
-                    // stop the process if the user has cancel it
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    // go to the next valuation
-                    int index = 0;
-                    while (index <= counter - 1)
-                    {
-                        if (formulaClone.Variables[index].Valuation == ValuationEnum.False)
-                        {
-                            formulaClone.Variables[index].Valuation = ValuationEnum.True;
-                            totalCombinations++;
-                            break;
-                        }
-                        else
-                        {
-                            formulaClone.Variables[index].Valuation = ValuationEnum.False;
-                            index++;
-                        }
-                    }
-
-                    // check if must end the loop
-                    if (index == counter && formulaClone.Variables[index - 1].Valuation == ValuationEnum.False)
-                        continueLoop = false;
-                }
-
-                return results;
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         /// <summary>
-        /// Create a solutions from the current valuation of the variables
+        /// Apply the valuations from a solution to the variables of the formula
         /// </summary>
-        /// <returns></returns>
-        public static Solution CreateSolution(SATFormula formula)
+        /// <param name="solution"></param>
+        public void ApplyValuation(Solution solution)
         {
-            Solution solution = new Solution();
-
-            foreach (Variable variable in formula.Variables)
+            // reset all variables of the formula
+            foreach(var variable in this.Variables)
             {
-                VariableValuation valuation = new VariableValuation() { Valuation = variable.Valuation, VariableName = variable.Name };
-                solution.ValuationsList.Add(valuation);
+                variable.Valuation = ValuationEnum.Null;
             }
 
-            return solution;
+
+            foreach(var valuation in solution.ValuationsList)
+            {
+                if (VariablesDict.ContainsKey(valuation.VariableName))
+                {
+                    VariablesDict[valuation.VariableName].Valuation = valuation.Valuation;
+                }
+            }
         }
+       
 
         #endregion
     }
