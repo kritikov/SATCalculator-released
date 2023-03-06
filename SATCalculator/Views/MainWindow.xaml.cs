@@ -1160,17 +1160,28 @@ namespace SATCalculator.Views
         /// <param name="formula"></param>
         private async Task SolveFormula(SATFormula formula)
         {
-            SolverResults?.Solutions?.Clear();
+            try
+            {
+                SolverResults = new SolverResults();
+                RefreshSolverViews();
 
-            ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
+                cancellationToken = new CancellationTokenSource();
 
-            await Task.Run(() => {
-                SolverResults = SolverDeterministic.Solve(Formula, cancellationToken.Token); 
-            });
+                await Task.Run(() => {
+                    SolverDeterministic.Solve(Formula, cancellationToken.Token, SolverResults, this);
+                });
 
-            SearchingValuationsRunning = false;
-
-            RefreshSolverViews();
+                SearchingValuationsRunning = false;
+                RefreshSolverViews();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                SearchingValuationsRunning = false;
+            }
         }
 
         private void ApplyValuationToFormula(Solution solution, SATFormula formula)

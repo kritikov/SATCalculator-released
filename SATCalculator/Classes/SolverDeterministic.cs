@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SATCalculator.Views;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -6,17 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SATCalculator.Classes
 {
     public static class SolverDeterministic
     {
-        public static SolverResults Solve(SATFormula formula, CancellationToken cancellationToken)
+        public static void Solve(SATFormula formula, CancellationToken cancellationToken, SolverResults results, MainWindow window)
         {
             try
             {
-                SolverResults results = new SolverResults();
-
                 SATFormula formulaClone = formula.Copy();
 
                 if (formulaClone.Variables.Count == 0)
@@ -28,19 +28,27 @@ namespace SATCalculator.Classes
 
 
                 // examine all combinations
-                int totalCombinations = 1;
+                ulong checkedCombinations = 1;
+                double totalCombinations = Math.Pow(2, formulaClone.Variables.Count);
                 int counter = formulaClone.Variables.Count;
                 bool continueLoop = true;
                 while (continueLoop)
                 {
-                    if (totalCombinations % 1000000 == 0)
-                        Logs.Write(totalCombinations.ToString());
+                    if (checkedCombinations % 10000 == 0)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            window.Message = $"checking {checkedCombinations} valuations from a total of {totalCombinations}";
+                        });
+                    }
 
                     // check formula valuation
                     if (formulaClone.Valuation == ValuationEnum.True)
                     {
-                        Solution solution = CreateSolution(formulaClone);
-                        results.Solutions.Add(solution);
+                        Application.Current.Dispatcher.Invoke(() => {
+                            Solution solution = CreateSolution(formulaClone);
+                            results.Solutions.Add(solution);
+                        });
                     }
 
                     // stop the process if the user has cancel it
@@ -53,7 +61,7 @@ namespace SATCalculator.Classes
                         if (formulaClone.Variables[index].Valuation == ValuationEnum.False)
                         {
                             formulaClone.Variables[index].Valuation = ValuationEnum.True;
-                            totalCombinations++;
+                            checkedCombinations++;
                             break;
                         }
                         else
@@ -68,10 +76,12 @@ namespace SATCalculator.Classes
                         continueLoop = false;
                 }
 
-                results.Statistics.Add(new Statistics() { Name = "solutions", Value = results.Solutions.Count });
-                results.Statistics.Add(new Statistics() { Name = "total variables", Value = formula.VariablesCount });
+                Application.Current.Dispatcher.Invoke(() => {
+                    results.Statistics.Add(new Statistics() { Name = "solutions", Value = results.Solutions.Count });
+                    results.Statistics.Add(new Statistics() { Name = "total variables", Value = formula.VariablesCount });
+                });
 
-                return results;
+                return;
             }
             catch (Exception ex)
             {
