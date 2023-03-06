@@ -77,6 +77,17 @@ namespace SATCalculator.Views
             }
         }
 
+        //private Solution selectedSolution = null;
+        //public Solution SelectedSolution
+        //{
+        //    get => selectedSolution;
+        //    set
+        //    {
+        //        selectedSolution = value;
+        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedSolution"));
+        //    }
+        //}
+
         private ObservableCollection<Clause> resolutionResolutionResults = new ObservableCollection<Clause>();
         public ObservableCollection<Clause> ResolutionResolutionResults
         {
@@ -96,6 +107,17 @@ namespace SATCalculator.Views
             {
                 algorithmAnalysisResults = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResults"));
+            }
+        }
+
+        private SolverResults solverResults = new SolverResults();
+        public SolverResults SolverResults
+        {
+            get => solverResults;
+            set
+            {
+                solverResults = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverResults"));
             }
         }
 
@@ -189,6 +211,15 @@ namespace SATCalculator.Views
             }
         }
 
+        private readonly CollectionViewSource solverSelectedSolutionSource = new CollectionViewSource();
+        public ICollectionView SolverSelectedSolutionView
+        {
+            get
+            {
+                return this.solverSelectedSolutionSource.View;
+            }
+        }
+
         public CompositeCollection ResolutionClausesWithReferencesCollection { get; set; } = new CompositeCollection();
 
         private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
@@ -262,6 +293,8 @@ namespace SATCalculator.Views
 
         private void LoadFormula(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 LoadFormula();
@@ -275,6 +308,8 @@ namespace SATCalculator.Views
 
         private void NewFormula(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 CreateNewFormula();
@@ -288,6 +323,8 @@ namespace SATCalculator.Views
 
         private void SaveResolutionFormulaAsCNF(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 SaveFormulaAsCNF(Formula);
@@ -301,6 +338,8 @@ namespace SATCalculator.Views
 
         public void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 var headerClicked = e.OriginalSource as GridViewColumnHeader;
@@ -327,6 +366,8 @@ namespace SATCalculator.Views
         
         private void FormulaVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 if (Formula != null)
@@ -355,6 +396,8 @@ namespace SATCalculator.Views
 
         private void ResolutionVariablesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 if (Formula != null)
@@ -380,6 +423,8 @@ namespace SATCalculator.Views
 
         private void ResolutionSelectedClauseChanged(object sender, SelectionChangedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 if (ResolutionClausesWithPositiveReferencesView != null && ResolutionClausesWithNegativeReferencesView != null)
@@ -396,6 +441,8 @@ namespace SATCalculator.Views
 
         private void ResolutionResolutionSelectedClauses(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 ResolutionSelectedClauses();
@@ -409,6 +456,8 @@ namespace SATCalculator.Views
 
         private void ResolutionResolutionAllClausesTest(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 ResolutionAllClausesTest();
@@ -422,6 +471,8 @@ namespace SATCalculator.Views
 
         private void ResolutionResolutionAllClauses(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 ResolutionAllClauses();
@@ -433,8 +484,29 @@ namespace SATCalculator.Views
             }
         }
 
+        private void SolverSelectedSolutionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Message = "";
+
+            try
+            {
+                if (SolverSolutionsView != null && SolverSolutionsView.CurrentItem != null)
+                {
+                    SolverResults.SelectedSolution = SolverSolutionsView.CurrentItem as Solution;
+                    RefreshSolverViews();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
         private void AnalyzeFormula(object sender, RoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 AnalyzeFormula(Formula);
@@ -457,6 +529,8 @@ namespace SATCalculator.Views
         }
         private void RemoveClause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 if (FormulaClausesView.CurrentItem != null)
@@ -479,6 +553,8 @@ namespace SATCalculator.Views
         }
         private void AddClause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 AddNewClause();
@@ -497,10 +573,13 @@ namespace SATCalculator.Views
         }
         private void ResetFormula_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 Formula = formulaOriginal.Copy();
                 SelectedVariable = null;
+                SolverResults = null;
                 RefreshViews();
             }
             catch (Exception ex)
@@ -517,6 +596,8 @@ namespace SATCalculator.Views
         }
         private void CopyFormula_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 Clipboard.SetText(Formula.Name);
@@ -535,6 +616,8 @@ namespace SATCalculator.Views
         }
         private void SolveFormula_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 SearchingValuationsRunning = true;
@@ -555,6 +638,8 @@ namespace SATCalculator.Views
         }
         private void StopSearchingValuations_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Message = "";
+
             try
             {
                 cancellationToken.Cancel();
@@ -638,6 +723,7 @@ namespace SATCalculator.Views
                     Formula = formulaOriginal.Copy();
                     
                     SelectedVariable = null;
+                    SolverResults = null;
                     AlgorithmAnalysisResults = new AnalysisResults();
 
                     RefreshViews();
@@ -686,8 +772,11 @@ namespace SATCalculator.Views
 
         private void RefreshSolverViews()
         {
-            solverSolutionsSource.Source = Formula.Solutions;
+            solverSolutionsSource.Source = SolverResults?.Solutions;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverSolutionsView"));
+
+            solverSelectedSolutionSource.Source = SolverResults?.SelectedSolution?.ValuationsList;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverSelectedSolutionView"));
         }
 
         /// <summary>
@@ -912,6 +1001,7 @@ namespace SATCalculator.Views
                     Formula = formulaOriginal.Copy();
 
                     SelectedVariable = null;
+                    SolverResults = null;
                     RefreshViews();
                 }
             }
@@ -1039,25 +1129,22 @@ namespace SATCalculator.Views
         /// <param name="formula"></param>
         private async Task SolveFormula(SATFormula formula)
         {
-
-            Formula.Solutions.Clear();
+            SolverResults?.Solutions?.Clear();
 
             ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
 
             await Task.Run(() => {
-                solutions = SATFormula.SolveDetermistic(Formula, cancellationToken.Token); 
+                SolverResults = SATFormula.SolveDetermistic(Formula, cancellationToken.Token); 
             });
 
             SearchingValuationsRunning = false;
 
-            Formula.Solutions = solutions;
             RefreshSolverViews();
-
         }
+
 
         #endregion
 
-
-
+        
     }
 }

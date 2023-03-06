@@ -526,6 +526,10 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
@@ -537,7 +541,8 @@
 
                                 <DataGrid 
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding SolverSolutionsView}">
+                                          ItemsSource="{Binding SolverSolutionsView}"
+                                    SelectionChanged="SolverSelectedSolutionChanged">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Width="*" MinWidth="300" Binding="{Binding DisplayValue}" IsReadOnly="True">
                                             <DataGridTextColumn.Header>
@@ -559,6 +564,51 @@
                             </Grid>
 
                             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                            <Grid Grid.Row="0" Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid 
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding SolverSelectedSolutionView}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="solution" ToolTip="Analysis of the selected valuation that solves the formula"/>
+                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                </WrapPanel>
+                            </Grid>
+
+                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                            
+                            <Grid Grid.Row="0" Grid.Column="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                        <Run Text="solutions: "/>
+                                        <Run Text="{Binding SolverResults.SolutionsCount, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                </TextBlock>
+
+                            </Grid>
+
+                            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
                             
                         </Grid>
                     </TabItem>

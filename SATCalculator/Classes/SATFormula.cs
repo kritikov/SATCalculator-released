@@ -29,6 +29,7 @@ namespace SATCalculator.Classes
 
         public int ClausesCount => Clauses.Count;
         public int VariablesCount => Variables.Count;
+        public int SolutionsCount => Solutions.Count;
 
         private Variable selectedVariable = null;
         public Variable SelectedVariable
@@ -315,16 +316,15 @@ namespace SATCalculator.Classes
             }
         }
 
-        public static ObservableCollection<Solution> SolveDetermistic(SATFormula formula, CancellationToken cancellationToken)
+        public static SolverResults SolveDetermistic(SATFormula formula, CancellationToken cancellationToken)
         {
             try
             {
+                SolverResults results = new SolverResults();
                 SATFormula formulaClone = formula.Copy();
 
                 if (formulaClone.Variables.Count == 0)
                     throw new Exception("The formula has no variables");
-
-                ObservableCollection<Solution> solutions = new ObservableCollection<Solution>();
 
                 // initialize the valuations
                 foreach ( Variable variable in formulaClone.Variables )
@@ -341,7 +341,7 @@ namespace SATCalculator.Classes
                     if (formulaClone.Valuation == ValuationEnum.True)
                     {
                         Solution solution = CreateSolution(formulaClone);
-                        solutions.Add(solution);
+                        results.Solutions.Add(solution);
                     }
 
                     // stop the process if the user has cancel it
@@ -369,7 +369,7 @@ namespace SATCalculator.Classes
                         continueLoop = false;
                 }
 
-                return solutions;
+                return results;
             }
             catch(Exception ex)
             {
