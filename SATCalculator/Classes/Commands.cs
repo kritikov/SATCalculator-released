@@ -57,5 +57,23 @@ namespace SATCalculator.Classes
             typeof(Commands)
         );
 
+        public static readonly RoutedUICommand NewFormula = new RoutedUICommand(
+            "new formula",
+            "new formula",
+            typeof(Commands)
+        );
+
+        public static readonly RoutedUICommand LoadFormula = new RoutedUICommand(
+            "load formula",
+            "load formula",
+            typeof(Commands)
+        );
+
+        public static readonly RoutedUICommand SaveFormula = new RoutedUICommand(
+            "save formula",
+            "save formula",
+            typeof(Commands)
+        );
+
     }
 }

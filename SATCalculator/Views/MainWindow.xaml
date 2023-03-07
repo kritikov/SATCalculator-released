@@ -15,6 +15,18 @@
 
     <Window.CommandBindings>
         <CommandBinding
+            Command="Commands:Commands.NewFormula"
+            CanExecute="NewFormula_CanExecute"
+            Executed="NewFormula_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.LoadFormula"
+            CanExecute="LoadFormula_CanExecute"
+            Executed="LoadFormula_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.SaveFormula"
+            CanExecute="SaveFormula_CanExecute"
+            Executed="SaveFormula_Executed" />
+        <CommandBinding
             Command="Commands:Commands.Remove"
             CanExecute="RemoveClause_CanExecute"
             Executed="RemoveClause_Executed" />
@@ -47,9 +59,9 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Formula">
-                <MenuItem Header="_New" Click="NewFormula"/>
-                <MenuItem Header="_Load" Click="LoadFormula"/>
-                <MenuItem Header="_Save" Click="SaveResolutionFormulaAsCNF"/>
+                <MenuItem Header="_New" Command="Commands:Commands.NewFormula"/>
+                <MenuItem Header="_Load" Command="Commands:Commands.LoadFormula"/>
+                <MenuItem Header="_Save" Command="Commands:Commands.SaveFormula" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="ExitProgram"/>
             </MenuItem>
@@ -72,31 +84,287 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="240"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                
                 <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding ClausesView}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Name">
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="Clauses" ToolTip="The clauses of the formula"/>
+                                <TextBlock Text="formula clauses" ToolTip="The clauses of the formula"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+                    <Button Content="New" Width="55" Command="Commands:Commands.NewFormula" ToolTip="Create a new formula"/>
+                    <Button Content="Load" Width="55" Command="Commands:Commands.LoadFormula" ToolTip="Load an existing formula"/>
+                    <Button Content="Save" Width="55" Command="Commands:Commands.SaveFormula" ToolTip="Save the formula in cnf form"/>
+                    <Button Content="Reset" Width="55" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
+                </WrapPanel>
             </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
             
             <Grid Grid.Column="2">
-                <TabControl >
+                <TabControl SelectedIndex="{Binding SelectedTab}">
                     <TabItem Header="Formula">
-                        <DockPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <DockPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid Grid.Column="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                        <Run Text="variables: "/>
+                                        <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/>
+                                        </TextBlock>
+                                        <DataGrid Grid.Row="1"
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding VariablesView}"
+                                          SelectionChanged="FormulaVariablesGrid_SelectionChanged">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Width="70" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="CnfIndex">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="50" Binding="{Binding References}" IsReadOnly="True">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="50" Binding="{Binding ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="50" Binding="{Binding ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTemplateColumn IsReadOnly="False" Width="100">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="value" ToolTip="The valuation of the variable. Select a valuation to see the valuation of its related clauses"/>
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox Grid.Column="4" 
+                                                                  ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.VariableValues}"
+                                                                  DisplayMemberPath="ValueAsString"
+                                                                  SelectedValuePath="Value"
+                                                                  HorizontalContentAlignment="Center"
+                                                                  Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"
+                                                                  SelectedValue="{Binding Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                                <ComboBox.ItemContainerStyle>
+                                                                    <Style TargetType="ComboBoxItem">
+                                                                        <Setter Property="Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                    </Style>
+                                                                </ComboBox.ItemContainerStyle>
+
+                                                            </ComboBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+                                    <Grid Grid.Column="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                        <Run Text="related clauses"/>
+                                        </TextBlock>
+
+                                        <DataGrid Grid.Row="1" 
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding FormulaRelatedClausesView}">
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Width="*" MinWidth="160">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ItemsControl ItemsSource="{Binding Literals}">
+                                                                <ItemsControl.Template>
+                                                                    <ControlTemplate TargetType="ItemsControl">
+                                                                        <ItemsPresenter/>
+                                                                    </ControlTemplate>
+                                                                </ItemsControl.Template>
+
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 1, 0, 1"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackPanel Orientation="Horizontal" >
+                                                                            <TextBlock Text="∨ ">
+                                                                                <TextBlock.Style>
+                                                                                    <Style TargetType="TextBlock">
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </TextBlock.Style>
+                                                                            </TextBlock>
+                                                                            <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+
+                                    <Grid Grid.Column="4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
+                                        <Run Text="formula clauses: "/>
+                                        <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>
+                                        </TextBlock>
+
+                                        <DataGrid Grid.Row="1" 
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding FormulaClausesView}">
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Width="*" MinWidth="140">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="formula clauses" ToolTip="All clauses of the formula and their valuation based on the valuations of the variables"/>
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ItemsControl ItemsSource="{Binding Literals}">
+                                                                <ItemsControl.Template>
+                                                                    <ControlTemplate TargetType="ItemsControl">
+                                                                        <ItemsPresenter/>
+                                                                    </ControlTemplate>
+                                                                </ItemsControl.Template>
+
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0, 1, 0, 1"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <TextBlock Text="∨ ">
+                                                                                <TextBlock.Style>
+                                                                                    <Style TargetType="TextBlock">
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </TextBlock.Style>
+                                                                            </TextBlock>
+                                                                            <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTextColumn Header="valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                            <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
+                                            <Button Content="Add" Width="60" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
+                                            <Button Content="Delete" Width="60" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
+                                        </WrapPanel>
+                                    </Grid>
+                                </Grid>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem Header="Resolution">
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                             <Grid>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
@@ -106,21 +374,16 @@
 
                                 <Grid Grid.Column="0">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                        <Run Text="variables: "/>
-                                        <Run Text="{Binding Formula.VariablesCount, Mode=OneWay}"/> 
-                                    </TextBlock>
-                                    <DataGrid Grid.Row="1"
+                                    <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}"
-                                          SelectionChanged="FormulaVariablesGrid_SelectionChanged">
+                                          SelectionChanged="ResolutionVariablesGrid_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                            <DataGridTextColumn Width="60" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="CnfIndex">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
                                                 </DataGridTextColumn.Header>
@@ -130,7 +393,7 @@
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding References}" IsReadOnly="True">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
                                                 </DataGridTextColumn.Header>
@@ -140,7 +403,18 @@
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding Contrasts}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Width="50" Binding="{Binding ClausesWithPositiveReferencesCount}" IsReadOnly="True">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
                                                 </DataGridTextColumn.Header>
@@ -150,7 +424,7 @@
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="50" Binding="{Binding ClausesWithNegativeReferencesCount}" IsReadOnly="True">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
                                                 </DataGridTextColumn.Header>
@@ -160,671 +434,436 @@
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTemplateColumn IsReadOnly="False" Width="100">
-                                                <DataGridTemplateColumn.Header>
-                                                    <TextBlock Text="value" ToolTip="The valuation of the variable. Select a valuation to see the valuation of its related clauses"/>
-                                                </DataGridTemplateColumn.Header>
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ComboBox Grid.Column="4" 
-                                                                  ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.VariableValues}"
-                                                                  DisplayMemberPath="ValueAsString"
-                                                                  SelectedValuePath="Value"
-                                                                  HorizontalContentAlignment="Center"
-                                                                  Foreground="{Binding Value.Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"
-                                                                  SelectedValue="{Binding Value.Valuation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                                            <ComboBox.ItemContainerStyle>
-                                                                <Style TargetType="ComboBoxItem">
-                                                                    <Setter Property="Foreground" Value="{Binding Value, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                                </Style>
-                                                            </ComboBox.ItemContainerStyle>
-                                                            
-                                                        </ComboBox>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
 
                                 <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-                                
+
                                 <Grid Grid.Column="2">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                        <Run Text="related clauses"/>
-                                    </TextBlock>
-
-                                    <DataGrid Grid.Row="1" 
+                                    <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding FormulaRelatedClausesView}">
+                                          ItemsSource="{Binding ResolutionClausesWithReferencesCollection}">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Width="*" MinWidth="160">
-                                                <DataGridTemplateColumn.Header>
+                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding Name}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
                                                     <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
-                                                </DataGridTemplateColumn.Header>
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ItemsControl ItemsSource="{Binding Literals}">
-                                                            <ItemsControl.Template>
-                                                                <ControlTemplate TargetType="ItemsControl">
-                                                                    <ItemsPresenter/>
-                                                                </ControlTemplate>
-                                                            </ItemsControl.Template>
-
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 1, 0, 1"/>
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Text="∨ ">
-                                                                            <TextBlock.Style>
-                                                                                <Style TargetType="TextBlock">
-                                                                                    <Style.Triggers>
-                                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-                                                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                                                        </DataTrigger>
-                                                                                    </Style.Triggers>
-                                                                                </Style>
-                                                                            </TextBlock.Style>
-                                                                        </TextBlock>
-                                                                        <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                                    </StackPanel>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
 
                                 <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
-                                
+
                                 <Grid Grid.Column="4">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Style="{StaticResource InformationsTextBlock}">
-                                        <Run Text="formula clauses: "/>
-                                        <Run Text="{Binding Formula.ClausesCount, Mode=OneWay}"/>   
-                                    </TextBlock>
-
-                                    <DataGrid Grid.Row="1" 
+                                    <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding FormulaClausesView}">
+                                          ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}" 
+                                          SelectionChanged="ResolutionSelectedClauseChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Width="*" MinWidth="140">
-                                                <DataGridTemplateColumn.Header>
-                                                    <TextBlock Text="formula clauses" ToolTip="All clauses of the formula and their valuation based on the valuations of the variables"/>
-                                                </DataGridTemplateColumn.Header>
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ItemsControl ItemsSource="{Binding Literals}">
-                                                            <ItemsControl.Template>
-                                                                <ControlTemplate TargetType="ItemsControl">
-                                                                    <ItemsPresenter/>
-                                                                </ControlTemplate>
-                                                            </ItemsControl.Template>
+                                            <DataGridTextColumn Width="*" MinWidth="130" Binding="{Binding Name}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="with positive refs." ToolTip="The clauses of the formula that includes the selected variable as positive literal"/>
+                                                </DataGridTextColumn.Header>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
 
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0, 1, 0, 1"/>
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
+                                <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
 
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <StackPanel Orientation="Horizontal">
-                                                                        <TextBlock Text="∨ ">
-                                                                            <TextBlock.Style>
-                                                                                <Style TargetType="TextBlock">
-                                                                                    <Style.Triggers>
-                                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-                                                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                                                        </DataTrigger>
-                                                                                    </Style.Triggers>
-                                                                                </Style>
-                                                                            </TextBlock.Style>
-                                                                        </TextBlock>
-                                                                        <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}"/>
-                                                                    </StackPanel>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
+                                <Grid Grid.Column="6">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
 
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-
-                                            <DataGridTextColumn Header="valuation" Width="auto" MinWidth="100" Binding="{Binding Valuation}" IsReadOnly="True">
+                                    <DataGrid Grid.Row="0"
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}" 
+                                          SelectionChanged="ResolutionSelectedClauseChanged">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="130" Binding="{Binding Name}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="with negative refs." ToolTip="The clauses of the formula that includes the selected variable as negative literal"/>
+                                                </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
                                                         <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                        <Setter Property="TextBlock.Foreground" Value="{Binding Valuation, Converter={StaticResource ValuationToColor}, Mode=OneWay}" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="7" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <Grid Grid.Column="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid Grid.Row="0"
+                                          Style="{StaticResource DataGridStyle}"
+                                          ItemsSource="{Binding ResolutionResolutionResults}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="resolution result" ToolTip="The result of the resolution of the selected clauses in the 'with positive refs.' and 'with negative refs.' lists"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
 
-                                    <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-                                        <Button Content="Add" Width="60" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
-                                        <Button Content="Delete" Width="60" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
-                                        <Button Content="Reset" Width="60" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
-                                    </WrapPanel>
+                                    <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+                                        <Button Content="Resolution" Click="ResolutionResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
+                                        <Button Content="Test all" Click="ResolutionResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                        <Button Content="Resolution all" Click="ResolutionResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                    </StackPanel>
                                 </Grid>
+
+                                <GridSplitter Grid.Column="9" Width="5" HorizontalAlignment="Stretch"/>
+
                             </Grid>
-                        </DockPanel>
-                        
-                    </TabItem>
-
-                    <TabItem Header="Resolution">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid Grid.Column="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0"
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding VariablesView}"
-                                          SelectionChanged="ResolutionVariablesGrid_SelectionChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="60" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                            <Grid Grid.Column="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0"
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding ResolutionClausesWithReferencesCollection}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="180" Binding="{Binding Name}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="related clauses" ToolTip="The clauses of the formula that includes the selected variable"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                            <Grid Grid.Column="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0"
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}" 
-                                          SelectionChanged="ResolutionSelectedClauseChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="with positive refs." ToolTip="The clauses of the formula that includes the selected variable as positive literal"/>
-                                            </DataGridTextColumn.Header>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
-
-                            <Grid Grid.Column="6">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0"
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}" 
-                                          SelectionChanged="ResolutionSelectedClauseChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="with negative refs." ToolTip="The clauses of the formula that includes the selected variable as negative literal"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="7" Width="5" HorizontalAlignment="Stretch"/>
-
-                            <Grid Grid.Column="8">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Grid.Row="0"
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding ResolutionResolutionResults}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="140" Binding="{Binding Name}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="resolution result" ToolTip="The result of the resolution of the selected clauses in the 'with positive refs.' and 'with negative refs.' lists"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                                    <Button Content="Resolution" Click="ResolutionResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
-                                    <Button Content="Test all" Click="ResolutionResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                                    <Button Content="Resolution all" Click="ResolutionResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                                </StackPanel>
-                            </Grid>
-                            
-                            <GridSplitter Grid.Column="9" Width="5" HorizontalAlignment="Stretch"/>
-
-                        </Grid>
+                        </ScrollViewer>
                     </TabItem>
 
                     <TabItem Header="Solver">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Row="0" Grid.Column="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
 
-                                <DataGrid 
+                                    <DataGrid 
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding SolverSolutionsView}"
                                     SelectionChanged="SolverSelectedSolutionChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="300" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="400" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
 
-                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Content="Solve" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
-                                    <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
-                                </WrapPanel>
+                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Solve" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
+                                        <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <Grid Grid.Row="0" Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverSelectedSolutionView}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="solution" ToolTip="Analysis of the selected valuation that solves the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Apply to formula" Command="Commands:Commands.ApplyToFormula" ToolTip="Apply the selected valuation to the variables of the formula"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <Grid Grid.Row="0" Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="30"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverStatisticsView}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="statistics" ToolTip="Statistics"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <GroupBox Grid.Row="1" Header="Options" Margin="0">
+                                        <StackPanel Orientation="Vertical">
+                                            <CheckBox Content="Update progress" IsChecked="{Binding SolverUpdateMessage}" FlowDirection="LeftToRight" 
+                                                  ToolTip="Update the message area with the progress while searching for a solutions. Uncheck it for faster results."/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
+
                             </Grid>
 
-                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                            <Grid Grid.Row="0" Grid.Column="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverSelectedSolutionView}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="solution" ToolTip="Analysis of the selected valuation that solves the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Content="Apply to formula" Command="Commands:Commands.ApplyToFormula" ToolTip="Apply the selected valuation to the variables of the formula"/>
-                                </WrapPanel>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                            <Grid Grid.Row="0" Grid.Column="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-
-                                <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverStatisticsView}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="statitics" ToolTip="Statistics"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                        </Grid>
+                        </ScrollViewer>
                     </TabItem>
                     
                     <TabItem Header="Algorithm">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
 
-                                <DataGrid Grid.Row="0"
+                                    <DataGrid Grid.Row="0"
                                           Style="{StaticResource DataGridStyle}"
                                           ItemsSource="{Binding VariablesView}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="70" Binding="{Binding Value.Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.References}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.Contrasts}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithPositiveReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Width="50" Binding="{Binding Value.ClausesWithNegativeReferencesCount}" IsReadOnly="True">
-                                            <DataGridTextColumn.Header>
-                                                <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
-                                            </DataGridTextColumn.Header>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style>
-                                                    <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                                <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Content="Analyze" Click="AnalyzeFormula"/>
-                                </WrapPanel>
-                            </Grid>
-
-                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-                            
-                            <TabControl Grid.Column="2">
-                                <TabItem Header="flow">
-                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" >
-                                        <DataGrid.Resources>
-                                            <Style TargetType="{x:Type DataGridCell}">
-                                                <Style.Triggers>
-                                                    <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                                        <Setter Property="Background" Value="Transparent" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </DataGrid.Resources>
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="steps" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <DataTemplate.Resources>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="Black"/>
-                                                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                                                <Setter Property="Margin" Value="5"/>
-                                                            </Style>
-                                                            <Style TargetType="{x:Type ListView}">
-                                                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                                                <Setter Property="Background" Value="Transparent" />
-                                                                <Setter Property="BorderBrush" Value="Transparent" />
+                                            <DataGridTextColumn Width="70" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Value.CnfIndex">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="50" Binding="{Binding References}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="refs" ToolTip="The number of appearances of the variable in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="50" Binding="{Binding Contrasts}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="cont" ToolTip="The contrasts of the variable is the minimum from the positive and relative appearances of the variable in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
 
-                                                                <Style.Resources>
-                                                                    <Style TargetType="{x:Type ListViewItem}">
-                                                                        <Setter Property="HorizontalAlignment" Value="Center" />
-                                                                        <Setter Property="Background" Value="Bisque" />
-                                                                        <Setter Property="BorderBrush" Value="Black" />
-                                                                        <Setter Property="Padding" Value="0" />
-                                                                        <Setter Property="Margin" Value="0, 2, 0, 2" />
-                                                                    </Style>
-                                                                </Style.Resources>
-                                                            </Style>
-                                                            <Style TargetType="Border">
-                                                                <Setter Property="BorderBrush" Value="Black"/>
-                                                                <Setter Property="BorderThickness" Value="1"/>
-                                                                <Setter Property="Background" Value="AliceBlue"/>
-                                                                <Setter Property="CornerRadius" Value="8"/>
-                                                            </Style>
-                                                        </DataTemplate.Resources>
-
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="1*"/>
-                                                                <ColumnDefinition Width="1*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <StackPanel Grid.Column="0" Orientation="Vertical">
-                                                                <Border Width="50">
-                                                                    <TextBlock>
-                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
-                                                                    </TextBlock>
-                                                                </Border>
-                                                                <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding Variable.PositiveLiteral.ClausesContainingIt}"/>
-                                                                <TextBlock Text="|"/>
-                                                                <Border Width="150">
-                                                                    <TextBlock>
-                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
-                                                                        <Run Text="=TRUE"/>
-                                                                    </TextBlock>
-                                                                </Border>
-                                                                <TextBlock Text="|" />
-                                                                <ListView ItemsSource="{Binding ClausesWhenPositiveIsTrue}"/>
-                                                            </StackPanel>
-
-                                                            <StackPanel Grid.Column="1" Orientation="Vertical">
-                                                                <Border Width="50">
-                                                                    <TextBlock>
-                                                                        <Run Text="-"/>
-                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
-                                                                    </TextBlock>
-                                                                </Border>
-                                                                <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding Variable.NegativeLiteral.ClausesContainingIt}"/>
-                                                                <TextBlock Text="|"/>
-                                                                <Border Width="150">
-                                                                    <TextBlock>
-                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
-                                                                        <Run Text="=FALSE"/>
-                                                                    </TextBlock>
-                                                                </Border>
-                                                                <TextBlock Text="|"/>
-                                                                <ListView ItemsSource="{Binding ClausesWhenNegativeIsTrue}"/>
-                                                            </StackPanel>
-
-                                                        </Grid>
-
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Width="50" Binding="{Binding ClausesWithPositiveReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="pos" ToolTip="The number of appearances of the variable as positive literal in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="50" Binding="{Binding ClausesWithNegativeReferencesCount}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="neg" ToolTip="The number of appearances of the variable as negative literal in the clauses of the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                </TabItem>
 
-                                <TabItem Header="Problems">
-                                    <ListView ItemsSource="{Binding AlgorithmProblemsView}"/>
-                                </TabItem>
+                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Analyze" Click="AnalyzeFormula"/>
+                                    </WrapPanel>
+                                </Grid>
 
-                                <TabItem Header="Appearances">
-                                    <DataGrid ItemsSource="{Binding AlgorithmAppearancesView}"
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <TabControl Grid.Column="2">
+                                    <TabItem Header="flow">
+                                        <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" >
+                                            <DataGrid.Resources>
+                                                <Style TargetType="{x:Type DataGridCell}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                                            <Setter Property="Background" Value="Transparent" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DataGrid.Resources>
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="steps" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <DataTemplate.Resources>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="Black"/>
+                                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                                    <Setter Property="Margin" Value="5"/>
+                                                                </Style>
+                                                                <Style TargetType="{x:Type ListView}">
+                                                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                                                    <Setter Property="Background" Value="Transparent" />
+                                                                    <Setter Property="BorderBrush" Value="Transparent" />
+
+                                                                    <Style.Resources>
+                                                                        <Style TargetType="{x:Type ListViewItem}">
+                                                                            <Setter Property="HorizontalAlignment" Value="Center" />
+                                                                            <Setter Property="Background" Value="Bisque" />
+                                                                            <Setter Property="BorderBrush" Value="Black" />
+                                                                            <Setter Property="Padding" Value="0" />
+                                                                            <Setter Property="Margin" Value="0, 2, 0, 2" />
+                                                                        </Style>
+                                                                    </Style.Resources>
+                                                                </Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="BorderBrush" Value="Black"/>
+                                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                                    <Setter Property="Background" Value="AliceBlue"/>
+                                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                                </Style>
+                                                            </DataTemplate.Resources>
+
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="1*"/>
+                                                                    <ColumnDefinition Width="1*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" Orientation="Vertical">
+                                                                    <Border Width="50">
+                                                                        <TextBlock>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        </TextBlock>
+                                                                    </Border>
+                                                                    <TextBlock Text="|"/>
+                                                                    <ListView ItemsSource="{Binding Variable.PositiveLiteral.ClausesContainingIt}"/>
+                                                                    <TextBlock Text="|"/>
+                                                                    <Border Width="150">
+                                                                        <TextBlock>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        <Run Text="=TRUE"/>
+                                                                        </TextBlock>
+                                                                    </Border>
+                                                                    <TextBlock Text="|" />
+                                                                    <ListView ItemsSource="{Binding ClausesWhenPositiveIsTrue}"/>
+                                                                </StackPanel>
+
+                                                                <StackPanel Grid.Column="1" Orientation="Vertical">
+                                                                    <Border Width="50">
+                                                                        <TextBlock>
+                                                                        <Run Text="-"/>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        </TextBlock>
+                                                                    </Border>
+                                                                    <TextBlock Text="|"/>
+                                                                    <ListView ItemsSource="{Binding Variable.NegativeLiteral.ClausesContainingIt}"/>
+                                                                    <TextBlock Text="|"/>
+                                                                    <Border Width="150">
+                                                                        <TextBlock>
+                                                                        <Run Text="{Binding Variable.Name, Mode=OneWay}"/>
+                                                                        <Run Text="=FALSE"/>
+                                                                        </TextBlock>
+                                                                    </Border>
+                                                                    <TextBlock Text="|"/>
+                                                                    <ListView ItemsSource="{Binding ClausesWhenNegativeIsTrue}"/>
+                                                                </StackPanel>
+
+                                                            </Grid>
+
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </TabItem>
+
+                                    <TabItem Header="Problems">
+                                        <ListView ItemsSource="{Binding AlgorithmProblemsView}"/>
+                                    </TabItem>
+
+                                    <TabItem Header="Appearances">
+                                        <DataGrid ItemsSource="{Binding AlgorithmAppearancesView}"
                                               Style="{StaticResource DataGridFromDataTableStyle}"
                                               AutoGenerateColumns ="True"
                                               HeadersVisibility="Column"
                                               CanUserAddRows="False">
-                                    </DataGrid>
-                                </TabItem>
+                                        </DataGrid>
+                                    </TabItem>
 
-                                <TabItem Header="Conflicts">
-                                    <DataGrid ItemsSource="{Binding AlgorithmConflictsView}"
+                                    <TabItem Header="Conflicts">
+                                        <DataGrid ItemsSource="{Binding AlgorithmConflictsView}"
                                               Style="{StaticResource DataGridFromDataTableStyle}"
                                               AutoGenerateColumns ="True"
                                               HeadersVisibility="Column"
                                               CanUserAddRows="False">
-                                    </DataGrid>
-                                </TabItem>
+                                        </DataGrid>
+                                    </TabItem>
 
-                            </TabControl>
-                        </Grid>
+                                </TabControl>
+                            </Grid>
+                        </ScrollViewer>
                     </TabItem>
 
                     <TabItem Header="Logs">

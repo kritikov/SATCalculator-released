@@ -1,6 +1,7 @@
 ﻿using SATCalculator.Classes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -8,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace SATCalculator.Classes
 {
-    public class Variable
+    public class Variable : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
 
@@ -31,7 +33,20 @@ namespace SATCalculator.Classes
             }
         }
         public int CnfIndex { get; set; } = 0;
-        public ValuationEnum Valuation { get; set; } = ValuationEnum.Null;
+
+        private ValuationEnum valuation = ValuationEnum.Null;
+        public ValuationEnum Valuation
+        {
+            get
+            {
+                return valuation;
+            }
+            set
+            {
+                valuation = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Valuation"));
+            }
+        }
 
         public int ClausesWithPositiveReferencesCount => PositiveLiteral.ClausesContainingIt.Count;
         public int ClausesWithNegativeReferencesCount => NegativeLiteral.ClausesContainingIt.Count;

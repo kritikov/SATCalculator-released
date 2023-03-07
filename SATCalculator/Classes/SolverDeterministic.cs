@@ -36,10 +36,13 @@ namespace SATCalculator.Classes
                 {
                     if (checkedCombinations % 10000 == 0)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        if (window.SolverUpdateMessage)
                         {
-                            window.Message = $"checking {checkedCombinations} valuations from a total of {totalCombinations}";
-                        });
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                window.Message = $"checking {checkedCombinations} valuations from a total of {totalCombinations}";
+                            });
+                        }
                     }
 
                     // check formula valuation
@@ -79,6 +82,7 @@ namespace SATCalculator.Classes
                 Application.Current.Dispatcher.Invoke(() => {
                     results.Statistics.Add(new Statistics() { Name = "solutions", Value = results.Solutions.Count });
                     results.Statistics.Add(new Statistics() { Name = "total variables", Value = formula.VariablesCount });
+                    window.Message = $"checked {checkedCombinations} valuations from a total of {totalCombinations}";
                 });
 
                 return;

@@ -35,6 +35,9 @@ namespace SATCalculator.Views
             public string ValueAsString { get; set; }
         }
 
+        private bool SearchingValuationsRunning = false;
+        private CancellationTokenSource cancellationToken = new CancellationTokenSource();
+
         public static List<VariableValue> VariableValues { get; set; } = new List<VariableValue>
         {
             new VariableValue(){Value = ValuationEnum.Null, ValueAsString="null" },
@@ -50,6 +53,28 @@ namespace SATCalculator.Views
             {
                 message = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Message"));
+            }
+        }
+
+        private int selectedTab = 0;
+        public int SelectedTab
+        {
+            get { return selectedTab; }
+            set
+            {
+                selectedTab = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedTab"));
+            }
+        }
+
+        private bool solverUpdateMessage = true;
+        public bool SolverUpdateMessage
+        {
+            get { return solverUpdateMessage; }
+            set
+            {
+                solverUpdateMessage = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SolverUpdateMessage"));
             }
         }
 
@@ -121,8 +146,6 @@ namespace SATCalculator.Views
             }
         }
 
-        private bool SearchingValuationsRunning = false;
-        private CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
 
         #endregion
@@ -384,9 +407,9 @@ namespace SATCalculator.Views
 
                     if (grid.SelectedItem != null)
                     {
-                        var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+                        var selectedVariable = (Variable)grid.SelectedItem;
 
-                        SelectedVariable = selectedItem.Value;
+                        SelectedVariable = selectedVariable;
                         if (SelectedVariable != null && FormulaRelatedClausesView != null && FormulaClausesView != null)
                         {
                             FormulaRelatedClausesView.Filter = RelatedClausesFilter;
@@ -414,9 +437,9 @@ namespace SATCalculator.Views
 
                     if (grid.SelectedItem != null)
                     {
-                        var selectedItem = (KeyValuePair<string, Variable>)grid.SelectedItem;
+                        var selectedVariable = (Variable)grid.SelectedItem;
 
-                        Formula.SelectedVariable = selectedItem.Value;
+                        Formula.SelectedVariable = selectedVariable;
                         if (Formula.SelectedVariable != null)
                             RefreshResolutionViews();
                     }
@@ -530,6 +553,66 @@ namespace SATCalculator.Views
 
 
         #region COMMANDS
+
+        private void NewFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+
+        }
+        private void NewFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Message = "";
+
+            try
+            {
+                CreateNewFormula();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        private void LoadFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+
+        }
+        private void LoadFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Message = "";
+
+            try
+            {
+                LoadFormula();
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
+
+        private void SaveFormula_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Formula != null ? true : false;
+
+        }
+        private void SaveFormula_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Message = "";
+
+            try
+            {
+                SaveFormulaAsCNF(Formula);
+            }
+            catch (Exception ex)
+            {
+                Logs.Write(ex.Message);
+                Message = ex.Message;
+            }
+        }
 
         private void RemoveClause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -776,8 +859,10 @@ namespace SATCalculator.Views
             clausesSource.Source = Formula.Clauses;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClausesView"));
 
-            variablesSource.Source = Formula.VariablesDict;
+            variablesSource.Source = Formula.Variables;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VariablesView"));
+            VariablesView?.SortDescriptions.Add(new SortDescription("CnfIndex", ListSortDirection.Ascending));
+            VariablesView.Refresh();
 
             RefreshFormulaViews();
             RefreshResolutionViews();
@@ -1188,11 +1273,12 @@ namespace SATCalculator.Views
         {
             formula.ApplyValuation(solution);
 
-            RefreshFormulaViews();
+            SelectedTab = 0;
+
+            //RefreshFormulaViews();
         }
 
         #endregion
-
 
     }
 }
