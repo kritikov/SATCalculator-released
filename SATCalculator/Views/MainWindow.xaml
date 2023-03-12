@@ -7,7 +7,7 @@
         xmlns:Converters="clr-namespace:SATCalculator.Classes"
         xmlns:Commands="clr-namespace:SATCalculator.Classes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="694" Width="1145" WindowStartupLocation="CenterScreen">
+        Title="SAT calculator" Height="694" Width="1150" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Converters:ValuationToColor x:Key="ValuationToColor"/>
@@ -383,9 +383,9 @@
                                           ItemsSource="{Binding VariablesView}"
                                           SelectionChanged="ResolutionVariablesGrid_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Width="60" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="CnfIndex">
+                                            <DataGridTextColumn Width="70" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="CnfIndex">
                                                 <DataGridTextColumn.Header>
-                                                    <TextBlock Text="name" ToolTip="The name of the variable. Select one to view its related clauses"/>
+                                                    <TextBlock Text="variable" ToolTip="The name of the variable. Select one to view its related clauses"/>
                                                 </DataGridTextColumn.Header>
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style>
@@ -477,7 +477,7 @@
                                           ItemsSource="{Binding ResolutionClausesWithPositiveReferencesView}" 
                                           SelectionChanged="ResolutionSelectedClauseChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Width="*" MinWidth="130" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="*" MinWidth="135" Binding="{Binding Name}" IsReadOnly="True">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="with positive refs." ToolTip="The clauses of the formula that includes the selected variable as positive literal"/>
                                                 </DataGridTextColumn.Header>
@@ -499,7 +499,7 @@
                                           ItemsSource="{Binding ResolutionClausesWithNegativeReferencesView}" 
                                           SelectionChanged="ResolutionSelectedClauseChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Width="*" MinWidth="130" Binding="{Binding Name}" IsReadOnly="True">
+                                            <DataGridTextColumn Width="*" MinWidth="135" Binding="{Binding Name}" IsReadOnly="True">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="with negative refs." ToolTip="The clauses of the formula that includes the selected variable as negative literal"/>
                                                 </DataGridTextColumn.Header>

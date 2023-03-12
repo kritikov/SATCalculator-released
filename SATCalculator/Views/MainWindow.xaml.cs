@@ -146,8 +146,6 @@ namespace SATCalculator.Views
             }
         }
 
-
-
         #endregion
 
 
@@ -302,9 +300,11 @@ namespace SATCalculator.Views
 
             logsSource.Source = Logs.List;
 
+            CreateInitialFormula();
+
             Logs.Write("Application started");
         }
-       
+
         #endregion
 
 
@@ -811,14 +811,13 @@ namespace SATCalculator.Views
             try
             {
                 // Configure open file dialog box
-                string path = AppDomain.CurrentDomain.BaseDirectory;
-                path = "C:\\Users\\kritikov\\source\\repos\\SATCalculator\\SATCalculator\\Resources\\SAT3 formulas";
+                string path = AppDomain.CurrentDomain.BaseDirectory + "Resources";
 
                 var dialog = new OpenFileDialog();
                 dialog.InitialDirectory = path;
-                dialog.FileName = "Document"; // Default file name
-                dialog.DefaultExt = ".cnf"; // Default file extension
-                dialog.Filter = "SAT3 documents (.cnf)|*.cnf"; // Filter files by extension
+                dialog.FileName = "file"; 
+                dialog.DefaultExt = ".cnf";
+                dialog.Filter = "SAT files (.cnf)|*.cnf";
 
                 // Show open file dialog box
                 bool? result = dialog.ShowDialog();
@@ -1120,6 +1119,33 @@ namespace SATCalculator.Views
                     SolverResults = null;
                     RefreshViews();
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Create the initial formula to display as example
+        /// </summary>
+        private void CreateInitialFormula()
+        {
+            try
+            {
+                List<string> lines = new List<string>()
+                {
+                    "1 2 3 0",
+                    "1 -2 3 0",
+                    "1 2 -3 0",
+                };
+
+                formulaOriginal = SATFormula.CreateFromCnfLines(lines);
+                Formula = formulaOriginal.Copy();
+
+                SelectedVariable = null;
+                SolverResults = null;
+                RefreshViews();
             }
             catch (Exception ex)
             {
