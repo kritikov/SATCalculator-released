@@ -124,17 +124,6 @@ namespace SATCalculator.Views
             }
         }
 
-        private AnalysisResults algorithmAnalysisResults = new AnalysisResults();
-        public AnalysisResults AlgorithmAnalysisResults
-        {
-            get => algorithmAnalysisResults;
-            set
-            {
-                algorithmAnalysisResults = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAnalysisResults"));
-            }
-        }
-
         private SolverResults solverResults = new SolverResults();
         public SolverResults SolverResults
         {
@@ -248,42 +237,6 @@ namespace SATCalculator.Views
             get
             {
                 return this.solverStatisticsSource.View;
-            }
-        }
-
-        private readonly CollectionViewSource algorithmFlowSource = new CollectionViewSource();
-        public ICollectionView AlgorithmFlowView
-        {
-            get
-            {
-                return this.algorithmFlowSource.View;
-            }
-        }
-
-        private readonly CollectionViewSource algorithmProblemsSource = new CollectionViewSource();
-        public ICollectionView AlgorithmProblemsView
-        {
-            get
-            {
-                return this.algorithmProblemsSource.View;
-            }
-        }
-
-        private readonly CollectionViewSource algorithmAppearancesSource = new CollectionViewSource();
-        public ICollectionView AlgorithmAppearancesView
-        {
-            get
-            {
-                return this.algorithmAppearancesSource.View;
-            }
-        }
-
-        private readonly CollectionViewSource algorithmConflictsSource = new CollectionViewSource();
-        public ICollectionView AlgorithmConflictsView
-        {
-            get
-            {
-                return this.algorithmConflictsSource.View;
             }
         }
 
@@ -526,21 +479,6 @@ namespace SATCalculator.Views
                     SolverResults.SelectedSolution = SolverSolutionsView.CurrentItem as Solution;
                     RefreshSolverViews();
                 }
-            }
-            catch (Exception ex)
-            {
-                Logs.Write(ex.Message);
-                Message = ex.Message;
-            }
-        }
-
-        private void AnalyzeFormula(object sender, RoutedEventArgs e)
-        {
-            Message = "";
-
-            try
-            {
-                AnalyzeFormula(Formula);
             }
             catch (Exception ex)
             {
@@ -833,7 +771,6 @@ namespace SATCalculator.Views
                     
                     SelectedVariable = null;
                     SolverResults = null;
-                    AlgorithmAnalysisResults = new AnalysisResults();
 
                     RefreshViews();
                 }
@@ -866,7 +803,6 @@ namespace SATCalculator.Views
             RefreshFormulaViews();
             RefreshResolutionViews();
             RefreshSolverViews();
-            RefreshAlgorithmViews();
         }
 
         /// <summary>
@@ -925,25 +861,6 @@ namespace SATCalculator.Views
             {
                 throw ex;
             }
-        }
-
-        /// <summary>
-        /// Refresh the algorithm tab views
-        /// </summary>
-        private void RefreshAlgorithmViews()
-        {
-            algorithmFlowSource.Source = AlgorithmAnalysisResults.SelectionSteps;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmFlowView"));
-
-            algorithmProblemsSource.Source = AlgorithmAnalysisResults.Problems;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmProblemsView"));
-
-            algorithmAppearancesSource.Source = AlgorithmAnalysisResults.EndVariableAppearancesTable;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmAppearancesView"));
-
-            algorithmConflictsSource.Source = AlgorithmAnalysisResults.ConflictsTable;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AlgorithmConflictsView"));
-
         }
 
         /// <summary>
@@ -1196,24 +1113,6 @@ namespace SATCalculator.Views
 
                     file.Close();
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Analyze a formula with the algorithm
-        /// </summary>
-        /// <param name="formula"></param>
-        public void AnalyzeFormula(SATFormula formula)
-        {
-            try
-            {
-                AlgorithmAnalysisResults = AnalysisResults.Analyze(formula);
-
-                RefreshAlgorithmViews();
             }
             catch (Exception ex)
             {

@@ -74,7 +74,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classes\AnalysisResults.cs" />
     <Compile Include="Classes\Commands.cs" />
     <Compile Include="Classes\Converters.cs" />
     <Compile Include="Classes\Logs.cs" />
