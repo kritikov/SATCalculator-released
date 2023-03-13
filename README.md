@@ -1,4 +1,4 @@
-# SATCalculator-released
+# SAT Calculator-released
 
 SAT calculator is an open souce editor for SAT formulas. It currently provides:
 
