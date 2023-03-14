@@ -738,12 +738,18 @@ namespace SATCalculator.Views
             }
         }
 
+        /// <summary>
+        /// Display the 'About' window
+        /// </summary>
         private void DisplayAbout()
         {
             AboutWindow window = new AboutWindow();
             window.ShowDialog();
         }
 
+        /// <summary>
+        /// Open a window to select a cnf file to load a formula
+        /// </summary>
         private void LoadFormula()
         {
             try
@@ -1194,6 +1200,11 @@ namespace SATCalculator.Views
             }
         }
 
+        /// <summary>
+        /// Set the valuations of a solution to the variables of the formula
+        /// </summary>
+        /// <param name="solution"></param>
+        /// <param name="formula"></param>
         private void ApplyValuationToFormula(Solution solution, SATFormula formula)
         {
             formula.ApplyValuation(solution);

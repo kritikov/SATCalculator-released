@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo3.ico</ApplicationIcon>
+    <ApplicationIcon>SAT-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework.Aero2" />
@@ -6168,19 +6168,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="SAT icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\logo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="logo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\logo3.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="logo3.ico" />
+    <Resource Include="SAT-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

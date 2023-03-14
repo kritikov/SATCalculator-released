@@ -17,7 +17,7 @@
             <StackPanel Orientation="Vertical">
                 <TextBlock Text="SAT Calculator is an open source editor for SAT formulas. It is built in WPF and C# and provides several fuctionalities to study a SAT formula." />
                 <TextBlock >
-                                <Run Text="Current version of SAT Calculator is v1.0.0. You can download new versions or the sources from Github at "/>
+                                <Run Text="Current version of SAT Calculator is v1.0.1. You can download new versions or the sources from Github at "/>
                                 <Hyperlink NavigateUri="https://github.com/kritikov/SATCalculator-released" RequestNavigate="Hyperlink_RequestNavigate">
                                     github.com/kritikov/SATCalculator-released
                                 </Hyperlink>
