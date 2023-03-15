@@ -1,5 +1,4 @@
 # SATCalculator-released
-
 SAT calculator is an open souce editor for SAT formulas. It currently provides:
 
 Create-Update-Save a SAT formula in cnf format
